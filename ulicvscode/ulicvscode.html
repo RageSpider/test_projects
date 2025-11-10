@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>ULICT // VSCODE_INTERFACE</title>
+    <meta name="title" content="University Laboratory ICT Club - ULICT (VS Code Interface)">
+    <meta name="description" content="A VS Code-themed tech website for ULICT.">
+
+    <!-- NEW: Replaced favicon with a simpler, more robust SVG -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23007ACC' viewBox='0 0 16 16'%3E%3Cpath d='M13.7 0H2.3C1 0 0 1 0 2.3v11.4C0 15 1 16 2.3 16h11.4c1.3 0 2.3-1 2.3-2.3V2.3C16 1 15 0 13.7 0zM12.6 12.9L8.4 8.7c-.1-.1-.1-.2 0-.3l4.2-4.2c.1-.1.3-.1.4 0l.9.9c.1.1.1.3 0 .4l-3.8 3.8 3.8 3.8c.1.1.1.3 0 .4l-.9.9c-.2.1-.4.1-.4 0zM3.4 3.1l4.2 4.2c.1.1.1.2 0 .3L3.4 11.9c-.1.1-.3.1-.4 0l-.9-.9c-.1-.1-.1-.3 0-.4l3.8-3.8L2.1 3.8c-.1-.1-.1-.3 0-.4l.9-.9c.2-.1.4-.1.4 0z'/%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="webfonts/fonts.css">
+    <link rel="stylesheet" href="tech_style.css">
+
+    <script src="tech_script.js" defer></script>
+</head>
+<body>
+
+    <div class="app-grid">
+        
+        <!-- Activity Bar -->
+        <nav class="activity-bar">
+            <ul class="activity-menu">
+                <li>
+                    <a href="#" class="activity-link active" title="Explorer" id="toggle-explorer">
+                        <!-- SVG Icon: Files -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-link" title="Search" data-target="page-search" data-tab-name="Search">
+                        <!-- SVG Icon: Search -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-link" title="Source Control" data-target="page-git" data-tab-name="Source Control">
+                        <!-- SVG Icon: Git Branch -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-link" title="Run and Debug" data-target="page-debug" data-tab-name="Run and Debug">
+                        <!-- SVG Icon: Debug -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9s-2-1-7-1-7 1-7 1v5.5A3.5 3.5 0 0 0 3.5 18h17a3.5 3.5 0 0 0 0-7V9z"></path><line x1="12" y1="18" x2="12" y2="9"></line><line x1="6" y1="14" x2="6" y2="9"></line><line x1="18" y1="14" x2="18" y2="9"></line></svg>
+                    </a>
+                </li>
+            </ul>
+            <ul class="activity-menu-bottom">
+                 <li>
+                    <a href="#" class="activity-link" title="Settings" data-target="page-settings" data-tab-name="Settings">
+                        <!-- SVG Icon: Settings -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Explorer panel -->
+        <div class="explorer-panel" id="explorer-panel">
+            <div class="explorer-header">
+                <span>EXPLORER</span>
+            </div>
+            
+            <ul class="explorer-tree">
+                <li class="explorer-group open" id="workspace-group">
+                    <div class="explorer-group-header" data-toggle="collapse" data-target="#workspace-files">
+                        <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <span>ULICT_WORKSPACE</span>
+                    </div>
+                    <ul class="nav-menu open" id="workspace-files">
+                        <!-- src folder -->
+                        <li class="explorer-folder open">
+                            <div class="file-item" data-toggle="collapse" data-target="#src-files" data-icon="folder-open">
+                                <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                <span>src</span>
+                            </div>
+                            <ul class="nav-menu open" id="src-files">
+                                <!-- pages folder -->
+                                <li class="explorer-folder open">
+                                    <div class="file-item" data-toggle="collapse" data-target="#pages-files" data-icon="folder-open">
+                                        <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                        <span>pages</span>
+                                    </div>
+                                    <ul class="nav-menu open" id="pages-files">
+                                        <li><a href="#" class="sidebar-link file-item" data-target="page-about" data-tab-name="about.md" data-icon="md"><span>about.md</span></a></li>
+                                        <li><a href="#" class="sidebar-link file-item" data-target="page-domains" data-tab-name="domains.js" data-icon="js"><span>domains.js</span></a></li>
+                                        <li><a href="#" class="sidebar-link file-item" data-target="page-committee" data-tab-name="team.json" data-icon="json"><span>team.json</span></a></li>
+                                        <li><a href="#" class="sidebar-link file-item" data-target="page-contact" data-tab-name="contact.css" data-icon="css"><span>contact.css</span></a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- .gitignore -->
+                        <li><div class="file-item ignored" data-icon="git"><span>.gitignore</span></div></li>
+                        <!-- package.json -->
+                        <li><a href="#" class="sidebar-link file-item" data-target="page-package" data-tab-name="package.json" data-icon="npm"><span>package.json</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main viewport -->
+        <main class="main-viewport">
+            
+            <!-- Editor Tabs container -->
+            <div class="editor-tabs" id="editor-tabs">
+                <!-- NEW: Welcome tab is hardcoded and cannot be closed -->
+                <div class="editor-tab active" data-target="page-welcome" data-noclose="true">
+                    <span>Welcome</span>
+                </div>
+            </div>
+
+            <!-- Main Content Area (for scrolling) -->
+            <div class="main-content-area" id="main-content-area">
+
+                <!-- NEW: Welcome Page -->
+                <section class="content-page active" id="page-welcome">
+                    <header class="page-header">
+                        <h1>Welcome to ULICT</h1>
+                        <p class="subtitle">This is an interactive VS Code-themed portfolio. Click files on the left or use the terminal below.</p>
+                    </header>
+                    <div class="content-body">
+                        <h2>Quick Links</h2>
+                        <ul class="welcome-links">
+                            <li><a href="#" class="sidebar-link" data-target="page-about" data-tab-name="about.md">About ULICT</a></li>
+                            <li><a href="#" class="sidebar-link" data-target="page-domains" data-tab-name="domains.js">Our Domains</a></li>
+                            <li><a href="#" class="sidebar-link" data-target="page-committee" data-tab-name="team.json">Meet the Team</a></li>
+                        </ul>
+
+                        <h2>Try the Terminal</h2>
+                        <p>The terminal below is interactive and persists your file changes!</p>
+                        <pre class="code-block">
+<b>Available commands:</b>
+  help           - Show this message
+  ls [path]      - List files
+  cd [dir]       - Change directory
+  cat [file]     - Display file contents
+  mkdir [dir]    - Create a new directory
+  touch [file]   - Create a new empty file
+  rm [file/dir]  - Remove a file or directory
+  resetfs        - Reset file system to default
+  theme <light|dark> - Change the UI theme
+  neofetch       - Show (fake) system info
+  whoami, date, echo, clear, socials, pwd, git
+</pre>
+                    </div>
+                </section>
+
+
+                <section class="content-page" id="page-about">
+                    <header class="page-header">
+                        <h1><span class="typing-effect"></span></h1>
+                        <p class="subtitle">A community of developers, engineers, and problem-solvers designing the next generation of technology.</p>
+                    </header>
+                    
+                    <div class="content-body">
+                        <h2>Mission Briefing</h2>
+                        <p>The University Laboratory ICT Club (ULICT) is a high-performance hub for students passionate about computer science and engineering. We are not just a club; we are a development team. Our mission is to build real-world projects, compete at the highest levels, and bridge the gap between academic theory and industry practice.</p>
+                        
+                        <div class="about-grid">
+                            <div class="about-text">
+                                <h3>Our Philosophy</h3>
+                                <p>We believe in a "hands-on" approach. We run workshops on scalable system design, full-stack development, machine learning implementation, and offensive security. We build, we deploy, we learn.</p>
+                            </div>
+                            <div class="about-image">
+                                <img src="https://placehold.co/1000x800/1E1E1E/D4D4D4?text=Code+Server+Neon" alt="Dark coding environment">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-domains">
+                    <header class="page-header">
+                        <h1>Core Domains</h1>
+                        <p class="subtitle">We focus on the high-impact sectors of technology.</p>
+                    </header>
+                    
+                    <div class="content-body">
+                        <div class="domain-grid">
+                            <div class="domain-card">
+                                <h3>AI & Machine Learning</h3>
+                                <p>Training and deploying production-ready models. From data pipelines to neural network architecture.</p>
+                                <span class="card-tag">AI/ML</span>
+                            </div>
+                            <div class="domain-card">
+                                <h3>Full-Stack Architecture</h3>
+                                <p>Building scalable, resilient, and containerized applications. We architect systems with React, Node.js, and Kubernetes.</p>
+                                <span class="card-tag">Systems</span>
+                            </div>
+                            <div class="domain-card">
+                                <h3>Offensive Security</h3>
+                                <p>To build secure systems, you must know how to break them. We specialize in penetration testing and network forensics.</p>
+                                <span class="card-tag">Security</span>
+                            </div>
+                            <div class="domain-card">
+                                <h3>Algorithmic Design</h3>
+                                <p>Mastering the fundamentals of data structures and algorithms to write optimized, high-performance code.</p>
+                                <span class="card-tag">Theory</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-committee">
+                    <header class="page-header">
+                        <h1>Our Team</h1>
+                        <p class="subtitle">The leads and mentors for the 2024-2025 session.</p>
+                    </header>
+                    
+                    <div class="content-body">
+                        <div class="committee-grid">
+                            <div class="profile-card">
+                                <img src="https://placehold.co/400x400/1E1E1E/D4D4D4?text=S.R." alt="Profile picture">
+                                <h3>Sazidur Rahman</h3>
+                                <p>President // System Architect</p>
+                            </div>
+                            <div class="profile-card">
+                                <img src="https://placehold.co/400x400/1E1E1E/D4D4D4?text=S.A.S." alt="Profile picture">
+                                <h3>Samiul Ahammad Sami</h3>
+                                <p>VP (Tech) // AI Lead</p>
+                            </div>
+                            <div class="profile-card">
+                                <img src="https://placehold.co/400x400/1E1E1E/D4D4D4?text=R.S." alt="Profile picture">
+                                <h3>Sazidur Rahman</h3>
+                                <p>Full-Stack Lead</p>
+                            </div>
+                            <div class="profile-card">
+                                <img src="https://placehold.co/400x400/1E1E1E/D4D4D4?text=F.F.U" alt="Profile picture">
+                                <h3>Sazidur Rahman</h3>
+                                <p>Cybersecurity Lead</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="content-page" id="page-contact">
+                    <header class="page-header">
+                        <h1>Contact</h1>
+                        <p class="subtitle">Have a project or a question? We're open to collaboration.</p>
+                    </header>
+                    
+                    <div class="content-body">
+                        <form id="contact-form" class="contact-form">
+                            <div class="form-group-grid">
+                                <div class="form-group">
+                                    <label for="name">Your Name</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Your Email</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input type="text" id="subject" name="subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="7" required></textarea>
+                            </div>
+                            <button type="submit" class="cta-button">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-search">
+                    <header class="page-header">
+                        <h1>Search</h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="search-form-full">
+                            <div class="form-group">
+                                <input type="text" id="search-input" name="search" placeholder="Search">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="search-replace" name="replace" placeholder="Replace (not functional)">
+                            </div>
+                            <button class="cta-button">Find All</button>
+                        </div>
+                        <div class="search-results">
+                            <p>Search functionality not implemented in this demo.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-git">
+                    <header class="page-header">
+                        <h1>Source Control</h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="git-ui">
+                            <div class="form-group">
+                                <label for="commit-message">Commit Message</label>
+                                <textarea id="commit-message" name="commit-message" rows="3" placeholder="Commit message (not functional)"></textarea>
+                            </div>
+                            <button class="cta-button">Commit</button>
+                            
+                            <div class="git-changes">
+                                <h3>Changes (5)</h3>
+                                <ul class="git-changes-list">
+                                    <li><span>M</span> package.json</li>
+                                    <li><span>M</span> src/pages/about.md</li>
+                                    <li><span>M</span> src/pages/domains.js</li>
+                                    <li><span>A</span> src/pages/team.json</li>
+                                    <li><span>A</span> src/pages/contact.css</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-debug">
+                    <header class="page-header">
+                        <h1>Run and Debug</h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="debug-controls">
+                            <button class="cta-button" id="start-debugging-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: text-bottom;">
+                                  <path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                                </svg>
+                                Start Debugging (Demo)
+                            </button>
+                            <p>Click "Start Debugging" to see mock output in the "Debug Console" panel below.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-package">
+                    <header class="page-header">
+                        <h1>package.json</h1>
+                    </header>
+                    <div class="content-body">
+                        <pre id="content-package" class="code-block">{
+  "name": "ulict-vscode-demo",
+  "version": "6.0.0",
+  "description": "A VS Code-themed tech website for ULICT.",
+  "main": "tech_script.js",
+  "scripts": {
+    "start": "echo \"Nothing to start.\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "express": "^4.18.2"
+  },
+  "author": "ULICT",
+  "license": "MIT"
+}
+</pre>
+                    </div>
+                </section>
+
+                <section class="content-page" id="page-settings">
+                    <header class="page-header">
+                        <h1>Settings</h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="settings-ui">
+                            <h3>Common Settings</h3>
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="font-size">Editor: Font Size</label>
+                                    <span>Controls the font size in pixels.</span>
+                                </div>
+                                <input type="number" id="font-size" value="14" class="setting-input">
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="tab-size">Editor: Tab Size</label>
+                                    <span>The number of spaces a tab is equal to.</span>
+                                </div>
+                                <input type="number" id="tab-size" value="2" class="setting-input">
+                            </div>
+                             <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="autosave">Files: Auto Save</label>
+                                    <span>Controls how unsaved files are auto-saved.</span>
+                                </div>
+                                <select id="autosave" class="setting-input">
+                                    <option value="off">off</option>
+                                    <option value="onFocusChange" selected>onFocusChange</option>
+                                    <option value="onWindowChange">onWindowChange</option>
+                                    <option value="afterDelay">afterDelay</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="content-for-cat" style="display: none;">
+                    <div id="content-about.md">
+## Mission Briefing
+The University Laboratory ICT Club (ULICT) is a high-performance hub for students passionate about computer science and engineering. We are not just a club; we are a development team.
+
+### Our Philosophy
+We believe in a "hands-on" approach. We run workshops on scalable system design, full-stack development, machine learning implementation, and offensive security. We build, we deploy, we learn.
+                    </div>
+                    <div id="content-domains.js">
+// domains.js
+// Core focus areas for ULICT
+
+const domains = [
+  { name: "AI & Machine Learning", tag: "AI/ML" },
+  { name: "Full-Stack Architecture", tag: "Systems" },
+  { name: "Offensive Security", tag: "Security" },
+  { name: "Algorithmic Design", tag: "Theory" }
+];
+
+console.log("ULICT Core Domains", domains);
+                    </div>
+                    <div id="content-team.json">
+[
+  {
+    "name": "Sazidur Rahman",
+    "role": "President // System Architect"
+  },
+  {
+    "name": "Samiul Ahammad Sami",
+    "role": "VP (Tech) // AI Lead"
+  },
+  {
+    "name": "MD Sazidur Rahman",
+    "role": "Full-Stack Lead"
+  },
+  {
+    "name": "Rage Spider",
+    "role": "Cybersecurity Lead"
+  }
+]
+                    </div>
+                    <div id="content-contact.css">
+/* contact.css */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+}
+                    </div>
+                </div>
+
+            </div> <!-- End .main-content-area -->
+            
+            <div class="panel-resize-handle" id="panel-resize-handle"></div>
+            
+            <div class="bottom-panel" id="bottom-panel">
+                <div class="panel-tab-bar" id="panel-tab-bar">
+                    <div class="panel-tabs">
+                        <button class="panel-tab" data-target="panel-problems">PROBLEMS</button>
+                        <button class="panel-tab" data-target="panel-output">OUTPUT</button>
+                        <button class="panel-tab" data-target="panel-debug">DEBUG CONSOLE</button>
+                        <button class="panel-tab active" data-target="panel-terminal">TERMINAL</button>
+                    </div>
+                    <div class="panel-controls">
+                        <button class="panel-toggle-btn" title="Toggle Panel" id="panel-toggle-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-content-area">
+                    
+                    <div class="panel-content" id="panel-problems">
+                        <pre class="panel-output-placeholder">No problems have been detected in the workspace.</pre>
+                    </div>
+                    
+                    <div class="panel-content" id="panel-output">
+                        <pre class="panel-output-placeholder">No output yet...</pre>
+                    </div>
+
+                    <div class="panel-content" id="panel-debug">
+                        <pre class="panel-output-placeholder" id="debug-output">Click "Start Debugging" in the Run & Debug panel to begin...</pre>
+                    </div>
+                    
+                    <div class="panel-content active" id="panel-terminal">
+                        <div class="terminal-body">
+                            <pre class="terminal-output" id="terminal-output">Welcome to ULICT Terminal. Type 'help' for available commands.
+</pre>
+                            <div class="terminal-input-line">
+                                <span class="terminal-prompt" id="terminal-prompt">ULICT@web:~$</span>
+                                <input type="text" class="terminal-input" id="terminal-input" aria-label="Terminal Input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="status-bar">
+            <div class="status-left">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+                <span>main</span>
+            </div>
+            <div class="status-right">
+                <span id="current-time">15:02:10 PM</span>
+                <span>STATUS: OK</span>
+                <span>ULICT_SESSION: v2025</span>
+            </div>
+        </footer>
+
+    </div>
+</body>
+</html>

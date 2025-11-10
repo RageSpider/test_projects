@@ -1,0 +1,2678 @@
+html {
+  overflow-y: scroll; /* Keeps scrollbar always visible, preventing layout shift */
+  scroll-behavior: smooth;
+
+}
+/* Wrapper uses flexbox to space content + footer */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* full height of viewport */
+}
+
+/* Main expands to push footer down */
+main {
+  flex: 1;
+}
+
+body {
+  background-color: #040c15;
+  margin: 0; /* Reset body margins */
+  padding: 0;
+  min-height: 100vh; /* Ensures page fills viewport */
+}
+
+.desktop-1,
+.desktop-1 * {
+  box-sizing: border-box;
+}
+.desktop-1 {
+  background: #040c15;
+  min-height: 269.3125rem; /* Dynamic height, slightly above tallest content */
+  position: relative; /* Keep for positioning context */
+  overflow: hidden; /* Remove overflow: hidden to allow natural scrolling */
+}
+
+.mobile,
+.mobile * {
+  box-sizing: border-box;
+}
+.mobile {
+  background: #040c15;
+  height: 4191px;
+  position: relative;
+  overflow: hidden;
+}
+
+@font-face {
+  font-family: 'DarkerGrotesque';
+  src: url('/fonts/DarkerGrotesque.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'DarkerGrotesque1';
+  src: url('/fonts/DarkerGrotesque1.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'DarkerGrotesque-Medium';
+  src: url('/fonts/DarkerGrotesque-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'DarkerGrotesque-SemiBold';
+  src: url('/fonts/DarkerGrotesque-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'DarkerGrotesque-Bold';
+  src: url('/fonts/DarkerGrotesque-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'instrumentSans-Regular';
+  src: url('/fonts/InstrumentSans-VariableFont_wdth\,wght.ttf') format('truetype');
+}
+
+.vector {
+  width: 199.62rem;
+  height: 338.675rem;
+  position: absolute;
+  left: -47.311875rem;
+  top: -57.625rem;
+  overflow: visible;
+}
+@media only screen and (max-width: 468px) {
+  .vector {
+    left: -57rem;
+  }
+}
+
+
+.hero-section {
+  height: 33.625rem;
+  position: absolute;
+  right: 4rem;
+  left: 4.0625rem;
+  top: 9.125rem;
+}
+
+._3-d-emblem {
+  width: 31.5rem;
+  height: 33.625rem;
+  position: absolute;
+  right: 0rem;
+  top: -3rem;
+  object-fit: cover;
+  animation: fadeInRight 1.5s ease-out forwards;
+  transition: all 0.7s ease-out; /* Smooth movement */
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  display: block;
+  transform: translateY(0);
+  z-index: 1;
+  pointer-events: auto;
+}
+
+
+
+._3-d-emblem:hover {
+  filter: brightness(1);
+  scale: 1.05;
+  rotate: 2deg;
+  transform: translateY(-5px);
+  cursor: pointer;
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px) translateZ(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: baseline;
+  justify-content: flex-start;
+  width: 90.3%;
+  height: 25.6875rem;
+  position: absolute;
+  right: 17.7%;
+  left: 0%;
+  top: 1.875rem;
+  animation-duration: 0.4s;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    margin-left: -5%;
+  }
+  to {
+    margin-left: 0%;
+  }
+}
+
+.rajuk-college-cultural-club {
+  background: linear-gradient(180deg, #fbfff1 0%, #fcfff2 40%, #9ba2a2 70%, #fbfff1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+  text-align: left;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 6.875rem;
+  line-height: 6.5625rem;
+  letter-spacing: -0.4rem;
+  font-weight: 400;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10;
+}
+
+.rajuk-college-cultural-club-span {
+  background: linear-gradient(184deg, #f9ffe9 0%, #eceee3 40%, #deefef 60%, #fbfff1 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 110px;
+  line-height: 105px;
+  letter-spacing: -0.4rem;
+  font-weight: 400;
+  z-index: 10;
+}
+
+.not-just-a-club-its-a-community {
+  background: linear-gradient(15deg, #fbfff1 0%, #e7fbff 40%, #97e2e8 60%, #fbfff1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+  text-align: left;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 1.75rem;
+  line-height: 3.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10;
+}
+
+.joinclub-button {
+  color:#040c15; 
+  text-align: center;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.03rem;
+  background: linear-gradient(135deg, #fbfff1, #dffafd); /* thin border */
+  border-radius: 2rem;
+  padding: 0.54rem 2.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 0.4rem;
+  position: relative;
+  z-index: 10;
+
+  box-shadow: 0 6px 15px rgba(15, 30, 36, 0.2);
+  transition: all 0.35s ease;
+}
+
+
+
+.joinclub-button:hover {
+  background: linear-gradient(135deg, #d5faff, #bfdaff 70%, #d1f4f0 90%);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 25px rgba(8, 32, 36, 0.25);
+  color: #051517;
+}
+
+.joinclub-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(8, 32, 36, 0.15);
+}
+
+
+
+
+/* Mobile styles */
+@media only screen and (max-width: 767px) {
+  .hero-section {
+    height: 33.625rem; 
+    position: absolute;
+    right: 1.25rem; 
+    left: 1.1875rem; 
+    top: 6.875rem; 
+  }
+
+  ._3-d-emblem {
+    width: 27.125rem; 
+    height: 28rem; 
+    position: absolute;
+    right: -5.3rem; 
+    top: 1.5rem;
+    opacity: 0.5;
+    filter: opacity(70%);
+    object-fit: cover;
+    z-index: 1; 
+  }
+
+  .content {
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; 
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    height: 25.6875rem; 
+    position: absolute;
+    right: 0%;
+    left: 0%;
+    top: 4rem; 
+    z-index: 2; 
+  }
+
+  .rajuk-college-cultural-club {
+    background: linear-gradient(184deg, #f9ffe9 0%, #eceee3 40%, #deefef 60%, #fbfff1 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    text-align: left;
+    font-family: "InstrumentSans-Regular", sans-serif;
+    font-size: 4.5rem !important; 
+    line-height: 4.6rem !important; 
+    letter-spacing: -0.35rem;
+    font-weight: 400;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 2; 
+  }
+  .rajuk-college-cultural-club-span {
+    background: linear-gradient(184deg, #f9ffe9 0%, #eceee3 40%, #deefef 60%, #fbfff1 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    font-family: "InstrumentSans-Regular", sans-serif;
+    font-size: 5.8rem !important; 
+    line-height: 4.5rem !important; 
+    letter-spacing: -0.35rem;
+    font-weight: 400;
+    z-index: 2; 
+  
+  }
+  .not-just-a-club-its-a-community {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "InstrumentSans-Regular", sans-serif;
+    font-size: 1.4875rem; 
+    line-height: 1.59375rem; 
+    font-weight: 400;
+    text-transform: uppercase;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+}
+
+.nav-bar {
+  background: rgba(15, 15, 54, 0.24);
+  border-radius: 6.25rem;
+  position: fixed;
+  border-style: solid;
+  border-color: rgba(250, 255, 237, 0.5);
+  border-width: 0.0625rem;
+  padding: 1.1875rem 1.5rem 1.1875rem 1.6875rem;
+  width: 91.04%;
+  height: 4.1875rem;
+  right: 4.44%;
+  left: 4.51%;
+  top: 1.9375rem;
+  z-index: 1000;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s ease;
+  overflow: visible;
+}
+
+.nav-bar:hover {
+  background: rgba(15, 15, 54, 0.35);
+}
+
+.logo-white-1 {
+  width: 6.869375rem;
+  height: 2.125rem;
+  position: absolute;
+  left: 1.3125rem;
+  top: 1rem;
+  object-fit: cover;
+  aspect-ratio: 109.91/34;
+  transition: transform 0.3s ease;
+}
+
+.logo-white-1:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: flex-end;
+  width: 35.8125rem;
+  position: absolute;
+  right: 0.9375rem;
+  top: 0.8125rem;
+}
+
+.home, .events, .gallery, .community, .contact {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+  padding: 0.25rem 0.5rem;
+}
+
+.home::after, .events::after, .gallery::after, 
+.community::after, .contact::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1.2px;
+  bottom: -2px;
+  left: 0.5rem;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}
+
+.home:hover::after, .events:hover::after, .gallery:hover::after, 
+.community:hover::after, .contact:hover::after {
+  width: calc(100% - 1rem);
+}
+
+.home:hover, .events:hover, .gallery:hover, 
+.community:hover, .contact:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+.button {
+  background: #fbfff1;
+  border-radius: 1.5rem;
+  flex-shrink: 0;
+  width: 6.5rem;
+  height: 2.5rem;
+  position: relative;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button:hover {
+  background: #2e1e13;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.join-club {
+  color: #13262e;
+  text-align: center;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  position: relative;
+  left: 50%;
+  translate: -50% -50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.button:hover .join-club {
+  color: #ff6200;
+}
+
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #fcfff2;
+  cursor: pointer;
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media screen and (max-width: 660px) {
+  .nav-bar {
+    width: 90%;
+    left: 5%;
+    right: 5%; 
+    padding: 0.75rem 1rem;
+    height: auto;
+    min-height: 3.5rem;
+  }
+
+  .logo-white-1 {
+    width: 5rem;
+    height: auto;
+    left: 1rem;
+    top: 0.75rem;
+  }
+
+  .container {
+    background: rgba(1, 20, 25, 0.967); /* Matches nav-bar */
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    position: absolute;
+    top: 4rem;
+    left: 0;
+    border: 1px solid rgba(250, 255, 237, 0.5);
+    border-radius: 0 0 0.5rem 0.5rem;
+    padding: 1rem;
+    z-index: 999;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px) !important;
+   -webkit-backdrop-filter: blur(10px) !important;
+    transition: background 0.3s ease; /* Matches nav-bar */
+    
+  }
+
+  .container.active {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+    z-index: 1000;
+  }
+
+  .container.active .hamburger {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .home, .events, .gallery, .community, .contact {
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .button {
+    width: 100%;
+    max-width: 8rem;
+    margin: 0.5rem auto;
+  }
+
+  .join-club {
+    font-size: 1.1rem;
+  }
+
+  /* Fallback for browsers that don’t support backdrop-filter */
+  @supports not (backdrop-filter: blur(10px)) {
+    .container {
+      background: rgba(15, 15, 54, 0.5); /* More opaque fallback */
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-bar {
+      width: 95%;
+      left: 2.5%;
+      right: 2.5%;
+      padding: 0.75rem;
+  }
+  
+  .container {
+      gap: 1rem;
+      width: auto;
+      right: 0.5rem;
+  }
+  
+  .home, .events, .gallery, .community, .contact {
+      font-size: 1rem;
+      padding: 0.2rem 0.4rem;
+  }
+  
+  .home::after, .events::after, .gallery::after, 
+  .community::after, .contact::after {
+      bottom: -2px; /* Adjusted for smaller size */
+      left: 0.4rem;
+  }
+  
+  .home:hover::after, .events:hover::after, .gallery:hover::after, 
+  .community:hover::after, .contact:hover::after {
+      width: calc(100% - 0.8rem);
+  }
+  
+  .button {
+      width: 5rem;
+      height: 2rem;
+  }
+  
+  .join-club {
+      font-size: 1rem;
+  }
+}
+/* CSS */
+.notification-bar {
+  background: rgba(15, 15, 54, 0.9);
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-style: solid;
+  border-color: rgba(250, 255, 237, 0.5);
+  border-width: 0.0625rem 0.0625rem 0 0.0625rem;
+  padding: 1rem 1.5rem;
+  width: 91.04%;
+  position: fixed;
+  bottom: -100%; /* Initially hidden below screen */
+  left: 4.48%;
+  z-index: 2000;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: bottom 0.5s ease, background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-bar.show {
+  bottom: 0; /* Slides up when shown */
+}
+
+.notification-bar:hover {
+  background: rgba(15, 15, 54, 1);
+}
+
+.notification-text {
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(250, 255, 237, 0.8);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: rgba(250, 255, 237, 1);
+}
+
+
+
+/* Desktop styles */
+.about-section {
+  display: flex;
+  flex-direction: row;
+  gap: 2.875rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-content: center;
+  width: 78.89%;
+  height: 26.875rem;
+  position: absolute;
+  right: 12.22%;
+  left: 8.89%;
+  top: 52.4375rem;
+}
+
+.rccc-logo-2-1 {
+  flex-shrink: 0;
+  width: 12.625rem;
+  height: 11.7275rem;
+  position: relative;
+  object-fit: cover;
+  aspect-ratio: 202/187.64;
+}
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1;
+  position: relative;
+}
+
+.about-club {
+  text-align: left;
+  text-transform: uppercase;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.about-club-span {
+  color: #fbfff1;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 60px;
+  line-height: 60px;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.about-club-span2 {
+  color: rgba(251, 255, 241, 0.6);
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 48px;
+  line-height: 60px;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.rajuk-college-cultural-club-rccc-is-the-heart-and-soul-of-rajuk-uttara-model-college-where-creativity-thrives-and-artistic-passions-come-to-life-it-is-a-home-for-dreamers-performers-and-storytellers-a-place-where-music-dance-drama-and-cultural-heritage-come-together-to-create-unforgettable-moments-with-a-deep-love-for-tradition-and-an-eagerness-to-embrace-modern-artistic-expressions-rccc-provides-a-platform-for-students-to-explore-their-talents-celebrate-diversity-and-leave-their-mark-on-the-college-s-cultural-landscape-every-event-performance-and-initiative-reflects-the-boundless-creativity-and-spirit-of-its-members-at-rccc-art-is-more-than-just-an-activity-it-s-an-experience-a-journey-and-a-celebration-of-identity-more-than-a-club-rccc-is-a-family-where-students-find-inspiration-friendship-and-memories-that-last-a-lifetime {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque1", sans-serif;
+  font-size: 1.8rem;
+  line-height: 1.6125rem;
+  font-weight: 400;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#about {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+  .about-section {
+    flex-direction: column;
+    width: 93%;
+    height: auto;
+    position: absolute;
+    right: 4%;
+    left: 4%;
+    top: 50rem;
+    padding: 1rem;
+  }
+
+  .rccc-logo-2-1 {
+    display: none;
+  }
+
+  .about-content {
+    gap: 0.8rem;
+  }
+
+  .about-club-span {
+    font-size: 50px; /* 10% smaller than 60px */
+    line-height: 49px;
+  }
+
+  .about-club-span2 {
+    font-size: 41.2px; /* 10% smaller than 48px */
+    line-height: 40px;
+  }
+
+  .rajuk-college-cultural-club-rccc-is-the-heart-and-soul-of-rajuk-uttara-model-college-where-creativity-thrives-and-artistic-passions-come-to-life-it-is-a-home-for-dreamers-performers-and-storytellers-a-place-where-music-dance-drama-and-cultural-heritage-come-together-to-create-unforgettable-moments-with-a-deep-love-for-tradition-and-an-eagerness-to-embrace-modern-artistic-expressions-rccc-provides-a-platform-for-students-to-explore-their-talents-celebrate-diversity-and-leave-their-mark-on-the-college-s-cultural-landscape-every-event-performance-and-initiative-reflects-the-boundless-creativity-and-spirit-of-its-members-at-rccc-art-is-more-than-just-an-activity-it-s-an-experience-a-journey-and-a-celebration-of-identity-more-than-a-club-rccc-is-a-family-where-students-find-inspiration-friendship-and-memories-that-last-a-lifetime {
+    font-size: 1.45rem; /* 10% smaller than 1.8rem */
+    line-height: 1.45rem; /* 10% smaller than 1.6125rem */
+  }
+
+  #about {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Ensure body has enough height for demo */
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+.activities-section {
+  padding: 0.625rem;
+  width: 82.22%;
+  height: 29.1875rem;
+  position: absolute;
+  right: 8.89%;
+  left: 8.89%;
+  top: 91.125rem;
+  border-radius: 30;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 10, 41, 0.05) 0%,
+    rgba(0, 33, 143, 0.05) 100%
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  margin: 2rem 0; /* Vertical margin only */
+  text-align: center;
+}
+
+header h1 {
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-weight: 400;
+  font-size: 3.75rem;
+  line-height: 3.75rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #fbfff1;
+  margin: 0;
+}
+
+.tag-list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.loop-slider {
+  position: relative;
+  width: 100%;
+  flex: 1; /* Equal height for each row */
+}
+
+.loop-slider .inner {
+  display: flex;
+  width: fit-content;
+  animation-name: loop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: var(--direction);
+  animation-duration: var(--duration);
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  color: #ffffff;
+  font-family: "DarkerGrotesque", sans-serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-transform: uppercase;
+  background: linear-gradient(
+    109.8deg,
+    rgba(252, 255, 242, 0.14) 0%,
+    rgba(37, 69, 68, 0.14) 100%
+  );
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem; /* Only horizontal margin between tags */
+  box-shadow: 
+    0 0.1rem 0.2rem rgba(0, 0, 0, 0.2),
+    0 0.1rem 0.5rem rgba(0, 0, 0, 0.3),
+    0 0.2rem 1.5rem rgba(0, 0, 0, 0.4);
+}
+.fade {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Mask to apply blur gradient */
+  mask-image: linear-gradient(
+    90deg,
+    black 0%,    /* Max blur at left */
+    transparent 20%, /* No blur in center */
+    transparent 80%, /* No blur in center */
+    black 100%   /* Max blur at right */
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    black 0%,
+    transparent 20%,
+    transparent 80%,
+    black 100%
+  );
+  backdrop-filter: blur(5px); /* Blur effect applied where mask is black */
+}
+@keyframes loop {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%); /* Adjusted for quadrupled content */
+  }
+}
+@media screen and (max-width: 768px) {
+  .activities-section {
+    position: relative;
+    width: 100%;
+    top: 101rem;
+    height: auto; /* Allow height to adjust dynamically */
+    left: 0;
+    right: 0;
+    padding: 0rem;
+    border-radius: 1rem; /* Slightly smaller border radius */
+  }
+
+  header {
+    margin: 1.3rem 0; /* Reduced margin for mobile */  
+    margin-bottom: 2rem; /* Increased bottom margin for spacing */
+  }
+
+  header h1 {
+    font-size: 50px; 
+    line-height: 49px;
+    letter-spacing: -0.02em;
+  }
+
+  .tag-list {
+    gap: 0.8rem; /* Slightly smaller gap for mobile */
+  }
+
+  .loop-slider {
+    flex: 1; /* Maintain equal height for rows */
+  }
+
+  .tag {
+    font-size: 1.2rem; /* Smaller font size for mobile */
+    line-height: 1.5rem;
+    padding: 0.5rem 0.8rem; /* Adjusted padding */
+    margin: 0 0.4rem; /* Reduced margin */
+    box-shadow: 
+      0 0.05rem 0.1rem rgba(0, 0, 0, 0.2),
+      0 0.05rem 0.3rem rgba(0, 0, 0, 0.3); /* Lighter shadow */
+  }
+
+  .fade {
+    mask-image: linear-gradient(
+      90deg,
+      black 0%,
+      transparent 10%, /* Adjusted for smaller screens */
+      transparent 90%,
+      black 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      black 0%,
+      transparent 10%,
+      transparent 90%,
+      black 100%
+    );
+    backdrop-filter: blur(3px); /* Reduced blur for mobile */
+  }
+
+  @keyframes loop {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%); /* Adjusted for faster mobile scroll */
+    }
+  }
+}
+
+/* Desktop styles (unchanged) */
+.events-section {
+  position: absolute;
+  inset: 0;
+}
+
+.events2 {
+  color: #fbfff1;
+  text-align: center;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 3.75rem;
+  line-height: 3.75rem;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: absolute;
+  right: 6.86%;
+  left: 6.72%;
+  width: 86.42%;
+  top: 130.125rem;
+  height: 2.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.events-scrollbox {
+  display: flex;
+  flex-direction: row;
+  gap: 3.375rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  width: 96.18%;
+  height: 19.2175rem;
+  position: absolute;
+  right: 2.01%;
+  left: 1.81%;
+  top: 135.875rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding: 0 3rem;
+  background: transparent;
+}
+
+.event-card-1, .event-card-2 {
+  flex-shrink: 0;
+  width: 29rem;
+  height: 17rem;
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card-1:hover, .event-card-2:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.event-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-link:hover {
+  text-decoration: none;
+}
+
+.scroll-arrow {
+  position: absolute;
+  top: 54%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.167);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-arrow:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.left-arrow {
+  left: 0.5rem;
+}
+
+.right-arrow {
+  right: 0.5rem;
+}
+
+.events-scrollbox::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile styles (media queries for screens 768px and below) */
+@media screen and (max-width: 768px) {
+  .events-section {
+    position: absolute; /* Changed to relative for better mobile stacking */
+    width: 100%;
+    height: auto;
+    top: 133rem; 
+  }
+
+  .events2 {
+    font-size: 50px; 
+    line-height: 49px;
+    position: relative;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 1.5rem; 
+    height: auto;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .events-scrollbox {
+    width: 100%;
+    height: 16rem; /* Slightly reduced height for mobile */
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    gap: 1.5rem; /* Reduced gap for tighter mobile layout */
+    padding: 0 1.5rem; /* Adjusted padding for smaller screens */
+  }
+
+  .event-card-1, .event-card-2 {
+    width: 18rem; /* Smaller card width for mobile */
+    height: 12rem; /* Adjusted height for mobile */
+    border-radius: 0.75rem; /* Slightly smaller border radius */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Lighter shadow for mobile */
+  }
+
+  .event-card-1:hover, .event-card-2:hover {
+    transform: scale(1.05); /* Reduced scale for mobile hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .event-title {
+    font-size: 1.25rem; /* Smaller font size for mobile */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Adjusted shadow for readability */
+  }
+
+  .scroll-arrow {
+    width: 2rem; /* Smaller arrows for mobile */
+    height: 2rem;
+    font-size: 1rem;
+    top: 10%; /* Centered vertically */
+  }
+
+  .left-arrow {
+    left: 0rem;
+  }
+
+  .right-arrow {
+    right: 0rem;
+  }
+}
+
+/* Desktop styles (unchanged) */
+.gallery-circle {
+  height: auto;
+  position: absolute;
+  right: -4.0625rem;
+  top: 165.5rem;
+  overflow: visible;
+}
+.gallery-circle-2 {
+  height: auto;
+  position: absolute;
+  left: -4.0625rem;
+  top: 175.5rem;
+  overflow: visible;
+}
+.gallery-button {
+  position: relative;
+  width: 17.5rem;
+  height: 2.95rem;
+  margin: 0 auto;
+  top: 186.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* Rectangle background */
+.rectangle-4402 {
+  background: #fcfff2;
+  border-radius: 2.125rem;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.7s ease-in-out 0.1s; /* Delayed transition */ 
+}
+
+/* Text styling */
+.gallery2 {
+  color: #082024;
+  text-align: center;
+  font-family: "DarkerGrotesque", sans-serif;
+  font-size: 1.7rem;
+  line-height: 1.25rem;
+  font-weight: 750;
+  position: relative;
+  z-index: 1;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Standard hover effects */
+.gallery-button:hover .rectangle-4402 {
+  background: radial-gradient(circle at 90%, #d5faff, #bfdaff 80%, #d1f4f0 85%, #ffffff 95%);
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(8, 32, 36, 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-button:hover .gallery2 {
+  color: #051517;
+  text-shadow: 0 2px 4px rgba(8, 32, 36, 0.2);
+  letter-spacing: 0.05rem; /* Subtle spread effect */
+}
+
+/* Click animation */
+.gallery-button:active .rectangle-4402 {
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(8, 32, 36, 0.1);
+  transition: all 0.1s ease;
+}
+
+.gallery-button:active .gallery2 {
+  transition: all 0.1s ease;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.gallery-button {
+  animation: pulse 2s ease infinite;
+}
+
+.gallery-button:hover {
+  animation: none;
+}
+
+.see-beautiful-moments-full-of-nostalgia {
+  color: #fcfff2;
+  text-align: center;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 4rem;
+  line-height: 3.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: absolute;
+  left: 50% !important; /* Center horizontally, override conflicts */
+  transform: translateX(-50%) !important; /* Offset to truly center */
+  right: auto; /* Prevent right-side alignment */
+  width: 62%; /* Allow natural width */
+  margin: 0 auto; /* Fallback centering */
+  top: 174.3125rem;
+  height: 10.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile styles (up to 767px) */
+@media screen and (max-width: 767px) {
+  .gallery-circle {
+    right: -7rem; /* Reduced offset for smaller screens */
+    top: 162rem; /* Adjusted for mobile layout */
+    transform: scale(0.7); /* Scale down for better fit */
+  }
+  .gallery-circle-2 {
+  
+    top: 172rem; /* Provided positioning */
+    left: -7rem;
+    transform: scale(0.7); /* Increased size for mobile */
+  }
+  .gallery-button {
+    position: absolute;
+    width: 14rem; /* Smaller button width */
+    height: 2.5rem;
+    top: 191.5rem; /* Adjusted positioning */
+    left: 50% !important; /* Center horizontally, override conflicts */
+    transform: translateX(-50%) !important; /* Offset to truly center */
+    right: auto; /* Prevent right-side alignment */
+    margin: 0 auto; /* Fallback centering */
+    float: none; /* Prevent floating issues */
+    text-align: center; /* Ensure text alignment doesn't interfere */
+  }
+  .gallery2 {
+    font-size: 1.4rem; /* Smaller font size */
+    line-height: 1rem;
+  }
+  .rectangle-4402 {
+    border-radius: 1.5rem; /* Slightly smaller border radius */
+  }
+  .see-beautiful-moments-full-of-nostalgia {
+    font-family: "InstrumentSans-Regular", sans-serif;
+    font-weight: 500;
+    font-size: 3rem; /* Reduced font size for mobile */
+    line-height: 2.5rem;
+    top: 174rem; /* Adjusted for mobile layout */
+    height: 8rem;
+  }
+}
+
+.frame-1 {
+  padding: 0rem 0rem 0rem 2.1875rem;
+  display: flex;
+  flex-direction: row;
+  gap: 14.3125rem;
+  row-gap: 3.125rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  width: 89.24%;
+  position: absolute;
+  right: 2.85%;
+  left: 7.92%;
+  top: 208rem;
+}
+.contact-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5625rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18.9375rem;
+  position: relative;
+}
+.get-in-touch-with-us {
+  text-align: left;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 4rem;
+  line-height: 3.75rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.get-in-touch-with-us-span {
+  color: #fcfff2;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 64px;
+  line-height: 60px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.get-in-touch-with-us-span2 {
+  color: rgba(247, 255, 219, 0.6);
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 64px;
+  line-height: 60px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.email-section {
+  flex-shrink: 0;
+  width: 19rem;
+  height: 3.0625rem;
+  position: static;
+}
+.email-us {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque", sans-serif;
+  font-size: 2rem;
+  line-height: 1.5625rem;
+  font-weight: 600;
+  position: absolute;
+  right: 0%;
+  left: 0%;
+  width: 100%;
+  top: 13.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rajukcollegeculturalclub-gmail-com {
+  color: #589fa6;
+  text-align: left;
+  font-family: "DarkerGrotesque", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.5625rem;
+  font-weight: 400;
+  text-decoration: underline;
+  position: absolute;
+  right: -0.33%;
+  left: 0%;
+  width: 100.33%;
+  top: 16.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rajukcollegeculturalclub-gmail-com a {
+  color: inherit; /* Inherit color from parent */
+  text-decoration: inherit; /* Inherit underline from parent */
+}
+.group-1000001890 {
+  flex-shrink: 0;
+  width: 14.25rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons-x {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  width: 15.83%;
+  height: 1.875rem;
+  position: absolute;
+  right: -0.33%;
+  left: 0%;
+  top: 20.0625rem;
+}
+.social-icons {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons2 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.vector2 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons3 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons-x a {
+  display: inline-block; /* Keeps icons in a row */
+  margin: 0 0.5rem; /* Adjust spacing as needed */
+}
+
+.social-icons- img {
+  transition: transform 0.3s ease; /* Optional hover animation */
+}
+
+.social-icons-x a:hover img {
+  transform: scale(1.2); /* Optional hover effect */
+  transition: 0.3s ease;
+}
+.feedback {
+  flex-shrink: 0;
+  width: 28.0625rem;
+  height: 29.3125rem;
+  position: static;
+}
+.group-1000001886 {
+  width: 28.0625rem;
+  height: 29.3125rem;
+  position: static;
+}
+.full-name {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  position: absolute;
+  right: 42.08%;
+  left: 44.78%;
+  width: 13.14%;
+  top: 0rem;
+  height: 2.173125rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.email {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  position: absolute;
+  right: 42.08%;
+  left: 44.78%;
+  width: 13.14%;
+  top: 5.583125rem;
+  height: 2.173125rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.message {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  position: absolute;
+  right: 42.08%;
+  left: 44.78%;
+  width: 13.14%;
+  top: 11.2rem;
+  height: 2.173125rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rectangle-4396 {
+  background: var(
+    --card1,
+    linear-gradient(
+      109.8deg,
+      rgba(252, 255, 242, 0.14) 0%,
+      rgba(37, 69, 68, 0.14) 100%
+    )
+  );
+  border-radius: 0.9375rem;
+  border-style: solid;
+  border-color: #585858;
+  border-width: 0.03125rem;
+  width: 34.94%;
+  height: 2.375rem;
+  position: absolute;
+  right: 20.93%;
+  left: 44.12%;
+  top: 2.3125rem;
+}
+.rectangle-4403 {
+  background: var(
+    --card1,
+    linear-gradient(
+      109.8deg,
+      rgba(252, 255, 242, 0.14) 0%,
+      rgba(37, 69, 68, 0.14) 100%
+    )
+  );
+  border-radius: 0.9375rem;
+  border-style: solid;
+  border-color: #585858;
+  border-width: 0.03125rem;
+  width: 34.94%;
+  height: 2.375rem;
+  position: absolute;
+  right: 20.93%;
+  left: 44.12%;
+  top: 8rem;
+}
+.rectangle-4401 {
+  background: var(
+    --card1,
+    linear-gradient(
+      109.8deg,
+      rgba(252, 255, 242, 0.14) 0%,
+      rgba(37, 69, 68, 0.14) 100%
+    )
+  );
+  border-radius: 0.9375rem;
+  border-style: solid;
+  border-color: #585858;
+  border-width: 0.03125rem;
+  width: 34.94%;
+  height: 5.625625rem;
+  position: absolute;
+  right: 20.93%;
+  left: 44.12%;
+  top: 13.688125rem;
+}
+.rectangle-4396,
+.rectangle-4403,
+.rectangle-4401 {
+    color: white;  
+    font-family: "DarkerGrotesque";         /* Makes text white */
+    font-size: 1.2rem;         /* Reduces font size by 20% */
+    padding-left: 0.9rem;     /* Shifts text slightly to the right */
+    padding-right: 0.9rem;
+}
+
+.group-1000001888 {
+  width: 10.55625rem;
+  height: 2.5725rem;
+  position: static;
+}
+
+.submit {
+    /* Original font and text styling */
+    color: #0f1e24;
+    text-align: center;
+    font-family: var(
+        --button-text-font-family,
+        "DarkerGrotesque-Bold",
+        sans-serif
+    );
+    font-size: var(--button-text-font-size, 1.125rem);
+    line-height: var(--button-text-line-height, 1.25rem);
+    font-weight: var(--button-text-font-weight, 700);
+
+    /* Properties from .rectangle-44022 */
+    background: #fcfff2;
+    border-radius: 1.125rem;
+    width: 13.14%;
+    height: 2.5725rem;
+    position: absolute;
+    right: 42.73%;
+    left: 44.12%;
+    top: 20.74rem;
+
+    /* Additional necessary adjustments */
+    border: none;           /* Removes default button border */
+    cursor: pointer;        /* Adds pointer cursor for button feel */
+    display: flex;          /* Replaces block with flex for centering */
+    align-items: center;    /* Centers text vertically */
+    justify-content: center;/* Centers text horizontally */
+}
+.submit:hover {
+  background: radial-gradient(circle at 90%, #d5faff, #bfdaff 80%, #d1f4f0 85%, #ffffff 95%);
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(8, 32, 36, 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #051517;              /* From .gallery2:hover */
+  text-shadow: 0 2px 4px rgba(8, 32, 36, 0.2); /* From .gallery2:hover */
+  letter-spacing: 0.05rem;     /* From .gallery2:hover */
+  animation: none;             /* Stops pulse on hover */
+}
+
+/* Click animation for .submit */
+.submit:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(8, 32, 36, 0.1);
+  transition: all 0.1s ease;
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+@media (max-width: 768px) {
+  .frame-1 {
+    display: flex;
+    flex-direction: row;
+    gap: 28px;
+    row-gap: 50px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    width: 84.17%;
+    position: absolute;
+    right: 7.93%;
+    left: 6.91%;
+    top: 3100px;
+  }
+  .contact-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 303px;
+    position: absolute;
+    right: 60.51%;
+    left: 1%;
+    top: 200px;
+  }
+  .social-icons-x {
+    top: 12.0625rem;
+    display: none;
+  }
+  .get-in-touch-with-us {
+    text-align: left;
+    font-family: "Inter-Light", sans-serif;
+    font-size: 40px;
+    line-height: 35px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+    text-transform: uppercase;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: left;
+    justify-content: flex-start;
+  }
+  .get-in-touch-with-us-span {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "Inter-Light", sans-serif;
+    font-size: 40px;
+    line-height: 35px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+    text-transform: uppercase;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: left;
+    justify-content: flex-start;
+
+  }
+  .get-in-touch-with-us-span2 {
+    color: rgba(247, 255, 219, 0.6);
+    text-align: left;
+    font-family: "Inter-Light", sans-serif;
+    font-size: 40px;
+    line-height: 35px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+    text-transform: uppercase;
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .email-section {
+    flex-shrink: 0;
+    width: 253px;
+    height: 39px;
+    position: static;
+  }
+  .email-us {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "DarkerGrotesque-SemiBold", sans-serif;
+    font-size: 21px;
+    line-height: 25px;
+    font-weight: 600;
+    position: absolute;
+    right: 74.59%;
+    left: 0%;
+    width: 25.41%;
+    top: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .rajukcollegeculturalclub-gmail-com {
+    color: #589fa6;
+    text-align: left;
+    font-family: "DarkerGrotesque-Regular", sans-serif;
+    font-size: 15px;
+    line-height: 15px;
+    font-weight: 400;
+    text-decoration: underline;
+    position: absolute;
+    right: 16.5%;
+    left: 0%;
+    width: 83.5%;
+    top: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .feedback {
+    flex-shrink: 0;
+    width: 362px;
+    height: 469px;
+    position: static;
+  }
+  .group-1000001886 {
+    width: 362px;
+    height: 469px;
+    position: static;
+  }
+  .full-name {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 500;
+    position: absolute;
+    right: 60.51%;
+    left: 1.88%;
+    width: 37.6%;
+    top: 348.04px;
+    height: 34.77px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .email {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 500;
+    position: absolute;
+    right: 60.51%;
+    left: 1.88%;
+    width: 37.6%;
+    top: 440.65px;
+    height: 34.77px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .message {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 500;
+    position: absolute;
+    right: 60.51%;
+    left: 1.88%;
+    width: 37.6%;
+    top: 533.26px;
+    height: 34.77px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .rectangle-4396 {
+    background: var(
+      --card1,
+      linear-gradient(
+        109.8deg,
+        rgba(252, 255, 242, 0.14) 0%,
+        rgba(37, 69, 68, 0.14) 100%
+      )
+    );
+    border-radius: 15px;
+    border-style: solid;
+    border-color: #585858;
+    border-width: 0.5px;
+    width: 100.02%;
+    height: 38px;
+    position: absolute;
+    right: -0.02%;
+    left: 0%;
+    top: 386.39px;
+  }
+  .rectangle-4403 {
+    background: var(
+      --card1,
+      linear-gradient(
+        109.8deg,
+        rgba(252, 255, 242, 0.14) 0%,
+        rgba(37, 69, 68, 0.14) 100%
+      )
+    );
+    border-radius: 15px;
+    border-style: solid;
+    border-color: #585858;
+    border-width: 0.5px;
+    width: 100.02%;
+    height: 38px;
+    position: absolute;
+    right: -0.02%;
+    left: 0%;
+    top: 479px;
+  }
+  .rectangle-4398 {
+    background: var(
+      --card1,
+      linear-gradient(
+        109.8deg,
+        rgba(252, 255, 242, 0.14) 0%,
+        rgba(37, 69, 68, 0.14) 100%
+      )
+    );
+    border-radius: 15px;
+    border-style: solid;
+    border-color: #585858;
+    border-width: 0.5px;
+    width: 100.02%;
+    height: 38px;
+    position: absolute;
+    right: -0.02%;
+    left: 0%;
+    top: 390px;
+  }
+  .rectangle-4401 {
+    background: var(
+      --card1,
+      linear-gradient(
+        109.8deg,
+        rgba(252, 255, 242, 0.14) 0%,
+        rgba(37, 69, 68, 0.14) 100%
+      )
+    );
+    border-radius: 15px;
+    border-style: solid;
+    border-color: #585858;
+    border-width: 0.5px;
+    width: 100.02%;
+    height: 90.01px;
+    position: absolute;
+    right: -0.02%;
+    left: 0%;
+    top: 571.61px;
+  }
+  .leave-us-a-message {
+    color: #696c70;
+    text-align: left;
+    font-family: "Inter-Regular", sans-serif;
+    font-size: 8px;
+    line-height: 24px;
+    font-weight: 400;
+    position: absolute;
+    right: 58.71%;
+    left: 3.68%;
+    width: 37.6%;
+    top: 576.18px;
+    height: 34.77px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .group-1000001888 {
+    width: 136.18px;
+    height: 41.16px;
+    position: static;
+  }
+  
+  .submit {
+    position: absolute;
+    right: 68.46%;
+    left: 1%;
+    width: 31.57%;
+    top: 690.83px;
+    height: 36.54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+._3-d-emblem2 {
+  opacity: 0.7;
+  width: 32.3125rem;
+  height: 34.5rem;
+  position: absolute;
+  left: 0rem;
+  top: 246.5rem;
+  object-fit: cover;
+}
+._2025-rajuk-college-cultural-club-rccc-all-rights-reserved {
+  color: rgba(247, 255, 219, 0.6);
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  position: absolute;
+  right: 34.79%;
+  left: 9.17%;
+  width: 56.04%;
+  top: 260.5625rem;
+  height: 2.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.designed-developed-by-taawsif-tasin {
+  text-align: center;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  position: absolute;
+  right: 21.94%;
+  left: 22.01%;
+  width: 56.04%;
+  top: 265.9375rem;
+  height: 2.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.designed-developed-by-taawsif-tasin-span {
+  color: rgba(247, 255, 219, 0.6);
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 19px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.designed-developed-by-taawsif-tasin-span2 {
+  color: rgba(172, 221, 223, 0.6);
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 19px;
+  line-height: 20px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.line-1 {
+  margin-top: -0.03125rem;
+  border-style: solid;
+  border-color: rgba(247, 255, 219, 0.6);
+  border-width: 0.03125rem 0 0 0;
+  width: 81.94%;
+  height: 0rem;
+  position: absolute;
+  right: 9.03%;
+  left: 9.03%;
+  top: 245.110625rem;
+}
+.line-2 {
+  margin-top: -0.03125rem;
+  border-style: solid;
+  border-color: rgba(247, 255, 219, 0.6);
+  border-width: 0.03125rem 0 0 0;
+  width: 81.94%;
+  height: 0rem;
+  position: absolute;
+  right: 9.03%;
+  left: 9.03%;
+  top: 264.610625rem;
+}
+.home2 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.5625rem;
+  font-weight: 500;
+  position: absolute;
+  right: 48.19%;
+  left: 43.75%;
+  width: 8.06%;
+  top: 251.0625rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.about {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 48.06%;
+  left: 43.75%;
+  width: 8.19%;
+  top: 253.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.activities2 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 43.75%;
+  left: 43.75%;
+  width: 12.5%;
+  top: 255.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.events3 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 47.01%;
+  left: 43.75%;
+  width: 9.24%;
+  top: 258.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.community2 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 29.86%;
+  left: 57.64%;
+  width: 12.5%;
+  top: 251.0625rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.gallery3 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 34.58%;
+  left: 57.64%;
+  width: 7.78%;
+  top: 253.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.query {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 35.62%;
+  left: 57.64%;
+  width: 6.74%;
+  top: 255.9375rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.contact2 {
+  color: #fcfff2;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+  position: absolute;
+  right: 33.47%;
+  left: 57.64%;
+  width: 8.89%;
+  top: 258.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rajuk-uttara-model-college-isha-kha-avenue-sector-6-uttara-dhaka-1230 {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "DarkerGrotesque-Medium", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.375rem;
+  font-weight: 500;
+  position: absolute;
+  right: 9.03%;
+  left: 71.53%;
+  width: 19.44%;
+  top: 255.6875rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rajuk-college-cultural-club2 {
+  color: #fbfff1;
+  text-align: left;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 3.25rem;
+  line-height: 2.875rem;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  position: absolute;
+  right: 57.64%;
+  left: 9.03%;
+  width: 33.33%;
+  top: 251.0625rem;
+  height: 8.1875rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.rajuk-college-cultural-club-2-span {
+  color: #fbfff1;
+  font-family: "InstrumentSans-Regular", sans-serif;
+  font-size: 52px;
+  line-height: 46px;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+.rajuk-college-cultural-club-2-span2 {
+  color: #fbfff1;
+  font-family: "Inter-Medium", sans-serif;
+  font-size: 52px;
+  line-height: 46px;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+.social-icons-1 {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  width: 15.83%;
+  height: 1.875rem;
+  position: absolute;
+  right: 12.64%;
+  left: 71.53%;
+  top: 252.0625rem;
+}
+.social-icons {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons2 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.vector2 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+.social-icons3 {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  position: relative;
+  overflow: visible;
+}
+/* Mobile Media Query */
+@media screen and (max-width: 768px) { /* 768px */
+  ._3-d-emblem2 {
+    opacity: 0.7;
+    width: 413px;
+    height: 436px;
+    position: absolute;
+    left: -31px;
+    top: 4086px;
+    object-fit: cover;
+  }
+  ._2025-rajuk-college-cultural-club-rccc-all-rights-reserved {
+    color: rgba(247, 255, 219, 0.7);
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 16px;
+    line-height: 13px;
+    font-weight: 500;
+    position: absolute;
+    right: 30%;
+    left: 7.67%;
+    width: 92.33%;
+    top: 4220px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .designed-developed-by-taawsif-tasin {
+    text-align: center;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+    position: absolute;
+    left: 50%;
+    translate: -50%;
+    top: 4272px;
+    width: 287px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .designed-developed-by-taawsif-tasin-span {
+    color: rgba(247, 255, 219, 0.6);
+  }
+  .designed-developed-by-taawsif-tasin-span2 {
+    color: rgba(172, 221, 223, 0.6);
+    text-decoration: underline;
+  }
+  .line-1 {
+    margin-top: -0.5px;
+    border-style: solid;
+    border-color: rgba(247, 255, 219, 0.6);
+    border-width: 0.5px 0 0 0;
+    width: 81.94%;
+    height: 0px;
+    position: absolute;
+    right: 11.08%;
+    left: 6.98%;
+    top: 3893px;
+  }
+  .line-2 {
+    margin-top: -0.5px;
+    border-style: solid;
+    border-color: rgba(247, 255, 219, 0.6);
+    border-width: 0.5px 0 0 0;
+    width: 81.94%;
+    height: 0px;
+    position: absolute;
+    right: 11.08%;
+    left: 6.98%;
+    top: 4272px;
+  }
+  .group-1000001891 {
+    position: absolute;
+    inset: 0;
+  }
+  .home2 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 500;
+    position: absolute;
+    right: 63.06%;
+    left: 7.91%;
+    width: 29.03%;
+    top: 3910px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .about {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 62.76%;
+    left: 7.91%;
+    width: 29.34%;
+    top: 3950px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .activities2 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 47.01%;
+    left: 7.91%;
+    width: 45.09%;
+    top: 3990px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .events3 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 59.05%;
+    left: 7.91%;
+    width: 33.04%;
+    top: 4030px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .community2 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: -3.02%;
+    left: 54.94%;
+    width: 45.09%;
+    top: 3910px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .gallery3 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 13.96%;
+    left: 54.94%;
+    width: 28.1%;
+    top: 3950px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .query {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 17.67%;
+    left: 54.94%;
+    width: 24.4%;
+    top: 3990px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .contact2 {
+    color: #fcfff2;
+    text-align: left;
+    font-family: "DarkerGrotesque-Medium", sans-serif;
+    font-size: 18px;
+    line-height: 30px;
+    font-weight: 500;
+    position: absolute;
+    right: 10.26%;
+    left: 54.94%;
+    width: 31.81%;
+    top: 4030px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .rajuk-uttara-model-college-isha-kha-avenue-sector-6-uttara-dhaka-1230 {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "DarkerGrotesque1", sans-serif;
+    font-size: 18px;
+    line-height: 16px;
+    font-weight: 500;
+    position: absolute;
+    right: 8.6%;
+    left: auto;
+    width: 35.56%;
+    top: 4141px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .rajuk-college-cultural-club2 {
+    color: #fbfff1;
+    text-align: left;
+    font-family: "-", sans-serif;
+    font-size: 24px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+    position: absolute;
+    right: 46.98%;
+    left: 6.98%;
+    width: 48.05%;
+    top: 4095px;
+    height: 131px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .rajuk-college-cultural-club-2-span {
+    font-family: "InstrumentSans-Regular", sans-serif;
+    font-size: 32px;
+    line-height: 30px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+  }
+  .rajuk-college-cultural-club-2-span2 {
+    font-family: "Inter-Medium", sans-serif;
+    font-weight: 300;
+    font-size: 39px;
+    line-height: 38px;
+    letter-spacing: -0.02em;
+    font-weight: 300;
+  }
+  .social-icons-1 {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2px;
+    row-gap: 2px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-content: center;
+    width: 44.37%;
+    height: 21px;
+    position: absolute;
+    right: 6.88%;
+    left: 53.34%;
+    top: 4112px;
+  }
+  .social-icons {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: visible;
+  }
+  .social-icons2 {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: visible;
+  }
+  .vector2 {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: visible;
+  }
+  .social-icons3 {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    overflow: visible;
+  }
+}
+/* Example CSS adjustments */
+.home2, .about, .activities2, .events3, .community2, .gallery3, .query, .contact2 {
+  text-decoration: none; /* Removes underline */
+  display: block; /* Maintains div-like behavior if needed */
+}
+
+.home2:hover, .about:hover, .activities2:hover, .events3:hover, 
+.community2:hover, .gallery3:hover, .query:hover, .contact2:hover {
+  text-decoration: underline; /* Optional hover effect */
+  color: #dbe7bb70;
+  /* Add other hover styles as needed */
+}
+
+.social-icons-1 a {
+  display: inline-block; /* Keeps icons in a row */
+  margin: 0 0.5rem; /* Adjust spacing as needed */
+}
+
+.social-icons-1 img {
+  transition: transform 0.3s ease; /* Optional hover animation */
+}
+
+.social-icons-1 a:hover img {
+  transform: scale(1.2); /* Optional hover effect */
+}
+/* Add this to your existing CSS */
+
+/* Base class for hidden text elements */
+.hidden {
+  opacity: 0;
+  transform: translateY(15px); /* Subtle 15px slide like Hardik */
+  transition: opacity 1.8s ease-out, transform 1.8s ease-out; /* Slow and smooth */
+}
+
+/* Class to trigger animation when in view */
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Special animation for hero section title */
+.rajuk-college-cultural-club.hidden {
+  opacity: 0;
+  transform: translateY(15px) scale(0.98); /* Subtle scale + slide */
+  transition: opacity 2s ease-out, transform 2s ease-out; /* Slower: 2s */
+}
+
+.rajuk-college-cultural-club.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Apply to text elements (excluding navbar, footer, and form) */
+.not-just-a-club-its-a-community,
+.about-club,
+.rajuk-college-cultural-club-rccc-is-the-heart-and-soul-of-rajuk-uttara-model-college-where-creativity-thrives-and-artistic-passions-come-to-life-it-is-a-home-for-dreamers-performers-and-storytellers-a-place-where-music-dance-drama-and-cultural-heritage-come-together-to-create-unforgettable-moments-with-a-deep-love-for-tradition-and-an-eagerness-to-embrace-modern-artistic-expressions-rccc-provides-a-platform-for-students-to-explore-their-talents-celebrate-diversity-and-leave-their-mark-on-the-college-s-cultural-landscape-every-event-performance-and-initiative-reflects-the-boundless-creativity-and-spirit-of-its-members-at-rccc-art-is-more-than-just-an-activity-it-s-an-experience-a-journey-and-a-celebration-of-identity-more-than-a-club-rccc-is-a-family-where-students-find-inspiration-friendship-and-memories-that-last-a-lifetime,
+.activities,
+.music,
+.dance,
+.drama,
+.instruments,
+.filmmaking,
+.events2,
+.see-beautiful-moments-full-of-nostalgia,
+.gallery2,
+.get-in-touch-with-us,
+.email-us,
+.rajukcollegeculturalclub-gmail-com {
+  opacity: 0;
+}
+
+/* Ensure visibility when animated */
+.not-just-a-club-its-a-community.visible,
+.about-club.visible,
+.rajuk-college-cultural-club-rccc-is-the-heart-and-soul-of-rajuk-uttara-model-college-where-creativity-thrives-and-artistic-passions-come-to-life-it-is-a-home-for-dreamers-performers-and-storytellers-a-place-where-music-dance-drama-and-cultural-heritage-come-together-to-create-unforgettable-moments-with-a-deep-love-for-tradition-and-an-eagerness-to-embrace-modern-artistic-expressions-rccc-provides-a-platform-for-students-to-explore-their-talents-celebrate-diversity-and-leave-their-mark-on-the-college-s-cultural-landscape-every-event-performance-and-initiative-reflects-the-boundless-creativity-and-spirit-of-its-members-at-rccc-art-is-more-than-just-an-activity-it-s-an-experience-a-journey-and-a-celebration-of-identity-more-than-a-club-rccc-is-a-family-where-students-find-inspiration-friendship-and-memories-that-last-a-lifetime.visible,
+.activities.visible,
+.music.visible,
+.dance.visible,
+.drama.visible,
+.instruments.visible,
+.filmmaking.visible,
+.events2.visible,
+.see-beautiful-moments-full-of-nostalgia.visible,
+.gallery2.visible,
+.get-in-touch-with-us.visible,
+.email-us.visible,
+.rajukcollegeculturalclub-gmail-com.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ensure consistent scroll margin for all sections */
+#about, #home, #activities, #events, #community, #gallery, #contact {
+  scroll-margin-top: 9rem; /* Adjust this value as needed */
+  margin-top: 0; /* Reset any unexpected margins */
+  margin-bottom: 0; /* Reset any unexpected margins */
+  padding-top: 2rem; /* Consistent padding */
+  padding-bottom: 2rem; /* Consistent padding */
+} 

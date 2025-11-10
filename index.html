@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Projects</title>
+    <link rel="stylesheet" href="webfonts/fonts.css">
+
+    <style>
+        /* Font families:
+        font-family: 'Zoqula', serif;
+        font-family: 'Migra', serif;
+        */
+
+        /* --- Basic Setup --- */
+        body {
+            /* Using Migra as the fallback font family */
+            font-family: 'Migra', serif;
+            font-weight: 800; /* Use Extrabold by default */
+            
+            background: #1a1a1a;
+            background: radial-gradient(circle at 100% 0, #3a3a3a, #1a1a1a 40%);
+            color: #e8e8e8;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        /* --- "Glass" Content Card --- */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            
+            background: rgba(30, 30, 30, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Elegant Heading (Now Zoqula) --- */
+        h1 {
+            font-family: 'Zoqula', serif;
+            font-size: 3.2rem;
+            font-weight: 400; /* Zoqula is Regular */
+            color: #d4b28b; /* The gold/bronze color */
+            margin: 0 0 2rem 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Link Styles --- */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .links a {
+            font-family: 'Migra', serif;
+            font-weight: 800; /* Use Extrabold for links */
+            letter-spacing: 0.5px; /* Give the bold text space */
+            
+            display: block;
+            padding: 1rem;
+            background: transparent;
+            color: #e8e8e8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: left;
+            padding-left: 2rem;
+            
+            /* ACCESSIBILITY FIX: Brighter resting border */
+            border: 1px solid #888;
+            
+            /* ACCESSIBILITY FIX: Subtle shadow to lift text */
+            text-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            
+            position: relative;
+            overflow: hidden;
+            
+            transition: all 0.3s ease;
+        }
+        
+        /* --- "Fancy" Hover Effect: Arrow slide-in --- */
+
+        /* 1. The arrow (hidden by default) */
+        .links a::after {
+            content: '\2192'; /* '→' */
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            color: #d4b28b;
+            transition: right 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* 2. The hover state */
+        .links a:hover {
+            color: #d4b28b;
+            border-color: #d4b28b;
+            transform: scale(1.02);
+            
+            /* ACCESSIBILITY FIX: Add a glow on hover */
+            text-shadow: 0 0 8px rgba(212, 178, 139, 0.5);
+        }
+        
+        /* 3. The arrow on hover (unchanged) */
+        .links a:hover::after {
+            right: 20px;
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <h1>View All Links</h1>
+        
+        <div class="links">
+            <a href="rajukscraped.html">Rajuk Scraped Website</a>
+            <a href="ulicvscode/ulicvscode.html">ULIC SPA - VSCode Theme</a>
+            <a href="fontchecker.html">Font Checker</a>
+        </div>
+    </main>
+
+</body>
+</html>
