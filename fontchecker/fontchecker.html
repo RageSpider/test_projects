@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Font Checker v2.0</title>
+    
+    <!-- 1. Path to your auto-generated fonts.css (Software Fonts) -->
+    <link rel="stylesheet" href="../webfonts/fonts.css">
+    
+    <!-- 2. Link to the CSS for the app shell -->
+    <link rel="stylesheet" href="fontchecker.css">
+    
+    <!-- 3. Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 4. Phosphor Icons (for new UI elements) -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor-icons.js"></script>
+    
+    <!-- 5. Import the JavaScript modules -->
+    <!-- These MUST be type="module" -->
+    <script src="designs.js" type="module"></script>
+    <script src="app.js" type="module"></script>
+</head>
+<body class="min-h-screen h-screen">
+
+    <!-- 
+      ===============================================================
+      PART 1: THE BASE HTML (fontchecker.html)
+      
+      V2.0 REFACTOR:
+      - Added "Fonts" tab for dynamic font loading.
+      - Added "Viewport" controls above the preview area.
+      - Added "Accessibility" checker to the "Global" tab.
+      - Added "Export/Import Theme" to the "Presets" tab.
+      - Added "Help" modal and button.
+      - Added a global <datalist> for searchable font inputs.
+      ===============================================================
+    -->
+    <div class="flex flex-col md:flex-row-reverse min-h-screen h-full">
+        
+        <!-- === Sidebar: Controls === -->
+        <aside id="controls-sidebar" class="w-full md:w-80 lg:w-96 bg-white border-l border-gray-200 shadow-lg md:h-screen transition-all duration-300 ease-in-out relative flex-shrink-0">
+            
+            <!-- Sidebar Toggle Button -->
+            <button id="toggle-btn" class="absolute -left-12 top-5 p-2 bg-white border border-gray-200 rounded-l-md shadow-md text-gray-600 hover:bg-gray-100 z-20">
+                <svg id="minimize-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <svg id="maximize-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            
+            <div class="p-6 h-full overflow-y-auto" id="sidebar-inner">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="sidebar-title" class="text-2xl font-bold text-gray-900 transition-opacity">Font Checker</h2>
+                    <button id="help-btn" title="Help" class="p-1 text-gray-500 hover:text-blue-600">
+                        <i class="ph ph-question text-2xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Sidebar Content (Toggled) -->
+                <div id="sidebar-content" class="transition-opacity">
+                    
+                    <!-- Tab Buttons -->
+                    <div class="mb-4 border-b border-gray-200">
+                        <nav class="flex -mb-px space-x-4" aria-label="Tabs">
+                            <!-- NEW "Fonts" Tab -->
+                            <button class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="tab-fonts">Fonts</button>
+                            <button class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm" data-tab="tab-controls">Controls</button>
+                            <button class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="tab-tweaks">Global</a-tab="tab-tweaks">
+                            <button class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="tab-presets">Presets</button>
+                            <button class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm" data-tab="tab-export">Export</button>
+                        </nav>
+                    </div>
+
+                    <!-- === NEW Tab Panel 0: Font Sources === -->
+                    <div id="tab-fonts" class="tab-panel space-y-6">
+                        <div class="font-source-section space-y-3">
+                            <h3 class="text-lg font-semibold text-gray-800">Google Fonts</h3>
+                            <p class="text-sm text-gray-600">Add popular fonts from Google. Added fonts are saved to your browser.</p>
+                            <input id="google-font-search" type="text" placeholder="Search popular Google Fonts..." class="block w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm">
+                            <div id="google-font-results" class="google-font-results h-64 overflow-y-auto border border-gray-200 rounded-md bg-gray-50">
+                                <!-- Results populated by app.js -->
+                            </div>
+                        </div>
+                        
+                        <div class="font-source-section space-y-3">
+                            <h3 class="text-lg font-semibold text-gray-800">Local Fonts</h3>
+                            <p class="text-sm text-gray-600">Upload .ttf, .otf, .woff, or .woff2 files. Local fonts are <strong>not</strong> saved and must be re-added on page load.</p>
+                            <div id="font-dropzone" class="font-dropzone">
+                                <i class="ph ph-upload-simple text-4xl text-gray-400"></i>
+                                <p class="text-gray-500"><b>Click to upload</b> or drag & drop</p>
+                            </div>
+                            <input type="file" id="local-font-input" multiple accept=".ttf,.otf,.woff,.woff2" class="hidden">
+                            <div id="local-font-list" class="space-y-1">
+                                <!-- List of added local fonts -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- === Tab Panel 1: Controls (with Individual Tweaks) === -->
+                    <div id="tab-controls" class="tab-panel active space-y-6">
+                        
+                        <!-- Page Builder -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Page Builder</h3>
+                            <div id="page-builder-container" class="space-y-3">
+                                <!-- Selectors will be populated by app.js -->
+                            </div>
+                            <button id="randomize-page-btn" class="w-full bg-gray-600 text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 transition-colors text-sm">
+                                Randomize Page Layout
+                            </button>
+                        </div>
+                        
+                        <!-- Font Targets -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Font Targets</h3>
+                            <div class="space-y-2" id="font-targets-container">
+                                <!-- This will be populated by app.js -->
+                            </div>
+                        </div>
+                        
+                        <!-- Loader -->
+                        <div id="loader-container" class="flex items-center justify-center space-x-2 text-gray-500">
+                            <div id="loader"></div>
+                            <span>Loading fonts...</span>
+                        </div>
+                        <p id="font-count" class="text-xs text-gray-500 -mt-4 text-center"></p>
+
+                        <!-- Actions -->
+                        <div>
+                            <button id="randomize-all-btn" class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Randomize All (Unlocked)
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- === Tab Panel 2: Global Tweaks === -->
+                    <div id="tab-tweaks" class="tab-panel space-y-6">
+                        <p class="text-sm text-gray-600">These settings affect the entire page and can be overridden by individual controls.</p>
+                        <!-- Font Size Control -->
+                        <div>
+                            <label for="size-slider" class="block text-sm font-medium text-gray-700 mb-2">Base Font Size: <span id="size-value" class="font-bold">16px</span></label>
+                            <input id="size-slider" type="range" min="12" max="32" value="16" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        
+                        <!-- Font Weight Control -->
+                        <div>
+                            <label for="weight-slider" class="block text-sm font-medium text-gray-700 mb-2">Base Weight: <span id="weight-value" class="font-bold">400</span></label>
+                            <input id="weight-slider" type="range" min="100" max="900" value="400" step="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        
+                        <!-- Line Height Control -->
+                        <div>
+                            <label for="height-slider" class="block text-sm font-medium text-gray-700 mb-2">Base Line Height: <span id="height-value" class="font-bold">1.7</span></label>
+                            <input id="height-slider" type="range" min="1" max="2.5" value="1.7" step="0.1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        
+                        <!-- Letter Spacing Control -->
+                        <div>
+                            <label for="spacing-slider" class="block text-sm font-medium text-gray-700 mb-2">Base Letter Spacing: <span id="spacing-value" class="font-bold">0em</span></label>
+                            <input id="spacing-slider" type="range" min="-0.1" max="0.2" value="0" step="0.01" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        
+                        <!-- Color Pickers -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="text-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                                <input id="text-color-picker" type="color" value="#1e293b" data-default="#1e293b" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="bg-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Bg Color</label>
+                                <input id="bg-color-picker" type="color" value="#ffffff" data-default="#ffffff" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="heading-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Headings</label>
+                                <input id="heading-color-picker" type="color" value="#1e293b" data-default="#1e293b" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="accent-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Accent</label>
+                                <input id="accent-color-picker" type="color" value="#475569" data-default="#475569" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="btn-bg-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Button Bg</label>
+                                <input id="btn-bg-color-picker" type="color" value="#2563eb" data-default="#2563eb" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                            <div>
+                                <label for="btn-text-color-picker" class="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                                <input id="btn-text-color-picker" type="color" value="#ffffff" data-default="#ffffff" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+                            </div>
+                        </div>
+                        
+                        <!-- NEW: Accessibility Checker -->
+                        <div class="a11y-checker space-y-2">
+                            <h3 class="text-base font-semibold text-gray-800">Live Contrast Ratios</h3>
+                            <div id="a11y-text" class="a11y-result"><span>Text / Bg:</span></div>
+                            <div id="a11y-headings" class="a11y-result"><span>Headings / Bg:</span></div>
+                            <div id="a11y-buttons" class="a11y-result"><span>Button Text / Btn Bg:</span></div>
+                        </div>
+                        
+                        <button id="dark-mode-toggle" class="w-full bg-gray-800 text-white font-medium py-2 px-4 rounded-md hover:bg-gray-900 transition-colors">
+                            Toggle Dark Mode
+                        </button>
+                        
+                        <button id="reset-tweaks-btn" class="w-full bg-gray-600 text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 transition-colors">
+                            Reset Global Tweaks
+                        </button>
+                    </div>
+                    
+                    <!-- === Tab Panel 3: Presets === -->
+                    <div id="tab-presets" class="tab-panel space-y-4">
+                        <p class="text-sm text-gray-600">Save and load your favorite combinations as named presets.</p>
+                        
+                        <!-- Save Preset -->
+                        <div class="flex space-x-2">
+                            <input id="preset-name-input" type="text" placeholder="Preset Name" class="block w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm">
+                            <button id="save-preset-btn" class="flex-shrink-0 bg-green-600 text-white font-medium py-2 px-4 rounded-md hover:bg-green-700 transition-colors">Save</button>
+                        </div>
+                        
+                        <!-- Load Preset -->
+                        <div>
+                            <label for="preset-select" class="block text-sm font-medium text-gray-700 mb-2">Load Preset</label>
+                            <div class="flex space-x-2">
+                                <select id="preset-select" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md shadow-sm appearance-none">
+                                    <option value="">No presets found...</option>
+                                </select>
+                                <button id="delete-preset-btn" class="flex-shrink-0 p-2.5 border border-gray-300 bg-white rounded-md shadow-sm hover:bg-gray-100" title="Delete Selected Preset">
+                                    <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Import/Export Theme -->
+                        <div class="space-y-3 pt-4 border-t">
+                             <p class="text-sm text-gray-600">Save or load the <strong>entire</strong> app state (including colors, tweaks, and layout) as a .json file.</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button id="export-theme-btn" class="w-full bg-gray-600 text-white font-medium py-2 px-4 rounded-md hover:bg-gray-700 transition-colors text-sm">
+                                    Export Theme
+                                </button>
+                                <button id="import-theme-btn" class="w-full bg-gray-100 text-gray-700 font-medium py-2 px-4 rounded-md hover:bg-gray-200 border border-gray-300 transition-colors text-sm">
+                                    Import Theme
+                                </button>
+                                <input type="file" id="import-theme-input" accept=".json" class="hidden">
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <!-- === Tab Panel 4: Export === -->
+                    <div id="tab-export" class="tab-panel space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-700 mb-2">Copy the generated CSS for your selected fonts and tweaks.</p>
+                            <div class="relative">
+                                <button id="generate-css-btn" class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                    Generate CSS
+                                </button>
+                                <button id="copy-css-btn" title="Copy to Clipboard" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-white opacity-50 hover:opacity-100">
+                                    <i class="ph ph-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="css-output" rows="12" class="w-full p-2 border border-gray-300 rounded-md font-mono text-xs" readonly placeholder="Click 'Generate CSS' to see output..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- === Main Content: Preview Area === -->
+        <main id="main-content" class="flex-1 transition-all duration-300 ease-in-out h-full flex flex-col">
+            
+            <!-- NEW: Viewport Controls -->
+            <div id="viewport-controls" class="w-full bg-gray-800 p-2 flex justify-center items-center gap-4 flex-shrink-0">
+                <button class="viewport-btn" title="Mobile (390px)" data-size="390px">
+                    <i class="ph ph-device-mobile"></i>
+                </button>
+                <button class="viewport-btn" title="Tablet (768px)" data-size="768px">
+                    <i class="ph ph-device-tablet"></i>
+                </button>
+                <button class="viewport-btn active" title="Desktop (100%)" data-size="100%">
+                    <i class="ph ph-desktop"></i>
+                </button>
+            </div>
+            
+            <!-- Preview Wrapper for Sizing -->
+            <div class="flex-1 overflow-y-auto w-full flex justify-center bg-gray-300" id="preview-wrapper-outer">
+                <div id="preview-area-wrapper" class="bg-gray-100 shadow-lg">
+                    <!-- This div will be filled by app.js with a design template -->
+                    <div id="preview-area" class="p-6 md:p-12 lg:p-16">
+                        <!-- Content injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- NEW: Shared Font Datalist -->
+    <datalist id="font-datalist">
+        <!-- Populated by app.js -->
+    </datalist>
+
+    <!-- NEW: Help Modal -->
+    <div id="help-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Welcome to Font Checker v2.0</h2>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-gray-700">
+                <p>This tool helps you test font pairings, layouts, and themes in real-time.</p>
+                <h3 class="text-lg font-semibold">Key Features</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>Fonts Tab:</b> Add fonts from Google, your "Software Fonts" (from `fonts.css`), or upload local files.</li>
+                    <li><b>Controls Tab:</b> Pair fonts with specific targets (Headings, Body) and randomize layouts.</li>
+                    <li><b>Global Tab:</b> Adjust global typography, colors, and check WCAG contrast ratios.</li>
+                    <li><b>Presets Tab:</b> Save named presets or <b>Export/Import</b> your entire theme as a JSON file.</li>
+                    <li><b>State Saving:</b> Your current setup (including added Google Fonts) is auto-saved to your browser and restored on reload.</li>
+                </ul>
+                 <h3 class="text-lg font-semibold">Project Info</h3>
+                 <p>This is an open-source project. You can find the code on GitHub:</p>
+                 <a href="https://github.com/RageSpider/test_projects" target="_blank" class="text-blue-600 hover:underline break-all">https://github.com/RageSpider/test_projects</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Digital Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Using Inter font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for Omnibox */
+        #omnibox-backdrop.hidden { display: none; }
+        #omnibox.hidden { display: none; }
+        #omnibox-results > li.active {
+            background-color: #e0f2fe; /* light-blue-100 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 antialiased">
+
+    <!-- 1. The Omnibox (Global Command Bar) -->
+    <!-- This is the modal, hidden by default -->
+    <div id="omnibox-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 hidden transition-opacity" onclick="closeOmnibox()"></div>
+    <div id="omnibox" class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 md:w-1/2 max-w-2xl bg-white rounded-xl shadow-2xl z-50 overflow-hidden hidden transform transition-all">
+        <div class="relative">
+            <!-- Search Icon -->
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </div>
+            <input type="text" id="omnibox-input" placeholder="Search or type a command (e.g., 'transfer', 'security')..." class="w-full px-12 py-4 border-b border-gray-200 focus:outline-none text-base" autocomplete="off">
+            <!-- Loading/Shortcut -->
+            <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                <kbd class="hidden md:inline-flex items-center px-2 py-1.5 text-xs font-sans font-medium text-gray-400 bg-gray-100 border border-gray-300 rounded-md">
+                    Ctrl+K
+                </kbd>
+            </div>
+        </div>
+        <ul id="omnibox-results" class="max-h-96 overflow-y-auto">
+            <!-- Results will be dynamically inserted here -->
+            <li id="omnibox-placeholder" class="p-4 text-center text-gray-500">
+                Type to start searching...
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- Main Application UI -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200">
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="h-8 w-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                        </svg>
+                        <span class="ml-2 text-xl font-bold text-gray-900">Digital Bank</span>
+                    </div>
+
+                    <!-- Main Navigation -->
+                    <div class="hidden md:flex md:items-center md:space-x-8">
+                        <a href="#" class="font-medium text-gray-900" onclick="showView('dashboard')">Dashboard</a>
+                        <a href="#" class="font-medium text-gray-500 hover:text-gray-900" onclick="showView('dashboard')">Transfers</a>
+                        <a href="#" class="font-medium text-gray-500 hover:text-gray-900" onclick="showView('dashboard')">Payments</a>
+                        <a href="#" class="font-medium text-gray-500 hover:text-gray-900" onclick="showView('dashboard')">Support</a>
+                    </div>
+
+                    <!-- Search and Settings -->
+                    <div class="flex items-center space-x-4">
+                        <button id="search-button" title="Search (Ctrl+K)" class="p-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                        </button>
+                        <button title="Settings" class="p-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" onclick="showView('settings')">
+                            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-1.007 1.11-.998.55.009 1.02.468 1.11.998l.09 1.108c.394.03.784.094 1.164.185.38.092.748.214 1.09.377.344.164.67.36.974.58.303.22.58.468.82.744.24.276.45.58.62.9.17.32.3.65.39.99.09.34.15.69.18 1.04l.05.998c.009.55-.468 1.02-.998 1.11-.542.09-.998-.56-1.11-.998l-.09-1.108a2.5 2.5 0 0 0-.185-1.164.31.31 0 0 0-.377-1.09.32.32 0 0 0-.58-.974.31.31 0 0 0-.744-.82.32.32 0 0 0-.9-.62.31.31 0 0 0-.99-.39.31.31 0 0 0-1.04-.18l-.998-.05c-.55-.009-1.02-.468-.998-1.11.09-.542.56-1.007 1.11-.998l1.108-.09c.03-.394.094-.784.185-1.164.092-.38.214-.748.377-1.09.164-.344.36-.67.58-.974.22-.303.468-.58.744-.82.276-.24.58-.45.9-.62.32-.17.65-.3.99-.39.34-.09.69-.15 1.04-.18l.998-.05Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1">
+
+            <!-- View 1: Dashboard (with Tabbed Interface) -->
+            <div id="view-dashboard" class="view-panel max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">Your Accounts</h1>
+
+                <!-- 2. Tabbed Interface -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <!-- Tab Headers -->
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs" id="tab-nav">
+                            <button data-tab-target="checking" class="tab-button border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Checking (...1234)
+                            </button>
+                            <button data-tab-target="savings" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Savings (...5678)
+                            </button>
+                            <button data-tab-target="investments" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                Investments
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Tab Content Panels -->
+                    <div class="p-6">
+                        <!-- Checking Tab Panel -->
+                        <div id="tab-panel-checking" class="tab-panel">
+                            <h2 class="text-2xl font-semibold text-gray-900 mb-2">$12,450.78</h2>
+                            <p class="text-gray-600 mb-4">Available Balance</p>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                Make a Transfer
+                            </button>
+                            <h3 class="text-lg font-medium text-gray-900 mt-6 mb-4">Recent Transactions</h3>
+                            <ul class="divide-y divide-gray-200">
+                                <li class="py-3 flex justify-between items-center">
+                                    <span>Coffee Shop</span>
+                                    <span class="font-medium text-red-600">-$5.75</span>
+                                </li>
+                                <li class="py-3 flex justify-between items-center">
+                                    <span>Direct Deposit - Acme Corp</span>
+                                    <span class="font-medium text-green-600">+$2,100.50</span>
+                                </li>
+                                <li class="py-3 flex justify-between items-center">
+                                    <span>Grocery Store</span>
+                                    <span class="font-medium text-red-600">-$120.30</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Savings Tab Panel -->
+                        <div id="tab-panel-savings" class="tab-panel hidden">
+                            <h2 class="text-2xl font-semibold text-gray-900 mb-2">$84,200.00</h2>
+                            <p class="text-gray-600 mb-4">Available Balance</p>
+                            <h3 class="text-lg font-medium text-gray-900 mt-6 mb-4">Account Details</h3>
+                            <p class="text-gray-700">APY: 4.50%</p>
+                        </div>
+
+                        <!-- Investments Tab Panel -->
+                        <div id="tab-panel-investments" class="tab-panel hidden">
+                            <h2 class="text-2xl font-semibold text-gray-900 mb-2">$152,030.50</h2>
+                            <p class="text-gray-600 mb-4">Total Portfolio Value</p>
+                            <h3 class="text-lg font-medium text-gray-900 mt-6 mb-4">Top Holdings</h3>
+                            <ul class="divide-y divide-gray-200">
+                                <li class="py-3 flex justify-between items-center">
+                                    <span>Vanguard S&P 500 (VOO)</span>
+                                    <span class="font-medium text-green-600">+$1,200.10 (Today)</span>
+                                </li>
+                                <li class="py-3 flex justify-between items-center">
+                                    <span>Apple Inc. (AAPL)</span>
+                                    <span class="font-medium text-red-600">-$50.20 (Today)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View 2: Consolidated Settings -->
+            <div id="view-settings" class="view-panel hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">Settings</h1>
+
+                <!-- 6. The chrome://settings Page -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden lg:grid lg:grid-cols-12">
+                    <!-- Left-hand Navigation -->
+                    <aside class="py-6 px-2 lg:col-span-3">
+                        <nav class="space-y-1" id="settings-nav">
+                            <button data-settings-target="profile" class="settings-nav-button bg-blue-50 border-blue-500 text-blue-700 group border-l-4 px-3 py-2 flex items-center text-sm font-medium rounded-r-md">
+                                <svg class="text-blue-500 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.5 1.5 0 0 1 18 21.75H6a1.5 1.5 0 0 1-1.499-1.632Z" /></svg>
+                                Profile
+                            </button>
+                            <button data-settings-target="security" class="settings-nav-button text-gray-900 border-transparent hover:bg-gray-50 hover:text-gray-900 group border-l-4 px-3 py-2 flex items-center text-sm font-medium rounded-r-md">
+                                <svg class="text-gray-400 group-hover:text-gray-500 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                Security
+                            </button>
+                            <button data-settings-target="notifications" class="settings-nav-button text-gray-900 border-transparent hover:bg-gray-50 hover:text-gray-900 group border-l-4 px-3 py-2 flex items-center text-sm font-medium rounded-r-md">
+                                <svg class="text-gray-400 group-hover:text-gray-500 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                                Notifications
+                            </button>
+                        </nav>
+                    </aside>
+
+                    <!-- Right-hand Content Area -->
+                    <div class="divide-y divide-gray-200 lg:col-span-9">
+                        <!-- Profile Settings Panel -->
+                        <div id="settings-panel-profile" class="settings-panel p-6">
+                            <h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+                            <form class="space-y-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <input type="text" id="name" value="Jane Doe" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                    <input type="email" id="email" value="jane.doe@example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Security Settings Panel -->
+                        <div id="settings-panel-security" class="settings-panel hidden p-6">
+                            <h2 class="text-xl font-semibold mb-4">Security</h2>
+                            <form class="space-y-4">
+                                <div>
+                                    <label for="password" class="block text-sm font-medium text-gray-700">Change Password</label>
+                                    <input type="password" id="password" placeholder="New Password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="flex-grow flex flex-col">
+                                        <span class="text-sm font-medium text-gray-900">Two-Factor Authentication (2FA)</span>
+                                        <span class="text-sm text-gray-500">Enabled</span>
+                                    </span>
+                                    <button type="button" class="bg-white px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">Manage</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="flex-grow flex flex-col">
+                                        <span class="text-sm font-medium text-gray-900">Biometric Login</span>
+                                        <span class="text-sm text-gray-500">Disabled</span>
+                                    </span>
+                                    <button type="button" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" role="switch" aria-checked="false">
+                                        <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Notifications Settings Panel -->
+                        <div id="settings-panel-notifications" class="settings-panel hidden p-6">
+                            <h2 class="text-xl font-semibold mb-4">Notifications</h2>
+                            <fieldset class="space-y-4">
+                                <legend class="sr-only">Notification types</legend>
+                                <div class="relative flex items-start">
+                                    <div class="flex h-5 items-center">
+                                        <input id="email-security" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="email-security" class="font-medium text-gray-700">Security Alerts</label>
+                                        <p class="text-gray-500">Get notified about suspicious login activity.</p>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex h-5 items-center">
+                                        <input id="sms-transfers" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="sms-transfers" class="font-medium text-gray-700">Large Transfers (SMS)</label>
+                                        <p class="text-gray-500">Get an SMS text for any transfer over $1,000.</p>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- Mock Data for Omnibox ---
+        const omniboxData = [
+            { type: 'action', name: 'Make a Transfer', href: '#', icon: 'M0 18h24v-2H0v2zM10 4V1l-7 7 7 7v-3.01c9 0 11 4.01 11 10.01 0-6-2-10-11-10z' },
+            { type: 'action', name: 'Pay a Bill', href: '#', icon: 'M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z' },
+            { type: 'page', name: 'Security Settings', href: '#', icon: 'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z' },
+            { type: 'page', name: 'Transaction History', href: '#', icon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z' },
+            { type: 'payee', name: 'Acme Corp (Utilities)', href: '#', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' },
+            { type: 'help', name: 'How to set up 2FA', href: '#', icon: 'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z' },
+        ];
+
+        // --- Omnibox Logic ---
+        const omnibox = document.getElementById('omnibox');
+        const backdrop = document.getElementById('omnibox-backdrop');
+        const input = document.getElementById('omnibox-input');
+        const resultsList = document.getElementById('omnibox-results');
+        const placeholder = document.getElementById('omnibox-placeholder');
+        const searchButton = document.getElementById('search-button');
+        let activeResultIndex = -1;
+
+        function openOmnibox() {
+            backdrop.classList.remove('hidden');
+            omnibox.classList.remove('hidden');
+            input.focus();
+            input.select();
+        }
+
+        function closeOmnibox() {
+            backdrop.classList.add('hidden');
+            omnibox.classList.add('hidden');
+            input.value = '';
+            renderResults([]);
+            activeResultIndex = -1;
+        }
+
+        function fuzzyFind(query, data) {
+            if (!query) return [];
+            const lowerQuery = query.toLowerCase();
+            return data.filter(item => item.name.toLowerCase().includes(lowerQuery));
+            // A true fuzzy finder would check for characters in order, but this is fine for demo
+        }
+        
+        function getIcon(type) {
+            switch(type) {
+                case 'action': return `<svg class="w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" /></svg>`;
+                case 'page': return `<svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>`;
+                case 'payee': return `<svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.5 1.5 0 0 1 18 21.75H6a1.5 1.5 0 0 1-1.499-1.632Z" /></svg>`;
+                case 'help': return `<svg class="w-6 h-6 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>`;
+                default: return '';
+            }
+        }
+        
+        function renderResults(results) {
+            resultsList.innerHTML = '';
+            if (results.length === 0 && input.value) {
+                resultsList.innerHTML = `<li class="p-4 text-center text-gray-500">No results found for "${input.value}"</li>`;
+            } else if (results.length === 0) {
+                resultsList.appendChild(placeholder);
+            } else {
+                results.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.dataset.index = index;
+                    li.className = 'flex items-center justify-between p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50';
+                    li.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            ${getIcon(item.type)}
+                            <span class="font-medium text-gray-800">${item.name}</span>
+                        </div>
+                        <span class="text-xs font-semibold uppercase text-gray-400">${item.type}</span>
+                    `;
+                    li.onclick = () => {
+                        // In a real app, this would navigate:
+                        // window.location.href = item.href;
+                        
+                        // For demo, we handle special cases
+                        if (item.name.includes('Security')) {
+                            showView('settings');
+                            activateSettingsTab('security');
+                        }
+                        closeOmnibox();
+                    };
+                    resultsList.appendChild(li);
+                });
+            }
+        }
+        
+        input.addEventListener('input', () => {
+            const query = input.value;
+            const results = fuzzyFind(query, omniboxData);
+            renderResults(results);
+            activeResultIndex = -1;
+        });
+
+        input.addEventListener('keydown', (e) => {
+            const results = resultsList.querySelectorAll('li[data-index]');
+            if (results.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                results[activeResultIndex]?.classList.remove('active');
+                activeResultIndex = (activeResultIndex + 1) % results.length;
+                results[activeResultIndex].classList.add('active');
+                results[activeResultIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                results[activeResultIndex]?.classList.remove('active');
+                activeResultIndex = (activeResultIndex - 1 + results.length) % results.length;
+                results[activeResultIndex].classList.add('active');
+                results[activeResultIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeResultIndex > -1) {
+                    results[activeResultIndex].click();
+                } else {
+                    // Cick the first result if available
+                    results[0]?.click();
+                }
+            } else if (e.key === 'Escape') {
+                closeOmnibox();
+            }
+        });
+        
+        searchButton.addEventListener('click', openOmnibox);
+        window.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                openOmnibox();
+            }
+        });
+
+        // --- View Switching Logic ---
+        const views = document.querySelectorAll('.view-panel');
+        function showView(viewId) {
+            views.forEach(view => {
+                if (view.id === `view-${viewId}`) {
+                    view.classList.remove('hidden');
+                } else {
+                    view.classList.add('hidden');
+                }
+            });
+            // Scroll to top on view change
+            window.scrollTo(0, 0);
+        }
+
+        // --- Tabbed Interface Logic ---
+        const tabNav = document.getElementById('tab-nav');
+        const tabButtons = tabNav.querySelectorAll('.tab-button');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabNav.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const targetId = button.dataset.tabTarget;
+
+            // Update button styles
+            tabButtons.forEach(btn => {
+                if (btn === button) {
+                    btn.classList.add('border-blue-500', 'text-blue-600');
+                    btn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                } else {
+                    btn.classList.remove('border-blue-500', 'text-blue-600');
+                    btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                }
+            });
+
+            // Show/hide panels
+            tabPanels.forEach(panel => {
+                if (panel.id === `tab-panel-${targetId}`) {
+                    panel.classList.remove('hidden');
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
+        });
+
+        // --- Settings Page Logic ---
+        const settingsNav = document.getElementById('settings-nav');
+        const settingsButtons = settingsNav.querySelectorAll('.settings-nav-button');
+        const settingsPanels = document.querySelectorAll('.settings-panel');
+        
+        function activateSettingsTab(targetId) {
+             // Update button styles
+            settingsButtons.forEach(btn => {
+                if (btn.dataset.settingsTarget === targetId) {
+                    btn.classList.add('bg-blue-50', 'border-blue-500', 'text-blue-700');
+                    btn.classList.remove('text-gray-900', 'border-transparent', 'hover:bg-gray-50', 'hover:text-gray-900');
+                } else {
+                    btn.classList.remove('bg-blue-50', 'border-blue-500', 'text-blue-700');
+                    btn.classList.add('text-gray-900', 'border-transparent', 'hover:bg-gray-50', 'hover:text-gray-900');
+                }
+            });
+
+            // Show/hide panels
+            settingsPanels.forEach(panel => {
+                if (panel.id === `settings-panel-${targetId}`) {
+                    panel.classList.remove('hidden');
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
+        }
+
+        settingsNav.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+            activateSettingsTab(button.dataset.settingsTarget);
+        });
+
+    </script>
+</body>
+</html>
