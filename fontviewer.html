@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Viewer Pro</title>
+    
+    <link rel="stylesheet" href="/webfonts/fonts.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Light Mode */
+            --bg-color: #f3f4f6;
+            --card-bg-color: #ffffff;
+            --text-color: #1f2937;
+            --text-color-light: #6b7280;
+            --border-color: #d1d5db;
+            --primary-color: #2563eb;
+            --primary-text: #ffffff;
+            --input-bg-color: #ffffff;
+            --btn-reset-bg: #ef4444;
+            --btn-reset-text: #ffffff;
+            --btn-secondary-bg: #4b5563;
+            --btn-secondary-text: #ffffff;
+        }
+
+        body.dark-mode {
+            /* Dark Mode (Default) */
+            --bg-color: #111827;
+            --card-bg-color: #1f2937;
+            --text-color: #f3f4f6;
+            --text-color-light: #9ca3af;
+            --border-color: #374151;
+            --primary-color: #3b82f6;
+            --primary-text: #ffffff;
+            --input-bg-color: #374151;
+            --btn-reset-bg: #dc2626;
+            --btn-reset-text: #ffffff;
+            --btn-secondary-bg: #374151;
+            --btn-secondary-text: #f3f4f6;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 25px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .filter-bar {
+            background-color: var(--card-bg-color);
+            padding: 20px 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        
+        body.dark-mode .filter-bar {
+             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            min-width: 180px;
+        }
+
+        .filter-group.full-width {
+            min-width: 100%;
+            flex-basis: 100%;
+        }
+        
+        /* New group for final action buttons */
+        .filter-group.action-group {
+            flex-direction: row;
+            flex-grow: 2;
+            gap: 8px;
+        }
+        .filter-group.action-group .btn {
+            height: 44px; /* Match input height */
+        }
+
+
+        .filter-group label, .filter-group span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .input-group .btn {
+            flex-shrink: 0;
+        }
+        
+        .input-group select, .input-group input {
+            flex-grow: 1;
+        }
+
+        .filter-group input[type="text"],
+        .filter-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            box-sizing: border-box; 
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        .filter-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239ca3af'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.25em;
+            padding-right: 2.5rem;
+            cursor: pointer; /* Polish */
+        }
+        
+        .filter-group input[type="text"]:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color, #3b82f6)40;
+        }
+        
+        .filter-group input[type="range"] {
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .range-value {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1px;
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg-color);
+            color: var(--text-color-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex-grow: 1;
+        }
+        
+        .btn-group .btn { border-radius: 0; }
+        .btn-group .btn:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .btn-group .btn:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-left-width: 0; }
+        
+        .btn.active {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px var(--primary-color, #3b82f6)4D;
+            z-index: 1;
+        }
+
+        .btn:hover:not(.active) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            z-index: 2;
+        }
+        
+        .btn.standalone { border-radius: 10px; }
+        
+        #btn-reset {
+            background-color: var(--btn-reset-bg);
+            color: var(--btn-reset-text);
+            border: none;
+        }
+        
+        #btn-theme, #btn-equip, #btn-reset-ui-font {
+            background-color: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            border: none;
+        }
+
+        #btn-theme:hover, #btn-equip:hover, #btn-reset-ui-font:hover {
+            background-color: var(--text-color-light);
+            color: var(--card-bg-color);
+        }
+
+        .font-container {
+            display: grid;
+            gap: 25px;
+        }
+
+        .font-container.grid-view { grid-template-columns: repeat(var(--grid-cols, 3), 1fr); }
+        .font-container.grid-view-2 { --grid-cols: 2; }
+        .font-container.grid-view-3 { --grid-cols: 3; }
+        .font-container.grid-view-4 { --grid-cols: 4; }
+        .font-container.grid-view-5 { --grid-cols: 5; }
+        .font-container.list-view { grid-template-columns: 1fr; }
+
+        .font-card {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.03);
+            transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+            overflow: hidden; 
+        }
+
+        .font-card:hover {
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        body.dark-mode .font-card:hover {
+             box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .font-card-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .font-family-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-color);
+            transition: color 0.2s;
+        }
+        .font-card:hover .font-family-name {
+            color: var(--primary-color);
+        }
+
+        .text-showcase {
+            font-size: 32px;
+            line-height: 1.5;
+            word-break: break-word;
+            transition: font-size 0.2s;
+            color: var(--text-color);
+        }
+        
+        .text-showcase h3 {
+            /* Polish: Subtler headings */
+            font-size: 0.6em; /* Relative to slider size */
+            font-weight: 500;
+            color: var(--text-color-light);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin: 20px 0 10px 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .text-showcase p, .text-showcase .alphabet, .text-showcase .numerals {
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        /* Adjust paragraph font size to be more readable */
+        .text-showcase p.paragraph {
+            font-size: 0.5em; /* Relative to slider size */
+        }
+
+        .font-container.list-view .font-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+        }
+        
+        .font-container.list-view .font-card-header {
+             border-bottom: none;
+             border-right: 1px solid var(--border-color);
+             padding-bottom: 0;
+             padding-right: 25px;
+             margin-bottom: 0;
+             min-width: 220px;
+        }
+        
+        .font-container.list-view .text-showcase {
+            flex-grow: 1;
+            font-size: 2.5rem;
+        }
+        
+        .font-container.list-view .text-showcase h3 {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .font-container.grid-view-5 { --grid-cols: 4; }
+            .filter-group { min-width: 200px; }
+        }
+        @media (max-width: 992px) {
+            .font-container.grid-view-4,
+            .font-container.grid-view-5 { --grid-cols: 3; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 15px; }
+            .font-container.grid-view-3,
+            .font-container.grid-view-4,
+            .font-container.grid-view-5 { --grid-cols: 2; }
+            .filter-group { min-width: 150px; }
+            .filter-group.action-group { flex-direction: column; }
+            .filter-group.action-group .btn { width: 100%; }
+        }
+        @media (max-width: 576px) {
+            .filter-group { min-width: 100%; flex-basis: 100%; }
+            .font-container.grid-view { --grid-cols: 1; }
+            .font-container.list-view .font-card { flex-direction: column; align-items: flex-start; }
+            .font-container.list-view .font-card-header { border-right: none; border-bottom: 1px solid var(--border-color); padding-right: 0; padding-bottom: 15px; margin-bottom: 20px; width: 100%; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <header class="filter-bar">
+    
+        <div class="filter-group" style="flex-grow: 2;">
+            <label for="search-input">Search Font</label>
+            <input type="text" id="search-input" placeholder="e.g., Agenia">
+        </div>
+
+        <div class="filter-group" style="flex-grow: 2;">
+            <label for="preview-text-select">Showcase</label>
+            <select id="preview-text-select">
+                <option value="sentence" selected>Sentence</option>
+                <option value="alphabet">Alphabet</option>
+                <option value="numerals">Numerals</option>
+                <option value="paragraph">Paragraph</option>
+                <option value="custom">Custom...</option>
+            </select>
+        </div>
+        
+        <div class="filter-group" id="preview-text-input-group" style="flex-grow: 3; display: none;">
+            <label for="preview-text-input">Custom Text</label>
+            <input type="text" id="preview-text-input" value="The quick brown fox jumps over the lazy dog">
+        </div>
+
+        <div class="filter-group" style="flex-grow: 3;">
+            <label for="font-size-slider">Font Size (<span id="font-size-value" class="range-value">32</span>px)</label>
+            <input type="range" id="font-size-slider" min="12" max="100" value="32" step="1">
+        </div>
+        
+        <div class="filter-group">
+            <label for="sort-select">Sort By</label>
+            <select id="sort-select">
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="style-select">Style</label>
+            <select id="style-select">
+                <option value="all">All Styles</option>
+                <option value="normal">Normal</option>
+                <option value="italic">Italic</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <span>View Mode</span>
+            <div class="btn-group">
+                <button class="btn" id="btn-list-view">List</button>
+                <button class="btn active" id="btn-grid-view">Grid</button>
+            </div>
+        </div>
+
+        <div class="filter-group" id="grid-size-group">
+            <label for="grid-size-select">Grid Size</label>
+            <select id="grid-size-select">
+                <option value="2">2 Col</option>
+                <option value="3" selected>3 Col</option>
+                <option value="4">4 Col</option>
+                <option value="5">5 Col</option>
+            </select>
+        </div>
+        
+        <div class="filter-group full-width" style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 10px;">
+            <label for="equip-select">Equip UI Font</label>
+            <div class="input-group">
+                <select id="equip-select">
+                    <option value="" disabled selected>Select a font to apply...</option>
+                </select>
+                <button class="btn standalone" id="btn-equip">Apply</button>
+                <button class="btn standalone" id="btn-reset-ui-font">Reset</button>
+            </div>
+        </div>
+        
+        <div class="filter-group action-group">
+            <span>Actions</span>
+            <button class="btn standalone" id="btn-theme"></button> 
+            <button class="btn standalone" id="btn-reset">Reset Filters</button>
+        </div>
+
+    </header>
+
+    <main id="font-container" class="font-container grid-view grid-view-3">
+        <p id="loading-message">Loading fonts...</p>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 0. Apply Saved Preferences ---
+            const baseFontFamily = getComputedStyle(document.body).fontFamily;
+            
+            // Apply saved UI Font
+            const savedUiFont = localStorage.getItem('uiFontPreference');
+            if (savedUiFont) {
+                document.body.style.fontFamily = `'${savedUiFont}', ${baseFontFamily}`;
+            }
+            
+            // Apply saved Theme
+            const savedTheme = localStorage.getItem('themePreference');
+            if (savedTheme === 'light') {
+                document.body.classList.remove('dark-mode');
+            } else {
+                document.body.classList.add('dark-mode'); // Default to dark
+            }
+
+
+            // --- 1. CSS Parsing ---
+            const fontsData = {};
+            const container = document.getElementById('font-container');
+            
+            const fontFaceSheet = Array.from(document.styleSheets).find(sheet => {
+                try { return sheet.href && sheet.href.endsWith('/webfonts/fonts.css'); } 
+                catch (e) { return false; }
+            });
+
+            if (fontFaceSheet) {
+                try {
+                    const rules = Array.from(fontFaceSheet.cssRules);
+                    for (const rule of rules) {
+                        if (rule.type === CSSRule.FONT_FACE_RULE) {
+                            const family = rule.style.getPropertyValue('font-family').replace(/"|'/g, '');
+                            if (!family) continue;
+                            if (!fontsData[family]) {
+                                fontsData[family] = { family: family, styles: new Set(), weights: new Set() };
+                            }
+                            fontsData[family].styles.add(rule.style.getPropertyValue('font-style') || 'normal');
+                            fontsData[family].weights.add(rule.style.getPropertyValue('font-weight') || '400');
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error parsing CSS rules:", e);
+                    container.innerHTML = `<p style="color: red; font-weight: bold;">Error: Could not parse CSS rules.</p>`;
+                }
+            } else {
+                console.error("Could not find the linked 'fonts.css' stylesheet.");
+                container.innerHTML = `<p style="color: red; font-weight: bold;">Error: Could not find <code>/webfonts/fonts.css</code>.</p>`;
+            }
+            
+            const allFonts = Object.values(fontsData);
+
+            // --- 2. Element References ---
+            const searchInput = document.getElementById('search-input');
+            const previewTextSelect = document.getElementById('preview-text-select');
+            const previewTextInputGroup = document.getElementById('preview-text-input-group');
+            const previewTextInput = document.getElementById('preview-text-input');
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
+            const btnList = document.getElementById('btn-list-view');
+            const btnGrid = document.getElementById('btn-grid-view');
+            const gridSizeSelect = document.getElementById('grid-size-select');
+            const gridSizeGroup = document.getElementById('grid-size-group');
+            const sortSelect = document.getElementById('sort-select');
+            const styleSelect = document.getElementById('style-select');
+            const btnTheme = document.getElementById('btn-theme');
+            const btnReset = document.getElementById('btn-reset');
+            const equipSelect = document.getElementById('equip-select');
+            const btnEquip = document.getElementById('btn-equip');
+            const btnResetUiFont = document.getElementById('btn-reset-ui-font');
+
+            // --- 2b. Populate Equip Select ---
+            if (allFonts.length > 0) {
+                const sortedFonts = [...allFonts].sort((a, b) => a.family.localeCompare(b.family));
+                const equipOptions = sortedFonts.map(font => `<option value="${font.family}">${font.family}</option>`).join('');
+                
+                // Polish: Keep the disabled option and add new ones
+                equipSelect.innerHTML = '<option value="" disabled>Select a font to apply...</option>' + equipOptions;
+                
+                // Polish: Set dropdown to saved value if it exists
+                if (savedUiFont && fontsData[savedUiFont]) {
+                    equipSelect.value = savedUiFont;
+                } else {
+                    equipSelect.value = ""; // Default to the disabled option
+                }
+            }
+
+            // --- 3. Render Function ---
+            function getPreviewText() {
+                const mode = previewTextSelect.value;
+                const customText = previewTextInput.value || "Sample Text";
+                
+                switch(mode) {
+                    case 'sentence': return "The quick brown fox jumps over the lazy dog";
+                    case 'alphabet': return "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+                    case 'numerals': return "0123456789";
+                    case 'paragraph': return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+                    case 'custom': return customText;
+                    default: return customText;
+                }
+            }
+            
+            function renderFonts() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const previewText = getPreviewText();
+                const fontSize = fontSizeSlider.value;
+                const viewMode = btnGrid.classList.contains('active') ? 'grid' : 'list';
+                const gridSize = gridSizeSelect.value;
+                const sortMode = sortSelect.value;
+                const styleFilter = styleSelect.value;
+                const previewMode = previewTextSelect.value;
+                
+                let filteredFonts = [...allFonts];
+                filteredFonts.sort((a, b) => sortMode === 'az' ? a.family.localeCompare(b.family) : b.family.localeCompare(a.family));
+
+                filteredFonts = filteredFonts.filter(font => 
+                    font.family.toLowerCase().includes(searchTerm) &&
+                    (styleFilter === 'all' || font.styles.has(styleFilter))
+                );
+
+                container.className = 'font-container';
+                if (viewMode === 'grid') {
+                    container.classList.add('grid-view', `grid-view-${gridSize}`);
+                } else {
+                    container.classList.add('list-view');
+                }
+                
+                if (!container.innerHTML.startsWith('<p style="color: red')) {
+                    container.innerHTML = ''; // Clear loading message
+                }
+
+                if (filteredFonts.length === 0 && allFonts.length > 0) {
+                    container.innerHTML = '<p>No fonts match your criteria.</p>';
+                    return;
+                }
+                
+                for (const font of filteredFonts) {
+                    const card = document.createElement('div');
+                    card.className = 'font-card';
+                    card.style.fontFamily = `'${font.family}', sans-serif`;
+                    
+                    // --- FIXED: Showcase HTML Logic ---
+                    let showcaseHtml = '';
+                    const showcaseText = getPreviewText(); // Text for the selected mode
+
+                    if (viewMode === 'grid') {
+                        // In grid view, always show Alphabet, Numerals, and the selected Preview Text
+                        let thirdBlockLabel = 'Preview';
+                        let thirdBlockText = showcaseText;
+                        let thirdBlockClass = '';
+
+                        switch(previewMode) {
+                            case 'sentence': thirdBlockLabel = 'Sentence'; break;
+                            case 'alphabet': thirdBlockLabel = 'Alphabet'; break;
+                            case 'numerals': thirdBlockLabel = 'Numerals'; break;
+                            case 'paragraph': thirdBlockLabel = 'Paragraph'; thirdBlockClass = 'paragraph'; break;
+                            case 'custom': thirdBlockLabel = 'Custom Text'; break;
+                        }
+                        
+                        showcaseHtml = `
+                            <h3>Alphabet</h3>
+                            <p class="alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz</p>
+                            <h3>Numerals</h3>
+                            <p class="numerals">0123456789</p>
+                            <h3>${thirdBlockLabel}</h3>
+                            <p class="${thirdBlockClass}">${thirdBlockText}</p>
+                        `;
+                    } else {
+                        // In list view, just show the selected Preview Text
+                        showcaseHtml = `<p>${showcaseText}</p>`;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="font-card-header">
+                            <span class="font-family-name">${font.family}</span>
+                        </div>
+                        <div class="text-showcase" style="font-size: ${fontSize}px;">
+                           ${showcaseHtml}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+
+            // --- 4. Event Listeners ---
+            
+            searchInput.addEventListener('input', renderFonts);
+            sortSelect.addEventListener('change', renderFonts);
+            styleSelect.addEventListener('change', renderFonts);
+            gridSizeSelect.addEventListener('change', renderFonts);
+            
+            previewTextSelect.addEventListener('change', () => {
+                previewTextInputGroup.style.display = (previewTextSelect.value === 'custom') ? 'flex' : 'none';
+                renderFonts();
+            });
+            
+            previewTextInput.addEventListener('input', () => {
+                if (previewTextSelect.value === 'custom') renderFonts();
+            });
+
+            btnGrid.addEventListener('click', () => {
+                btnGrid.classList.add('active');
+                btnList.classList.remove('active');
+                gridSizeGroup.style.display = 'flex';
+                renderFonts();
+            });
+
+            btnList.addEventListener('click', () => {
+                btnList.classList.add('active');
+                btnGrid.classList.remove('active');
+                gridSizeGroup.style.display = 'none';
+                renderFonts();
+            });
+            
+            fontSizeSlider.addEventListener('input', () => {
+                const size = fontSizeSlider.value;
+                fontSizeValue.textContent = size;
+                document.querySelectorAll('.text-showcase').forEach(el => el.style.fontSize = `${size}px`);
+            });
+            
+            function updateThemeButtonText() {
+                const isDark = document.body.classList.contains('dark-mode');
+                btnTheme.textContent = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+            }
+            
+            btnTheme.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('themePreference', isDark ? 'dark' : 'light'); // Save theme
+                updateThemeButtonText();
+            });
+            
+            btnEquip.addEventListener('click', () => {
+                const selectedFont = equipSelect.value;
+                if (selectedFont) {
+                    document.body.style.fontFamily = `'${selectedFont}', ${baseFontFamily}`;
+                    localStorage.setItem('uiFontPreference', selectedFont); // Save font
+                }
+            });
+            
+            btnResetUiFont.addEventListener('click', () => {
+                document.body.style.fontFamily = baseFontFamily;
+                localStorage.removeItem('uiFontPreference'); // Clear saved font
+                equipSelect.value = ""; // Reset dropdown
+            });
+            
+            btnReset.addEventListener('click', () => {
+                searchInput.value = '';
+                previewTextSelect.value = 'sentence';
+                previewTextInput.value = 'The quick brown fox jumps over the lazy dog';
+                previewTextInputGroup.style.display = 'none';
+                fontSizeSlider.value = '32';
+                fontSizeValue.textContent = '32';
+                sortSelect.value = 'az';
+                styleSelect.value = 'all';
+                gridSizeSelect.value = '3';
+                
+                btnGrid.click();
+                
+                if (!document.body.classList.contains('dark-mode')) {
+                    document.body.classList.add('dark-mode');
+                }
+                localStorage.setItem('themePreference', 'dark'); // Save reset theme
+                updateThemeButtonText();
+                
+                btnResetUiFont.click(); // Reset UI font and clear storage
+                
+                if(container.innerHTML.startsWith('<p style="color: red')) {
+                   container.innerHTML = ''; 
+                }
+                renderFonts();
+            });
+
+            // --- 5. Initial Render ---
+            updateThemeButtonText();
+            if (allFonts.length > 0) {
+                renderFonts();
+            } else if (container.innerHTML.startsWith('<p style="color: red')) {
+                // Error already shown
+            } else {
+                container.innerHTML = '<p>No fonts found in <code>/webfonts/fonts.css</code>.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
