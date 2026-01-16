@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!-- 
+    📚 LESSON 1: THE DOCTYPE
+    This tells the browser "Hey, I'm writing modern HTML5." 
+    Without this, browsers might go into "Quirks Mode" and render things weirdly.
+-->
+<html lang="en">
+<head>
+    <!-- 
+        📚 LESSON 2: META TAGS
+        - charset="UTF-8": Allows us to use any character (emojis, different languages).
+        - viewport: CRITICAL for mobile phones. It tells the phone "don't zoom out, show this at 100% scale."
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Coding: Event Registration</title>
+
+    <!-- 
+        📚 LESSON 3: EXTERNAL FONTS
+        We are borrowing cool fonts from Google. This is like importing a library in a game.
+    -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <!-- 
+        📚 LESSON 4: CSS (CASCADING STYLE SHEETS)
+        This controls how the website LOOKS. 
+        Usually, this is in a separate .css file, but for this lesson, we put it here.
+    -->
+    <style>
+        /* 📚 LESSON 5: CSS VARIABLES (:root)
+           Think of these as "Settings". If we want to change the green color, 
+           we change it here ONCE, and it updates everywhere.
+        */
+        :root {
+            --bg-color: #1C2526;
+            --text-color: #E0E0E0;
+            --primary-accent: #A0A0A0;
+            --highlight-color: #FFFFFF;
+            --overlay-color: rgba(28, 37, 38, 0.95);
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --font-heading: 'Crimson Pro', serif;
+            --font-body: 'Roboto', sans-serif;
+        }
+
+        /* Basic Setup */
+        html { scroll-behavior: smooth; }
+        
+        body {
+            margin: 0; /* Remove default browser spacing */
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* 📚 LESSON 6: FLEXBOX (The Sticky Nav)
+           display: flex; is the best way to lay things out.
+           justify-content: space-between; pushes the logo to the left and links to the right.
+        */
+        .sticky-nav {
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--overlay-color);
+            backdrop-filter: blur(10px); /* Gives that cool "frosted glass" look */
+            border-bottom: 1px solid var(--primary-accent);
+            position: sticky; /* Sticks to the top when scrolling */
+            top: 0;
+            z-index: 1000; /* Layers it above everything else */
+        }
+
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--highlight-color);
+        }
+
+        .sticky-nav nav a {
+            color: var(--text-color);
+            text-decoration: none; /* Removes the underline */
+            margin-left: 2rem;
+            font-weight: 500;
+            transition: color 0.3s ease; /* Smooth color change on hover */
+        }
+
+        .sticky-nav nav a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh; /* Takes up at least 100% of the viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            /* Using a gradient because we don't have the image file in this single file example */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), #2c3e50; 
+        }
+
+        .content {
+            background: var(--overlay-color);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--primary-accent);
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            
+            /* 📚 LESSON 7: ANIMATIONS
+               We are telling this box to run the 'fadeIn' animation for 1 second.
+            */
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        h1 {
+            font-family: var(--font-heading);
+            color: var(--highlight-color);
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p.description {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-accent);
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Space between inputs */
+        }
+
+        /* 📚 LESSON 8: CSS SELECTORS
+           input[type="text"] selects only text inputs.
+        */
+        input, select, textarea {
+            font-family: var(--font-body);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-accent);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text-color);
+            width: 100%;
+            box-sizing: border-box; /* Ensures padding doesn't make the element wider than 100% */
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            padding: 1rem;
+            background-color: var(--primary-accent);
+            color: var(--bg-color);
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--highlight-color);
+            transform: translateY(-2px); /* Moves up slightly */
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Utility Classes */
+        .form-message {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            display: none; /* Hidden until JS shows it */
+        }
+        .success { background: var(--success-color); color: white; display: block; }
+        .error { background: var(--error-color); color: white; display: block; }
+        
+        /* Spinner for loading state */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 3px solid rgba(0,0,0,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .sticky-nav { flex-direction: column; gap: 1rem; }
+            .sticky-nav nav a { margin: 0 10px; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+        📚 LESSON 9: HTML STRUCTURE (SEMANTICS)
+        Using <header>, <main>, and <footer> helps search engines and screen readers
+        understand what part of the page is what.
+    -->
+    <header class="sticky-nav">
+        <div class="logo-text">BANGLADESH 2.0</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Gallery</a>
+        </nav>
+    </header>
+
+    <main class="hero">
+        <div class="content">
+            <h1>Photography Contest</h1>
+            <p class="description">
+                Capture the raw emotion of the movement. Fill out the form below to submit your entry.
+            </p>
+
+            <!-- 
+                📚 LESSON 10: FORMS
+                id="registrationForm": Used by JavaScript to find this form.
+                novalidate: We turn off browser default validation so we can write our own custom JS validation.
+            -->
+            <form id="registrationForm" novalidate>
+                
+                <!-- Name Field -->
+                <input type="text" name="fullName" placeholder="Full Name" required>
+
+                <!-- Institute Field -->
+                <input type="text" name="institute" placeholder="Institution Name" required>
+
+                <!-- Dropdown (Select) -->
+                <select name="class" required>
+                    <option value="" disabled selected>Select Class / Year</option>
+                    <option value="HSC 24">HSC '24</option>
+                    <option value="HSC 25">HSC '25</option>
+                    <option value="Honours 1st">Honours 1st Year</option>
+                    <option value="Honours 2nd">Honours 2nd Year</option>
+                </select>
+
+                <!-- Contact & Social -->
+                <input type="tel" name="phone" placeholder="WhatsApp Number (e.g. 01xxxxxxxxx)" required>
+                <input type="url" name="socialLink" placeholder="Facebook Profile Link" required>
+                
+                <!-- Photo Submission -->
+                <input type="url" name="photoLink" placeholder="Google Drive Link to Photo" required>
+
+                <button type="submit" id="submitBtn">Submit Application</button>
+            </form>
+
+            <!-- This is where we will inject success/error messages -->
+            <div id="messageBox" class="form-message"></div>
+        </div>
+    </main>
+
+    <!-- 
+        📚 LESSON 11: JAVASCRIPT
+        This is the "Brain" of the website. It handles logic, clicking, and data.
+    -->
+    <script>
+        // 1. Select elements from the HTML so JS can control them
+        const form = document.getElementById('registrationForm');
+        const messageBox = document.getElementById('messageBox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 2. Listen for the 'submit' event (when user clicks button or hits enter)
+        form.addEventListener('submit', async (e) => {
+            
+            // 📚 LESSON 12: PREVENT DEFAULT
+            // By default, forms refresh the page. We don't want that! 
+            // We want to handle it seamlessly with JS.
+            e.preventDefault();
+
+            // Reset UI states
+            messageBox.className = 'form-message'; 
+            messageBox.style.display = 'none';
+            const originalBtnText = submitBtn.innerText;
+
+            // 3. Collect Data from the inputs
+            // FormData is a built-in tool to grab all fields at once
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // 📚 LESSON 13: VALIDATION logic
+            // Check if the phone number looks right (Starts with 01, has 11 digits)
+            // regex (Regular Expression) is a pattern matcher.
+            const phoneRegex = /^01\d{9}$/;
+            if (!phoneRegex.test(data.phone)) {
+                showError('Invalid Phone Number! Must start with 01 and be 11 digits.');
+                return; // Stop the code here
+            }
+
+            // Check if social link contains "facebook" or "instagram"
+            if (!data.socialLink.toLowerCase().includes('facebook') && !data.socialLink.toLowerCase().includes('instagram')) {
+                showError('Please provide a valid Facebook or Instagram link.');
+                return;
+            }
+
+            // 4. Set Loading State (Visual Feedback)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                // 📚 LESSON 14: ASYNC / AWAIT & MOCKING API
+                // Usually, we would fetch() to a server here (like Supabase).
+                // Since we don't have a backend in this file, we simulate it.
+                
+                console.log("Sending data to 'server'...", data);
+                
+                // 'await' pauses the code here until the fakeUpload is done.
+                await fakeDatabaseUpload(data);
+
+                // If we get here, it worked!
+                showSuccess('Registration Successful! Welcome to the revolution.');
+                form.reset(); // Clear the form
+
+            } catch (error) {
+                // If the fake database throws an error, we catch it here
+                showError(error.message);
+            } finally {
+                // 📚 LESSON 15: FINALLY
+                // This runs whether it succeeded OR failed.
+                // We always want to re-enable the button.
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalBtnText;
+            }
+        });
+
+        // Helper function to show Red Error Box
+        function showError(msg) {
+            messageBox.textContent = msg;
+            messageBox.className = 'form-message error';
+            messageBox.style.display = 'block';
+        }
+
+        // Helper function to show Green Success Box
+        function showSuccess(msg) {
+            messageBox.textContent = msg;
+            messageBox.className = 'form-message success';
+            messageBox.style.display = 'block';
+        }
+
+        // 📚 LESSON 16: SIMULATING A BACKEND
+        // This function pretends to be a server like Supabase.
+        // It returns a "Promise" (an IOU that resolves in the future).
+        function fakeDatabaseUpload(data) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // We flip a coin to simulate random network errors (10% chance of fail)
+                    const isNetworkError = Math.random() < 0.1; 
+                    
+                    if (isNetworkError) {
+                        reject(new Error("Network Error: Could not reach server. Try again!"));
+                    } else {
+                        resolve({ status: 200, message: "Saved" });
+                    }
+                }, 2000); // Wait 2000 milliseconds (2 seconds)
+            });
+        }
+    </script>
+</body>
+</html>
