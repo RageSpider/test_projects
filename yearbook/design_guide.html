@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearbook Design Specs | Class of '26</title>
+    <!-- Tailwind CSS (Hybrid Design) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Custom Font Imports - Noto Serif for headers, Inter for UI, Cinzel for Title */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;700;900&display=swap');
+
+        :root {
+            --color-gold: #D4AF37;
+            --color-black: #231F20;
+            --color-parchment: #F9F7F2;
+            
+            /* Section Colors */
+            --sec-a-blue: #1E40AF; /* Science A */
+            --sec-b-red: #B91C1C;  /* Science B */
+            --sec-c-yellow: #EAB308; /* Commerce */
+            --sec-h-green: #15803D; /* Humanities */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-parchment);
+            color: var(--color-black);
+            background-image: radial-gradient(#D4AF37 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Noto Serif', serif;
+        }
+
+        .font-display {
+            font-family: 'Cinzel', serif;
+        }
+
+        ::selection {
+            background-color: var(--color-gold);
+            color: white;
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+
+        /* Gold Foil Effect */
+        .text-gold-foil {
+            background: linear-gradient(
+                to right, 
+                #BF953F, 
+                #FCF6BA, 
+                #B38728, 
+                #FBF5B7, 
+                #AA771C
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Emboss Effect for Logo Placeholder */
+        .emboss-effect {
+            box-shadow: 
+                inset 2px 2px 5px rgba(0,0,0,0.3),
+                inset -2px -2px 5px rgba(255,255,255,0.1);
+        }
+
+        /* Badge Glows */
+        .badge-glow:hover {
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full bg-[#231F20]/95 backdrop-blur-md text-[#F9F7F2] z-50 shadow-2xl border-b-4 border-[#D4AF37]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <i data-lucide="book" class="h-6 w-6 text-[#D4AF37]"></i>
+                    <span class="font-serif text-xl font-bold tracking-wider">ULSC <span class="text-[#D4AF37]">'26 STUDIO</span></span>
+                </div>
+                
+                <!-- Nav Links -->
+                <div class="hidden md:flex space-x-8 text-xs uppercase tracking-widest font-bold" id="nav-links">
+                    <a href="#executive" class="nav-item hover:text-[#D4AF37] transition-colors text-[#D4AF37]" onclick="setActive(this)">Specs</a>
+                    <a href="#cover" class="nav-item hover:text-[#D4AF37] transition-colors" onclick="setActive(this)">Cover Design</a>
+                    <a href="#sections" class="nav-item hover:text-[#D4AF37] transition-colors" onclick="setActive(this)">Sections</a>
+                    <a href="#internal" class="nav-item hover:text-[#D4AF37] transition-colors" onclick="setActive(this)">Internal</a>
+                    <a href="#export" class="nav-item hover:text-[#D4AF37] transition-colors" onclick="setActive(this)">Export</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header Hero -->
+        <div class="text-center mb-20 space-y-6 animate-fade-in-up">
+            <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#231F20] text-[#D4AF37] text-xs font-bold uppercase tracking-widest border border-[#D4AF37] shadow-lg">
+                Official Production Guide
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black text-[#231F20] leading-tight tracking-tight">
+                University Laboratory<br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#231F20] to-[#555]">School & College</span>
+            </h1>
+            <p class="text-2xl font-serif italic text-[#3B2F2F] opacity-80">
+                HSC Batch '26 Yearbook Specification
+            </p>
+        </div>
+
+        <!-- 1. Executive Summary -->
+        <section id="executive" class="mb-24 scroll-mt-28">
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-[#231F20] pb-4">
+                <i data-lucide="ruler" class="w-8 h-8 text-[#231F20]"></i>
+                <h2 class="text-4xl font-display font-bold text-[#231F20]">Executive Specs</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="p-8 rounded-none border-l-4 border-[#231F20] bg-white shadow-sm hover:shadow-xl transition-all duration-300">
+                    <div class="text-xs uppercase tracking-widest font-bold mb-2 text-gray-400">Page Format</div>
+                    <div class="text-4xl font-display font-bold mb-1">8.5″ x 11″</div>
+                    <div class="font-mono text-sm mt-2 text-[#D4AF37]">2550 x 3300 px</div>
+                </div>
+                
+                <!-- Card 2 (Highlight) -->
+                <div class="p-8 rounded-none border-l-4 border-[#D4AF37] bg-[#231F20] text-[#F9F7F2] shadow-2xl transform scale-105 z-10">
+                    <div class="text-xs uppercase tracking-widest font-bold mb-2 text-[#D4AF37]">Bleed Size (Critcial)</div>
+                    <div class="text-4xl font-display font-bold mb-1">8.75″ x 11.25″</div>
+                    <div class="font-mono text-sm mt-2 text-gray-400">2625 x 3375 px</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-8 rounded-none border-l-4 border-[#231F20] bg-white shadow-sm hover:shadow-xl transition-all duration-300">
+                    <div class="text-xs uppercase tracking-widest font-bold mb-2 text-gray-400">Cover Wrap</div>
+                    <div class="text-4xl font-display font-bold mb-1">20.4″ x 12.85″</div>
+                    <div class="font-mono text-sm mt-2 text-[#D4AF37]">6120 x 3855 px</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Cover Architecture & Design -->
+        <section id="cover" class="mb-24 scroll-mt-28">
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-[#231F20] pb-4">
+                <i data-lucide="layers" class="w-8 h-8 text-[#231F20]"></i>
+                <h2 class="text-4xl font-display font-bold text-[#231F20]">Cover Architecture</h2>
+            </div>
+            
+            <!-- Visualizer Container -->
+            <div class="bg-white p-8 shadow-xl border border-[#E5E0D6] mb-12 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-[#D4AF37] text-[#231F20] text-xs font-bold px-3 py-1">FIGMA FRAME 3</div>
+                
+                <!-- The Canvas Visualizer -->
+                <div class="relative w-full aspect-[6120/2400] bg-gray-100 border border-gray-300 flex text-[10px] md:text-xs font-mono text-center text-white select-none shadow-inner">
+                    <!-- Left Wrap -->
+                    <div class="h-full bg-gray-400 flex flex-col justify-center items-center border-r border-white/20" style="width: 3.9%"></div>
+                    
+                    <!-- Back Cover -->
+                    <div class="h-full bg-[#3B2F2F] flex flex-col justify-center items-center relative" style="width: 42.9%">
+                        <div class="absolute inset-4 border border-dashed border-white/20 flex items-center justify-center">
+                            <span class="text-white/30 font-bold text-lg uppercase">Back Cover<br/>Safe Zone</span>
+                        </div>
+                    </div>
+
+                    <!-- Hinge -->
+                    <div class="h-full bg-[#2a2a2a]" style="width: 1.9%"></div>
+
+                    <!-- Spine -->
+                    <div class="h-full bg-gradient-to-r from-[#B88A44] to-[#E6C878] text-[#231F20] font-bold flex flex-col justify-center items-center relative shadow-lg z-10" style="width: 2.4%">
+                        <span class="vertical-text font-display tracking-[0.3em] font-black text-[8px] md:text-xs">YEARBOOK '26</span>
+                    </div>
+
+                    <!-- Hinge -->
+                    <div class="h-full bg-[#2a2a2a]" style="width: 1.9%"></div>
+
+                    <!-- Front Cover (The Main Design) -->
+                    <div class="h-full bg-[#1a1a1a] flex flex-col items-center relative overflow-hidden group" style="width: 42.9%">
+                        <!-- Cover Texture -->
+                        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/leather.png')]"></div>
+                        
+                        <!-- Safe Zone Indicator (Hover to see) -->
+                        <div class="absolute inset-8 border border-dashed border-[#D4AF37]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-0">
+                            <span class="text-[#D4AF37]/50 bg-black/50 px-2">Safe Zone (150px)</span>
+                        </div>
+
+                        <!-- Content Mockup -->
+                        <div class="relative z-10 w-full h-full flex flex-col items-center justify-between py-8 md:py-12 px-8 text-center">
+                            
+                            <!-- Header Text -->
+                            <div class="space-y-2">
+                                <h3 class="font-serif text-[#F9F7F2] text-[8px] md:text-sm tracking-widest uppercase opacity-80">University Laboratory School and College</h3>
+                                <div class="w-16 h-[1px] bg-[#D4AF37] mx-auto"></div>
+                            </div>
+
+                            <!-- Center Piece -->
+                            <div class="flex flex-col items-center gap-4 md:gap-6">
+                                <!-- Placeholder Logo -->
+                                <div class="w-16 h-16 md:w-24 md:h-24 rounded-full border-2 border-[#D4AF37] bg-[#231F20] flex items-center justify-center emboss-effect shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                                    <i data-lucide="shield" class="w-8 h-8 md:w-12 md:h-12 text-[#D4AF37]"></i>
+                                </div>
+                                
+                                <!-- Main Title -->
+                                <h1 class="font-display font-black text-2xl md:text-5xl tracking-widest text-gold-foil uppercase">
+                                    YEARBOOK
+                                </h1>
+                                
+                                <!-- Batch Info -->
+                                <div class="space-y-1">
+                                    <p class="font-serif text-[#F9F7F2] text-[10px] md:text-lg italic">HSC Batch 26</p>
+                                    <p class="font-sans text-[#D4AF37] text-[8px] md:text-xs tracking-widest uppercase">Session 24-25</p>
+                                </div>
+                            </div>
+
+                            <!-- Footer Badges -->
+                            <div class="flex gap-3 md:gap-6 mt-4">
+                                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-[8px] md:text-xs border border-white/20 shadow-lg">A</div>
+                                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-red-700 flex items-center justify-center text-white font-bold text-[8px] md:text-xs border border-white/20 shadow-lg">B</div>
+                                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-[8px] md:text-xs border border-white/20 shadow-lg">C</div>
+                                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-[8px] md:text-xs border border-white/20 shadow-lg">H</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Wrap -->
+                    <div class="h-full bg-gray-400 flex flex-col justify-center items-center border-l border-white/20" style="width: 3.9%"></div>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center text-xs text-gray-400 font-mono">
+                    <span>Full Width: 6120px</span>
+                    <span class="text-[#D4AF37]">Hover cover area to see Safe Margins</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Section Identity System -->
+        <section id="sections" class="mb-24 scroll-mt-28">
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-[#231F20] pb-4">
+                <i data-lucide="palette" class="w-8 h-8 text-[#231F20]"></i>
+                <h2 class="text-4xl font-display font-bold text-[#231F20]">Identity System</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- A: Science (Blue) -->
+                <div class="group relative overflow-hidden bg-white p-6 shadow-md hover:shadow-2xl transition-all border-t-8 border-[var(--sec-a-blue)]">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="atom" class="w-24 h-24 text-[var(--sec-a-blue)]"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-5xl font-display font-black text-[var(--sec-a-blue)] mb-2">A</h3>
+                        <p class="font-serif text-xl font-bold text-gray-800">Science</p>
+                        <p class="text-sm text-gray-500 mt-2">Uniform Code: Blue</p>
+                        <div class="mt-4 flex gap-2 font-mono text-xs">
+                            <span class="bg-gray-100 px-2 py-1 rounded">#1E40AF</span>
+                            <span class="bg-[var(--sec-a-blue)] w-8 h-6 rounded border border-black/10"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- B: Science (Red) -->
+                <div class="group relative overflow-hidden bg-white p-6 shadow-md hover:shadow-2xl transition-all border-t-8 border-[var(--sec-b-red)]">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="flask-conical" class="w-24 h-24 text-[var(--sec-b-red)]"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-5xl font-display font-black text-[var(--sec-b-red)] mb-2">B</h3>
+                        <p class="font-serif text-xl font-bold text-gray-800">Science</p>
+                        <p class="text-sm text-gray-500 mt-2">Uniform Code: Red</p>
+                        <div class="mt-4 flex gap-2 font-mono text-xs">
+                            <span class="bg-gray-100 px-2 py-1 rounded">#B91C1C</span>
+                            <span class="bg-[var(--sec-b-red)] w-8 h-6 rounded border border-black/10"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- C: Commerce (Yellow) -->
+                <div class="group relative overflow-hidden bg-white p-6 shadow-md hover:shadow-2xl transition-all border-t-8 border-[var(--sec-c-yellow)]">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="trending-up" class="w-24 h-24 text-[var(--sec-c-yellow)]"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-5xl font-display font-black text-[var(--sec-c-yellow)] mb-2">C</h3>
+                        <p class="font-serif text-xl font-bold text-gray-800">Commerce</p>
+                        <p class="text-sm text-gray-500 mt-2">Uniform Code: Yellow</p>
+                        <div class="mt-4 flex gap-2 font-mono text-xs">
+                            <span class="bg-gray-100 px-2 py-1 rounded">#EAB308</span>
+                            <span class="bg-[var(--sec-c-yellow)] w-8 h-6 rounded border border-black/10"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- H: Humanities (Green) -->
+                <div class="group relative overflow-hidden bg-white p-6 shadow-md hover:shadow-2xl transition-all border-t-8 border-[var(--sec-h-green)]">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="book-open-text" class="w-24 h-24 text-[var(--sec-h-green)]"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-5xl font-display font-black text-[var(--sec-h-green)] mb-2">H</h3>
+                        <p class="font-serif text-xl font-bold text-gray-800">Humanities</p>
+                        <p class="text-sm text-gray-500 mt-2">Uniform Code: Green</p>
+                        <div class="mt-4 flex gap-2 font-mono text-xs">
+                            <span class="bg-gray-100 px-2 py-1 rounded">#15803D</span>
+                            <span class="bg-[var(--sec-h-green)] w-8 h-6 rounded border border-black/10"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Internal Pages (Gutter Rule) -->
+        <section id="internal" class="mb-24 scroll-mt-28">
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-[#231F20] pb-4">
+                <i data-lucide="book-open" class="w-8 h-8 text-[#231F20]"></i>
+                <h2 class="text-4xl font-display font-bold text-[#231F20]">The Gutter Rule</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Visualizer -->
+                <div class="bg-[#231F20] p-8 rounded-lg shadow-2xl border border-[#231F20] relative">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-serif text-[#F9F7F2]">Spread Visualization</h3>
+                        <button onclick="toggleBleed()" id="bleed-btn" class="text-xs font-bold uppercase tracking-widest px-4 py-2 bg-[#D4AF37] text-[#231F20] hover:bg-white transition-colors">
+                            Toggle Bleed
+                        </button>
+                    </div>
+
+                    <div class="aspect-[17/11] relative flex justify-center items-center bg-[#1a1a1a] p-4 border border-white/10">
+                        <!-- The Book -->
+                        <div class="flex w-full h-full shadow-2xl relative transform transition-transform hover:scale-[1.02]">
+                            <!-- Left Page -->
+                            <div class="flex-1 bg-white relative border-r border-gray-200 overflow-hidden">
+                                <!-- Bleed Overlay -->
+                                <div class="bleed-layer absolute inset-0 border-[8px] border-red-500/20 pointer-events-none transition-opacity duration-300" title="Bleed Area"></div>
+                                
+                                <div class="absolute top-0 bottom-0 right-0 w-[15%] bg-gradient-to-l from-gray-300/50 to-transparent border-l border-dashed border-red-500/50 flex items-center justify-center">
+                                    <span class="hidden md:block -rotate-90 text-[10px] text-red-500 font-bold whitespace-nowrap uppercase tracking-wider">Danger Zone</span>
+                                </div>
+                                <div class="absolute bottom-6 left-6 font-mono text-xs text-gray-400">Page 42</div>
+                                <!-- Mock Content -->
+                                <div class="p-8">
+                                    <div class="w-full h-4 bg-gray-200 mb-4"></div>
+                                    <div class="w-2/3 h-4 bg-gray-200 mb-8"></div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="h-24 bg-gray-100"></div>
+                                        <div class="h-24 bg-gray-100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Page -->
+                            <div class="flex-1 bg-white relative overflow-hidden">
+                                <!-- Bleed Overlay -->
+                                <div class="bleed-layer absolute inset-0 border-[8px] border-red-500/20 pointer-events-none transition-opacity duration-300" title="Bleed Area"></div>
+
+                                <div class="absolute top-0 bottom-0 left-0 w-[15%] bg-gradient-to-r from-gray-300/50 to-transparent border-r border-dashed border-red-500/50 flex items-center justify-center">
+                                    <span class="hidden md:block rotate-90 text-[10px] text-red-500 font-bold whitespace-nowrap uppercase tracking-wider">Danger Zone</span>
+                                </div>
+                                <div class="absolute bottom-6 right-6 font-mono text-xs text-gray-400">Page 43</div>
+                                <!-- Mock Content -->
+                                <div class="p-8">
+                                    <div class="w-full h-48 bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-300">Photo</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Binding Shadow -->
+                            <div class="absolute top-0 bottom-0 left-1/2 w-12 -translate-x-1/2 bg-gradient-to-r from-black/40 via-black/10 to-black/40 pointer-events-none mix-blend-multiply"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specs -->
+                <div class="flex flex-col justify-center space-y-8">
+                    <div class="bg-white p-8 shadow-sm border-l-4 border-red-500">
+                        <h4 class="font-black text-red-600 uppercase tracking-widest text-sm mb-2">Critical Warning</h4>
+                        <p class="text-xl font-serif text-[#231F20] leading-relaxed">
+                            Do not place faces or text in the center fold. The "Gutter" eats 0.5 inches of paper.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex items-center gap-4 p-4 bg-[#FDFBF7] border border-[#E5E0D6]">
+                            <div class="w-12 h-12 bg-gray-200 flex items-center justify-center font-bold text-gray-500">L</div>
+                            <div>
+                                <div class="font-bold text-[#231F20] uppercase text-xs tracking-wider">Left Page Margin</div>
+                                <div class="font-mono text-[#D4AF37]">Right Side: 250px</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-[#FDFBF7] border border-[#E5E0D6]">
+                            <div class="w-12 h-12 bg-gray-200 flex items-center justify-center font-bold text-gray-500">R</div>
+                            <div>
+                                <div class="font-bold text-[#231F20] uppercase text-xs tracking-wider">Right Page Margin</div>
+                                <div class="font-mono text-[#D4AF37]">Left Side: 250px</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Export Checklist -->
+        <section id="export" class="mb-20 scroll-mt-28">
+            <div class="flex items-center gap-4 mb-8 border-b-2 border-[#231F20] pb-4">
+                <i data-lucide="check-circle" class="w-8 h-8 text-[#231F20]"></i>
+                <h2 class="text-4xl font-display font-bold text-[#231F20]">Export Checklist</h2>
+            </div>
+            
+            <div class="bg-white shadow-xl border border-[#E5E0D6] divide-y divide-[#E5E0D6]">
+                <!-- Item 1 -->
+                <div class="flex items-start gap-6 p-8 hover:bg-[#FDFBF7] transition-colors group">
+                    <div class="mt-1 bg-[#231F20] text-[#D4AF37] p-3 rounded-none shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="scissors" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-[#231F20]">Convert to Curves</h3>
+                        <p class="text-gray-600 mt-2 leading-relaxed">Select all text layers -> Right Click -> <span class="font-mono bg-gray-100 px-1">Outline Stroke</span>. This prevents "Missing Font" errors at the press.</p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="flex items-start gap-6 p-8 hover:bg-[#FDFBF7] transition-colors group">
+                    <div class="mt-1 bg-[#231F20] text-[#D4AF37] p-3 rounded-none shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="image" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-[#231F20]">Resolution Audit</h3>
+                        <p class="text-gray-600 mt-2 leading-relaxed">Ensure all photos are effectively 300 DPI. <span class="text-red-600 font-bold">Scaling an image 200% drops quality by half.</span></p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="flex items-start gap-6 p-8 hover:bg-[#FDFBF7] transition-colors group">
+                    <div class="mt-1 bg-[#231F20] text-[#D4AF37] p-3 rounded-none shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl text-[#231F20]">Color Space: CMYK</h3>
+                        <p class="text-gray-600 mt-2 leading-relaxed">Convert PDF to <span class="font-mono bg-gray-100 px-1">Coated FOGRA39</span>. Do not rely on screen colors (RGB).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-400 py-16 border-t border-[#E5E0D6] mt-24">
+            <div class="mb-4">
+                <i data-lucide="book" class="w-8 h-8 mx-auto text-[#D4AF37] opacity-50"></i>
+            </div>
+            <p class="font-serif italic text-2xl text-[#231F20] mb-4">University Laboratory School & College</p>
+            <p class="text-xs uppercase tracking-[0.2em] font-bold text-[#D4AF37]">Class of '26 Yearbook Committee</p>
+        </footer>
+
+    </main>
+
+    <!-- JS Logic -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. Logic for Bleed Toggle
+        let isBleedVisible = true;
+        const bleedBtn = document.getElementById('bleed-btn');
+        const bleedLayers = document.querySelectorAll('.bleed-layer');
+
+        function toggleBleed() {
+            isBleedVisible = !isBleedVisible;
+            
+            // Toggle visual layers
+            bleedLayers.forEach(layer => {
+                if (isBleedVisible) {
+                    layer.classList.remove('opacity-0');
+                } else {
+                    layer.classList.add('opacity-0');
+                }
+            });
+
+            // Update button text
+            bleedBtn.textContent = isBleedVisible ? 'HIDE BLEED' : 'SHOW BLEED';
+        }
+
+        // 3. Active Navigation State Logic
+        function setActive(element) {
+            // Remove active class from all
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('text-[#D4AF37]'));
+            // Add to clicked
+            element.classList.add('text-[#D4AF37]');
+        }
+
+        // Optional: Scroll Spy to update nav automatically
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 300)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-[#D4AF37]');
+                link.classList.add('text-[#F9F7F2]');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('text-[#D4AF37]');
+                    link.classList.remove('text-[#F9F7F2]');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

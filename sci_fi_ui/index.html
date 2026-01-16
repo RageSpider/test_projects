@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.C.I.F.I. // Design Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- EDITOR: Load ALL Font Families so switching is instant in the editor -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Audiowide&family=Press+Start+2P&family=Rajdhani:wght@500;700&family=Black+Ops+One&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CORE VARIABLES */
+        :root {
+            --ui-bg: rgba(5, 5, 5, 0.9);
+            --ui-border: rgba(255, 255, 255, 0.15);
+            --ui-accent: #06b6d4; /* Cyan-500 */
+            --ui-text: #e4e4e7;
+        }
+
+        body {
+            background-color: #000;
+            color: var(--ui-text);
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden; /* App handles scrolling */
+        }
+
+        /* CUSTOM SCROLLBAR FOR DRAWERS */
+        .scifi-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scifi-scroll::-webkit-scrollbar-track { background: #111; }
+        .scifi-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        .scifi-scroll::-webkit-scrollbar-thumb:hover { background: var(--ui-accent); }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <!-- 1. BACKGROUND LAYERS -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <!-- Noise -->
+        <div class="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+        <!-- Grid -->
+        <div class="absolute inset-0 opacity-10" 
+             style="background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px;">
+        </div>
+        <!-- Vignette -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_100%)]"></div>
+    </div>
+
+    <!-- 2. MAIN WORKSPACE (The Preview) -->
+    <!-- Reduced padding to prevent cropping of transformed elements -->
+    <main id="workspace" class="absolute inset-0 z-10 flex items-center justify-center p-4 md:p-8 transition-all duration-500">
+        
+        <!-- The Dynamic Frame Wrapper -->
+        <!-- Removed shadow-2xl to prevent 'random lines'. Shadow is now controlled by Design -->
+        <div id="frame-wrapper" class="relative transition-all duration-500 w-full h-full flex flex-col justify-center items-center">
+            
+            <!-- Content Renders Here -->
+            <div id="content-layer" class="w-full">
+                <!-- Injected via app.js -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 3. UI LAYER (The Mega Menu) -->
+    <div id="ui-layer" class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-end">
+        <!-- Content injected by MegaMenuSystem in app.js -->
+    </div>
+
+    <!-- APP ENGINE -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

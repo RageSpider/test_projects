@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULSC Yearbook Engine | Class of '26</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Theme Tokens - Brown & White */
+            --color-brown-dark: #3E2723;
+            --color-brown-main: #5D4037;
+            --color-brown-light: #8D6E63;
+            --color-stone-light: #FAFAFA;
+            --color-stone-dark: #E0E0E0;
+            
+            /* Section Colors (Fixed for ULSC) */
+            --sec-a: #1E40AF; /* Science A */
+            --sec-b: #B91C1C; /* Science B */
+            --sec-c: #EAB308; /* Commerce */
+            --sec-h: #15803D; /* Humanities */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4;
+            color: var(--color-brown-dark);
+            overflow: hidden;
+        }
+
+        /* Typography */
+        .font-serif { font-family: 'Noto Serif', serif; }
+        .font-display { font-family: 'Cinzel', serif; }
+        .font-sans-elegant { font-family: 'Montserrat', sans-serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 3px; }
+
+        /* Texture Classes */
+        .texture-marble { background-image: url("https://www.transparenttextures.com/patterns/white-diamond-dark.png"); }
+        .texture-limestone { background-image: url("https://www.transparenttextures.com/patterns/concrete-wall.png"); }
+        .texture-leather { background-image: url("https://www.transparenttextures.com/patterns/white-leather.png"); }
+        
+        /* The "Carved" Effect */
+        .carved-block {
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.8);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* 3D Transform Utils */
+        .perspective-2000 { perspective: 2000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+
+        /* UI Controls */
+        .control-group {
+            background: white;
+            border: 1px solid #e7e5e4;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .toggle-btn {
+            @apply px-3 py-1.5 text-xs font-medium border border-stone-300 rounded hover:bg-stone-50 transition-all text-stone-600;
+        }
+        .toggle-btn.active {
+            @apply bg-[#5D4037] text-white border-[#3E2723];
+        }
+
+        .input-field {
+            @apply w-full bg-stone-50 border border-stone-200 rounded px-3 py-1.5 text-sm text-stone-800 focus:outline-none focus:border-[#5D4037] focus:ring-1 focus:ring-[#5D4037];
+        }
+
+        .section-badge {
+            @apply w-8 h-8 flex items-center justify-center font-bold text-white rounded shadow-sm text-xs;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row">
+
+    <!-- LEFT SIDEBAR: THE ENGINE -->
+    <div class="w-full md:w-[400px] bg-[#fdfdfc] border-r border-stone-200 flex flex-col z-20 shadow-xl shrink-0">
+        
+        <!-- Header -->
+        <div class="h-16 px-6 border-b border-stone-200 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-2">
+                <div class="bg-[#5D4037] text-white p-1 rounded">
+                    <i data-lucide="layers" class="h-4 w-4"></i>
+                </div>
+                <span class="font-display font-bold text-lg tracking-tight text-[#3E2723]">ARCHITECT <span class="text-[#8D6E63]">'26</span></span>
+            </div>
+            <div class="text-[9px] font-bold px-2 py-1 bg-stone-100 text-stone-500 rounded uppercase tracking-widest border border-stone-200">
+                Singular Edition
+            </div>
+        </div>
+
+        <!-- Scrollable Controls -->
+        <div class="flex-1 overflow-y-auto p-5 custom-scrollbar">
+            
+            <!-- 1. GLOBAL IDENTITY -->
+            <div class="control-group">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="building-2" class="w-4 h-4 text-[#8D6E63]"></i>
+                    <span class="text-xs font-bold text-stone-500 uppercase tracking-widest">Institution Details</span>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-stone-400 uppercase">School Name</label>
+                        <input type="text" id="input-school" class="input-field font-serif" value="University Laboratory School and College" oninput="updateState('text')">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-stone-400 uppercase">Batch</label>
+                            <input type="text" id="input-batch" class="input-field" value="HSC Batch 26" oninput="updateState('text')">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-stone-400 uppercase">Session</label>
+                            <input type="text" id="input-session" class="input-field" value="24-25" oninput="updateState('text')">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. MATERIAL ENGINE -->
+            <div class="control-group">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="box" class="w-4 h-4 text-[#8D6E63]"></i>
+                    <span class="text-xs font-bold text-stone-500 uppercase tracking-widest">Base Material</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="updateState('material', 'marble')" class="mat-btn active flex flex-col items-center gap-1 p-2 border border-stone-200 rounded hover:bg-stone-50 transition">
+                        <div class="w-8 h-8 rounded-full bg-stone-100 texture-marble border border-stone-300"></div>
+                        <span class="text-[9px] uppercase font-bold text-stone-600">Marble</span>
+                    </button>
+                    <button onclick="updateState('material', 'limestone')" class="mat-btn flex flex-col items-center gap-1 p-2 border border-stone-200 rounded hover:bg-stone-50 transition">
+                        <div class="w-8 h-8 rounded-full bg-[#e5e5e0] texture-limestone border border-stone-300"></div>
+                        <span class="text-[9px] uppercase font-bold text-stone-600">Stone</span>
+                    </button>
+                    <button onclick="updateState('material', 'leather')" class="mat-btn flex flex-col items-center gap-1 p-2 border border-stone-200 rounded hover:bg-stone-50 transition">
+                        <div class="w-8 h-8 rounded-full bg-white texture-leather border border-stone-300"></div>
+                        <span class="text-[9px] uppercase font-bold text-stone-600">Leather</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. SECTION BLOCK ENGINE -->
+            <div class="control-group border-l-4 border-l-[#5D4037]">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="grid-2x2" class="w-4 h-4 text-[#8D6E63]"></i>
+                        <span class="text-xs font-bold text-stone-500 uppercase tracking-widest">Section Blocks</span>
+                    </div>
+                    <span class="text-[9px] bg-stone-100 px-1.5 py-0.5 rounded text-stone-500">ULSC Special</span>
+                </div>
+                
+                <p class="text-[10px] text-stone-500 mb-3 leading-relaxed">
+                    Visualizing 4 sections as carved blocks on a singular cover.
+                </p>
+
+                <!-- Layout Config -->
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-stone-400 uppercase block mb-1">Block Arrangement</label>
+                        <div class="flex gap-2">
+                            <button onclick="updateState('blockLayout', 'row')" class="layout-btn active toggle-btn flex-1">Row</button>
+                            <button onclick="updateState('blockLayout', 'grid')" class="layout-btn toggle-btn flex-1">Grid</button>
+                            <button onclick="updateState('blockLayout', 'scatter')" class="layout-btn toggle-btn flex-1">Scatter</button>
+                        </div>
+                    </div>
+
+                    <!-- The Blocks (Visualizer) -->
+                    <div class="p-3 bg-stone-100 rounded border border-stone-200">
+                        <div class="flex justify-between items-center text-[10px] font-bold text-stone-500 mb-2">
+                            <span>Active Blocks</span>
+                            <span class="opacity-50">Locked: 4</span>
+                        </div>
+                        <div class="flex gap-2 justify-center">
+                            <div class="section-badge bg-[#1E40AF]" title="Science">A</div>
+                            <div class="section-badge bg-[#B91C1C]" title="Science">B</div>
+                            <div class="section-badge bg-[#EAB308] !text-black" title="Commerce">C</div>
+                            <div class="section-badge bg-[#15803D]" title="Humanities">H</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- 4. TEXT ACCENTS -->
+             <div class="control-group">
+                <div class="flex items-center gap-2 mb-3">
+                    <i data-lucide="palette" class="w-4 h-4 text-[#8D6E63]"></i>
+                    <span class="text-xs font-bold text-stone-500 uppercase tracking-widest">Accent Palette</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="updateState('accent', 'sepia')" class="accent-btn active toggle-btn">Classic Sepia</button>
+                    <button onclick="updateState('accent', 'coffee')" class="accent-btn toggle-btn">Deep Coffee</button>
+                    <button onclick="updateState('accent', 'gold')" class="accent-btn toggle-btn">Antique Gold</button>
+                    <button onclick="updateState('accent', 'bronze')" class="accent-btn toggle-btn">Bronze</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-4 border-t border-stone-200 bg-stone-50">
+            <button onclick="alert('Exporting high-res proof...')" class="w-full py-3 bg-[#3E2723] text-[#EFEBE9] font-bold text-sm uppercase tracking-widest rounded shadow hover:bg-[#2D1B18] transition-all flex items-center justify-center gap-2">
+                <i data-lucide="save" class="w-4 h-4"></i> Save Configuration
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: PREVIEW CANVAS -->
+    <div class="flex-1 bg-[#e7e5e4] relative overflow-hidden flex flex-col">
+        
+        <!-- View Toggle -->
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 z-30 bg-white/50 backdrop-blur border border-white/40 p-1 rounded-full flex shadow-lg">
+            <button onclick="setView('flat')" id="btn-view-flat" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-[#3E2723] text-white shadow-sm transition-all">Flat View</button>
+            <button onclick="setView('3d')" id="btn-view-3d" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[#3E2723] hover:bg-white/50 transition-all">3D Book</button>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="flex-1 flex items-center justify-center p-8 md:p-12 relative perspective-2000">
+            
+            <!-- FLAT VIEW -->
+            <div id="view-flat" class="relative w-full max-w-[600px] aspect-[1/1.4] transition-all duration-500 shadow-2xl">
+                <!-- Cover Surface -->
+                <div id="cover-surface" class="w-full h-full bg-[#FAFAFA] texture-marble relative overflow-hidden flex flex-col border border-stone-300">
+                    
+                    <!-- Texture Overlay -->
+                    <div class="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply" style="background-image: url('https://www.transparenttextures.com/patterns/paper.png');"></div>
+
+                    <!-- Spine Hinge Visual (Left) -->
+                    <div class="absolute top-0 bottom-0 left-0 w-2 bg-gradient-to-r from-stone-400/20 to-transparent z-10"></div>
+
+                    <!-- CONTENT LAYER -->
+                    <div class="flex-1 flex flex-col p-12 relative z-20">
+                        
+                        <!-- Top: Institution -->
+                        <div class="text-center space-y-4 mb-12">
+                            <div class="inline-block p-1 border-b-2 border-[var(--accent-color)] pb-2">
+                                <i data-lucide="shield" class="w-12 h-12 mx-auto text-[var(--accent-color)] opacity-80 stroke-[1.5]"></i>
+                            </div>
+                            <h2 class="font-sans-elegant font-bold text-xs uppercase tracking-[0.25em] text-[var(--accent-color)] opacity-70" id="display-school">University Laboratory<br>School & College</h2>
+                        </div>
+
+                        <!-- Center: Title & Batch -->
+                        <div class="flex-1 flex flex-col items-center justify-center">
+                            <h1 class="font-display font-black text-6xl text-[var(--accent-color)] tracking-widest leading-none mb-4 mix-blend-multiply opacity-90 text-shadow">
+                                YEAR<br>BOOK
+                            </h1>
+                            <div class="flex items-center gap-4 w-full justify-center">
+                                <div class="h-[1px] bg-[var(--accent-color)] w-12 opacity-30"></div>
+                                <span class="font-serif italic text-xl text-[var(--accent-color)]" id="display-batch">HSC Batch 26</span>
+                                <div class="h-[1px] bg-[var(--accent-color)] w-12 opacity-30"></div>
+                            </div>
+                            <p class="mt-2 font-mono text-[10px] uppercase tracking-widest text-[var(--accent-color)] opacity-50" id="display-session">Session 24-25</p>
+                        </div>
+
+                        <!-- Bottom: THE CARVED BLOCKS (Section Engine) -->
+                        <div id="section-blocks-container" class="mt-auto w-full flex justify-center pt-12">
+                            <!-- Injected by JS -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D VIEW -->
+            <div id="view-3d" class="hidden relative w-[450px] h-[630px] transform-style-3d transition-transform duration-100 ease-out cursor-grab active:cursor-grabbing" style="transform: rotateY(-20deg) rotateX(10deg);">
+                
+                <!-- Front Face -->
+                <div class="absolute inset-0 bg-stone-100 rounded-r-sm border-l border-stone-300 overflow-hidden backface-hidden shadow-2xl" id="cover-3d">
+                     <!-- Mirrored Content from Flat View (Simplified for demo) -->
+                     <div class="w-full h-full texture-marble relative flex flex-col p-10 border border-stone-200">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-black/10 via-transparent to-white/40 pointer-events-none z-30 mix-blend-overlay"></div>
+                        
+                        <div class="text-center mt-8 opacity-80">
+                            <i data-lucide="shield" class="w-8 h-8 mx-auto text-[var(--accent-color)] mb-4"></i>
+                            <h1 class="font-display font-black text-5xl text-[var(--accent-color)] tracking-widest leading-none">YEAR<br>BOOK</h1>
+                        </div>
+
+                        <!-- 3D Blocks -->
+                        <div id="section-blocks-3d" class="mt-auto flex justify-center pb-8">
+                             <!-- JS Injects -->
+                        </div>
+                     </div>
+                </div>
+
+                <!-- Pages -->
+                <div class="absolute top-[3px] bottom-[3px] right-[2px] w-[20px] bg-[#fdfdfd] transform rotateY(90deg) translateZ(-10px) origin-right border-l border-stone-200" 
+                     style="background-image: repeating-linear-gradient(90deg, #f5f5f4 0px, #f5f5f4 1px, #fff 1px, #fff 3px);"></div>
+                
+                <!-- Back Cover -->
+                <div class="absolute inset-0 bg-[#e5e5e5] transform translateZ(-20px) rounded-l-sm -z-10 shadow-xl border border-stone-300"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        // --- CONFIGURATION ---
+        const state = {
+            school: 'University Laboratory School and College',
+            batch: 'HSC Batch 26',
+            session: 'Session 24-25',
+            material: 'marble',
+            blockLayout: 'row',
+            accent: 'sepia'
+        };
+
+        const accentColors = {
+            sepia: '#5D4037',
+            coffee: '#3E2723',
+            gold: '#9A7D0A',
+            bronze: '#8D6E63'
+        };
+
+        const materials = {
+            marble: { class: 'texture-marble', bg: '#FAFAFA' },
+            limestone: { class: 'texture-limestone', bg: '#E0E0E0' },
+            leather: { class: 'texture-leather', bg: '#FFFFFF' }
+        };
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            render();
+            setup3DInteraction();
+        });
+
+        // --- STATE MANAGER ---
+        function updateState(key, value) {
+            if (key === 'text') {
+                state.school = document.getElementById('input-school').value;
+                state.batch = document.getElementById('input-batch').value;
+                state.session = document.getElementById('input-session').value;
+            } else {
+                state[key] = value;
+            }
+
+            // Update Active Buttons
+            if(key === 'material') updateActiveBtn('.mat-btn', value, (el) => el.onclick.toString().includes(value));
+            if(key === 'blockLayout') updateActiveBtn('.layout-btn', value, (el) => el.onclick.toString().includes(value));
+            if(key === 'accent') updateActiveBtn('.accent-btn', value, (el) => el.onclick.toString().includes(value));
+
+            render();
+        }
+
+        function updateActiveBtn(selector, value, filterFn) {
+            document.querySelectorAll(selector).forEach(btn => {
+                if(filterFn(btn)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        // --- RENDERER ---
+        function render() {
+            // 1. Text Updates
+            document.getElementById('display-school').innerHTML = state.school.replace(/ and /g, ' &<br>');
+            document.getElementById('display-batch').innerText = state.batch;
+            document.getElementById('display-session').innerText = state.session;
+
+            // 2. Material & Color Updates
+            const mat = materials[state.material];
+            const accent = accentColors[state.accent];
+            const root = document.documentElement;
+            
+            // Apply accents variable
+            root.style.setProperty('--accent-color', accent);
+
+            // Apply texture classes
+            const surfaces = [document.getElementById('cover-surface'), document.querySelector('#cover-3d > div')];
+            surfaces.forEach(el => {
+                el.className = el.className.replace(/texture-\w+/g, '');
+                el.classList.add(mat.class);
+                el.style.backgroundColor = mat.bg;
+            });
+
+            // 3. Render Section Blocks
+            const blockHTML = generateBlocks(state.blockLayout);
+            document.getElementById('section-blocks-container').innerHTML = blockHTML;
+            document.getElementById('section-blocks-3d').innerHTML = blockHTML;
+
+            lucide.createIcons();
+        }
+
+        function generateBlocks(layout) {
+            const blocks = [
+                { id: 'A', color: '#1E40AF', label: 'Science' },
+                { id: 'B', color: '#B91C1C', label: 'Science' },
+                { id: 'C', color: '#EAB308', label: 'Commerce' },
+                { id: 'H', color: '#15803D', label: 'Humanities' }
+            ];
+
+            let containerClass = '';
+            let itemClass = 'carved-block flex items-center justify-center font-display font-bold text-white shadow-inner transition-all hover:scale-105';
+            
+            if (layout === 'row') {
+                containerClass = 'flex gap-4 items-end';
+                return `<div class="${containerClass}">
+                    ${blocks.map(b => `
+                        <div class="text-center group">
+                            <div class="${itemClass} w-10 h-10 md:w-14 md:h-14 rounded-md mb-2" style="background-color: ${b.color};">
+                                <span class="text-lg drop-shadow-md">${b.id}</span>
+                            </div>
+                            <div class="h-0.5 w-full bg-[var(--accent-color)] opacity-20"></div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            } 
+            else if (layout === 'grid') {
+                containerClass = 'grid grid-cols-2 gap-3 p-4 border border-[var(--accent-color)]/20 rounded-lg';
+                return `<div class="${containerClass}">
+                    ${blocks.map(b => `
+                        <div class="${itemClass} w-10 h-10 md:w-12 md:h-12 rounded bg-opacity-90" style="background-color: ${b.color};">
+                            <span class="text-base">${b.id}</span>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+            else if (layout === 'scatter') {
+                // Abstract layout
+                return `<div class="relative w-48 h-12 flex items-center justify-center">
+                    <div class="${itemClass} absolute left-0 bottom-0 w-10 h-10 rounded-full z-10" style="background-color: ${blocks[0].color};">${blocks[0].id}</div>
+                    <div class="${itemClass} absolute left-8 bottom-4 w-10 h-10 rounded-full z-20" style="background-color: ${blocks[1].color};">${blocks[1].id}</div>
+                    <div class="${itemClass} absolute left-16 bottom-0 w-10 h-10 rounded-full z-30" style="background-color: ${blocks[2].color}; text-color: black;">${blocks[2].id}</div>
+                    <div class="${itemClass} absolute left-24 bottom-4 w-10 h-10 rounded-full z-40" style="background-color: ${blocks[3].color};">${blocks[3].id}</div>
+                </div>`;
+            }
+        }
+
+        // --- VIEW CONTROLS ---
+        function setView(mode) {
+            const flat = document.getElementById('view-flat');
+            const threeD = document.getElementById('view-3d');
+            const btnFlat = document.getElementById('btn-view-flat');
+            const btn3d = document.getElementById('btn-view-3d');
+
+            if(mode === 'flat') {
+                flat.classList.remove('hidden');
+                threeD.classList.add('hidden');
+                btnFlat.className = "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-[#3E2723] text-white shadow-sm transition-all";
+                btn3d.className = "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[#3E2723] hover:bg-white/50 transition-all";
+            } else {
+                flat.classList.add('hidden');
+                threeD.classList.remove('hidden');
+                btn3d.className = "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-[#3E2723] text-white shadow-sm transition-all";
+                btnFlat.className = "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-[#3E2723] hover:bg-white/50 transition-all";
+            }
+        }
+
+        function setup3DInteraction() {
+            const container = document.getElementById('view-3d');
+            const viewArea = document.querySelector('.perspective-2000');
+            
+            viewArea.addEventListener('mousemove', (e) => {
+                if(container.classList.contains('hidden')) return;
+                const rect = viewArea.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateY = ((x - centerX) / centerX) * 25 - 20;
+                const rotateX = ((y - centerY) / centerY) * -15 + 10;
+                
+                container.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            });
+
+            viewArea.addEventListener('mouseleave', () => {
+                container.style.transform = `rotateY(-20deg) rotateX(10deg)`;
+            });
+        }
+    </script>
+</body>
+</html>
