@@ -1,385 +1,535 @@
 <!DOCTYPE html>
-<!-- 
-    📚 LESSON 1: THE DOCTYPE
-    This tells the browser "Hey, I'm writing modern HTML5." 
-    Without this, browsers might go into "Quirks Mode" and render things weirdly.
--->
 <html lang="en">
 <head>
-    <!-- 
-        📚 LESSON 2: META TAGS
-        - charset="UTF-8": Allows us to use any character (emojis, different languages).
-        - viewport: CRITICAL for mobile phones. It tells the phone "don't zoom out, show this at 100% scale."
-    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Coding: Event Registration</title>
+    <title>Full Stack Inspector: Frame of Revolution</title>
+    
+    <!-- External Fonts & Icons -->
+    <link href="https://fonts.cdnfonts.com/css/folks" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- 
-        📚 LESSON 3: EXTERNAL FONTS
-        We are borrowing cool fonts from Google. This is like importing a library in a game.
-    -->
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
-    <!-- 
-        📚 LESSON 4: CSS (CASCADING STYLE SHEETS)
-        This controls how the website LOOKS. 
-        Usually, this is in a separate .css file, but for this lesson, we put it here.
-    -->
     <style>
-        /* 📚 LESSON 5: CSS VARIABLES (:root)
-           Think of these as "Settings". If we want to change the green color, 
-           we change it here ONCE, and it updates everywhere.
-        */
         :root {
-            --bg-color: #1C2526;
-            --text-color: #E0E0E0;
-            --primary-accent: #A0A0A0;
-            --highlight-color: #FFFFFF;
-            --overlay-color: rgba(28, 37, 38, 0.95);
-            --success-color: #28a745;
-            --error-color: #dc3545;
-            --font-heading: 'Crimson Pro', serif;
-            --font-body: 'Roboto', sans-serif;
+            --bg-color: #0d1117; 
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --keyword: #ff7b72;
+            --string: #a5d6ff;
+            --tag: #7ee787;
+            --attr: #79c0ff;
+            --comment: #8b949e;
+            --font-code: 'Fira Code', monospace;
+            --font-body: 'Folks-Light', sans-serif;
         }
 
-        /* Basic Setup */
-        html { scroll-behavior: smooth; }
-        
         body {
-            margin: 0; /* Remove default browser spacing */
+            margin: 0;
             font-family: var(--font-body);
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        /* 📚 LESSON 6: FLEXBOX (The Sticky Nav)
-           display: flex; is the best way to lay things out.
-           justify-content: space-between; pushes the logo to the left and links to the right.
-        */
-        .sticky-nav {
-            display: flex; 
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background: var(--overlay-color);
-            backdrop-filter: blur(10px); /* Gives that cool "frosted glass" look */
-            border-bottom: 1px solid var(--primary-accent);
-            position: sticky; /* Sticks to the top when scrolling */
-            top: 0;
-            z-index: 1000; /* Layers it above everything else */
-        }
-
-        .logo-text {
-            font-family: var(--font-heading);
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--highlight-color);
-        }
-
-        .sticky-nav nav a {
-            color: var(--text-color);
-            text-decoration: none; /* Removes the underline */
-            margin-left: 2rem;
-            font-weight: 500;
-            transition: color 0.3s ease; /* Smooth color change on hover */
-        }
-
-        .sticky-nav nav a:hover {
-            color: var(--highlight-color);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh; /* Takes up at least 100% of the viewport height */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-            /* Using a gradient because we don't have the image file in this single file example */
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), #2c3e50; 
-        }
-
-        .content {
-            background: var(--overlay-color);
-            padding: 2.5rem;
-            border-radius: 15px;
-            border: 1px solid var(--primary-accent);
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            
-            /* 📚 LESSON 7: ANIMATIONS
-               We are telling this box to run the 'fadeIn' animation for 1 second.
-            */
-            animation: fadeIn 1s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Typography */
-        h1 {
-            font-family: var(--font-heading);
-            color: var(--highlight-color);
-            margin-top: 0;
-            text-align: center;
-        }
-
-        p.description {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--primary-accent);
-        }
-
-        /* Form Styling */
-        form {
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 1rem; /* Space between inputs */
+            overflow: hidden;
         }
 
-        /* 📚 LESSON 8: CSS SELECTORS
-           input[type="text"] selects only text inputs.
-        */
-        input, select, textarea {
-            font-family: var(--font-body);
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--primary-accent);
-            border-radius: 8px;
-            padding: 1rem;
-            color: var(--text-color);
-            width: 100%;
-            box-sizing: border-box; /* Ensures padding doesn't make the element wider than 100% */
-            font-size: 1rem;
+        /* --- Header --- */
+        header {
+            background: var(--panel-bg);
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        input:focus {
-            outline: none;
-            border-color: var(--highlight-color);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
-        }
-
-        button {
-            padding: 1rem;
-            background-color: var(--primary-accent);
-            color: var(--bg-color);
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1.1rem;
-            margin-top: 1rem;
-        }
-
-        button:hover {
-            background-color: var(--highlight-color);
-            transform: translateY(-2px); /* Moves up slightly */
-        }
-
-        button:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Utility Classes */
-        .form-message {
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            display: none; /* Hidden until JS shows it */
-        }
-        .success { background: var(--success-color); color: white; display: block; }
-        .error { background: var(--error-color); color: white; display: block; }
+        h1 { margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; color: var(--text-color); }
         
-        /* Spinner for loading state */
-        .spinner {
-            width: 20px; height: 20px;
-            border: 3px solid rgba(0,0,0,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s infinite linear;
-            margin: 0 auto;
+        .mode-toggles { display: flex; gap: 5px; background: #0d1117; padding: 3px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .mode-toggle { 
+            background: transparent; border: none; color: var(--comment); 
+            padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-family: var(--font-code);
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .mode-toggle:hover { color: var(--text-color); }
+        .mode-toggle.active { background: var(--panel-bg); color: var(--accent-color); font-weight: bold; }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            .sticky-nav { flex-direction: column; gap: 1rem; }
-            .sticky-nav nav a { margin: 0 10px; }
-            h1 { font-size: 1.8rem; }
+        .run-btn {
+            background: #238636; color: white; border: 1px solid rgba(240,246,252,0.1);
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
         }
+        .run-btn:hover { background: #2ea043; }
+
+        /* --- Main Layout --- */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left: Code Editor */
+        .editor-pane {
+            flex: 1;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background: #0d1117;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-textarea {
+            flex: 1;
+            background: transparent;
+            color: transparent; /* Text is transparent to show highlighting behind, but caret is visible */
+            caret-color: var(--text-color);
+            border: none;
+            padding: 20px;
+            font-family: var(--font-code);
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .code-highlight-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 20px;
+            font-family: var(--font-code);
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre;
+            pointer-events: none;
+            z-index: 1;
+            color: var(--text-color);
+            overflow: hidden; /* Scrolled by syncing with textarea */
+        }
+
+        /* Right: Live Preview */
+        .preview-pane {
+            flex: 1;
+            background: #111;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .console-log {
+            height: 150px;
+            background: #0d1117;
+            border-top: 1px solid var(--border-color);
+            padding: 10px;
+            font-family: var(--font-code);
+            font-size: 12px;
+            overflow-y: auto;
+            display: none; /* Toggled by JS logic */
+        }
+        
+        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #21262d; padding-bottom: 2px; }
+        .log-info { color: var(--string); }
+        .log-error { color: #ff7b72; }
+        .log-success { color: #7ee787; }
+
     </style>
 </head>
 <body>
 
-    <!-- 
-        📚 LESSON 9: HTML STRUCTURE (SEMANTICS)
-        Using <header>, <main>, and <footer> helps search engines and screen readers
-        understand what part of the page is what.
-    -->
-    <header class="sticky-nav">
-        <div class="logo-text">BANGLADESH 2.0</div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Gallery</a>
-        </nav>
+    <header>
+        <h1><i class="fas fa-layer-group"></i> Full Stack Inspector</h1>
+        <div class="mode-toggles">
+            <button class="mode-toggle active" onclick="switchTab('html')" data-tab="html">HTML (Structure)</button>
+            <button class="mode-toggle" onclick="switchTab('css')" data-tab="css">CSS (Style)</button>
+            <button class="mode-toggle" onclick="switchTab('js')" data-tab="js">JS (Logic)</button>
+        </div>
+        <button class="run-btn" onclick="runCode()"><i class="fas fa-play"></i> Run Updates</button>
     </header>
 
-    <main class="hero">
-        <div class="content">
-            <h1>Photography Contest</h1>
-            <p class="description">
-                Capture the raw emotion of the movement. Fill out the form below to submit your entry.
-            </p>
-
-            <!-- 
-                📚 LESSON 10: FORMS
-                id="registrationForm": Used by JavaScript to find this form.
-                novalidate: We turn off browser default validation so we can write our own custom JS validation.
-            -->
-            <form id="registrationForm" novalidate>
-                
-                <!-- Name Field -->
-                <input type="text" name="fullName" placeholder="Full Name" required>
-
-                <!-- Institute Field -->
-                <input type="text" name="institute" placeholder="Institution Name" required>
-
-                <!-- Dropdown (Select) -->
-                <select name="class" required>
-                    <option value="" disabled selected>Select Class / Year</option>
-                    <option value="HSC 24">HSC '24</option>
-                    <option value="HSC 25">HSC '25</option>
-                    <option value="Honours 1st">Honours 1st Year</option>
-                    <option value="Honours 2nd">Honours 2nd Year</option>
-                </select>
-
-                <!-- Contact & Social -->
-                <input type="tel" name="phone" placeholder="WhatsApp Number (e.g. 01xxxxxxxxx)" required>
-                <input type="url" name="socialLink" placeholder="Facebook Profile Link" required>
-                
-                <!-- Photo Submission -->
-                <input type="url" name="photoLink" placeholder="Google Drive Link to Photo" required>
-
-                <button type="submit" id="submitBtn">Submit Application</button>
-            </form>
-
-            <!-- This is where we will inject success/error messages -->
-            <div id="messageBox" class="form-message"></div>
+    <div class="workspace">
+        
+        <!-- LEFT: CODE EDITOR -->
+        <div class="editor-pane">
+            <!-- We stack a real textarea for editing over a div for syntax highlighting (simplified for this demo) -->
+            <pre class="code-highlight-layer" id="highlight-layer"></pre>
+            <textarea class="code-textarea" id="code-editor" spellcheck="false" oninput="syncScroll(); updateHighlight();" onscroll="syncScroll()"></textarea>
         </div>
-    </main>
 
-    <!-- 
-        📚 LESSON 11: JAVASCRIPT
-        This is the "Brain" of the website. It handles logic, clicking, and data.
-    -->
+        <!-- RIGHT: PREVIEW PANE -->
+        <div class="preview-pane">
+            <iframe id="preview-frame"></iframe>
+            <div class="console-log" id="console-log">
+                <div style="color: #8b949e; font-style: italic;">// System Logs & Logic Steps will appear here...</div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 1. Select elements from the HTML so JS can control them
-        const form = document.getElementById('registrationForm');
-        const messageBox = document.getElementById('messageBox');
-        const submitBtn = document.getElementById('submitBtn');
+        // --- 1. THE DATA (Your actual code contents) ---
+        
+        const fileContent = {
+            html: `<!-- 
+  STRUCTURE (HTML) 
+  This mimics your 'mobile-photography.html'.
+  Try changing the placeholders or removing 'required'.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style id="dynamic-style"></style> <!-- CSS injects here -->
+    <!-- Fonts -->
+    <link href="https://fonts.cdnfonts.com/css/folks" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="sticky-nav">
+        <div class="logo">BANGLADESH 2.0</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">About The Event</a>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="background-overlay"></div>
+            <div class="content">
+                <h1>Mobile Photography Submission</h1>
+                <p>Theme: Capture raw, unfiltered moments of the movement.</p>
+                
+                <!-- The ID 'mobile-registration' connects to our JS logic -->
+                <form id="mobile-registration" novalidate>
+                    <input type="text" name="Name" placeholder="Full Name" required>
+                    <input type="text" name="Institute" placeholder="Institution Name" required>
+                    
+                    <input type="tel" name="Contact Number (WhatsApp)" placeholder="WhatsApp (01xxxxxxxxx)" required>
+                    
+                    <!-- We check this link in JS to ensure it's valid -->
+                    <input type="url" name="Link" placeholder="Google Drive Link to Photo" required>
+                    
+                    <button type="submit">Submit Photo</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>UCA © 2025. Designed by Sazidur Rahman & Mahidul Islam Ahnaf.</p>
+    </footer>
+    
+    <!-- We inject our JS Logic script at runtime -->
+</body>
+</html>`,
 
-        // 2. Listen for the 'submit' event (when user clicks button or hits enter)
-        form.addEventListener('submit', async (e) => {
+            css: `/* STYLING (CSS)
+  This mimics your 'registration.css'.
+  Try changing colors or border-radius!
+*/
+
+:root {
+    --bg-color: #1C2526;
+    --text-color: #E0E0E0;
+    --primary-accent: #A0A0A0;
+    --highlight-color: #FFFFFF;
+    --overlay-color: rgba(28, 37, 38, 0.9);
+    --font-heading: 'Crimson Pro', serif;
+    --font-body: 'Folks-Light', sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Navbar */
+.sticky-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--overlay-color);
+    border-bottom: 1px solid var(--primary-accent);
+}
+.logo { font-family: var(--font-heading); font-weight: bold; font-size: 1.2rem; color: var(--highlight-color); }
+nav a { color: var(--text-color); margin-left: 1rem; text-decoration: none; }
+
+/* Hero & Form */
+.hero {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    /* Adding a gradient to simulate your background image */
+    background: radial-gradient(circle at center, #2C3839 0%, #1C2526 100%);
+}
+
+.content {
+    background: var(--overlay-color);
+    padding: 2.5rem;
+    border-radius: 15px;
+    border: 1px solid var(--primary-accent);
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: fadeIn 1s ease-out;
+}
+
+h1 { font-family: var(--font-heading); color: var(--highlight-color); margin-top: 0; }
+
+input {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--primary-accent);
+    border-radius: 8px;
+    color: white;
+    box-sizing: border-box; /* Fixes padding width issues */
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 50px;
+    border: none;
+    background: var(--primary-accent);
+    color: #1C2526;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover { background: var(--highlight-color); transform: translateY(-2px); }
+button:disabled { opacity: 0.7; cursor: wait; }
+
+/* Success/Error Message styling */
+.form-message {
+    padding: 10px; margin-top: 10px; border-radius: 5px; text-align: center;
+}
+.success { background: #28a745; color: white; }
+.error { background: #dc3545; color: white; }
+
+/* Spinner */
+.spinner {
+    width: 20px; height: 20px;
+    border: 2px solid #333;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+    margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity:0; transform:translateY(20px);} to { opacity:1; transform:translateY(0);} }`,
+
+            js: `// LOGIC (JS)
+// This mimics your 'main.js' structure exactly.
+// We use a fake 'Supabase' object to simulate the backend.
+
+// 1. Mock Supabase Client (So it works in this browser)
+const supabase = {
+    from: (table) => ({
+        insert: async (data) => {
+            log(\`📡 Supabase: Inserting into table '\${table}'...\`);
+            await new Promise(r => setTimeout(r, 1500)); // Fake network delay
+            log(\`✅ Supabase: Insert Successful!\`);
+            return { error: null }; 
+        }
+    })
+};
+
+// 2. Main Logic (Runs when DOM is ready)
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+    if(!form) return;
+
+    // Create message box dynamically
+    const messageBox = document.createElement('p');
+    messageBox.className = 'form-message';
+    messageBox.style.display = 'none';
+    form.parentNode.insertBefore(messageBox, form.nextSibling);
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        log("⚡ Event: Form Submitted. Preventing default refresh.");
+
+        const btn = form.querySelector('button');
+        const originalText = btn.innerText;
+        
+        // Start Loading
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div>';
+        messageBox.style.display = 'none';
+
+        // Gather Data
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        log("📦 Data Collected: " + JSON.stringify(data));
+
+        // Validation Logic (From your main.js)
+        const contactNumber = data['Contact Number (WhatsApp)'];
+        
+        // Regex: Must start with 01 and have 9 digits after
+        if (!contactNumber.match(/^01\\d{9}$/)) {
+            showMessage("❌ Error: Phone must be 01xxxxxxxxx (11 digits)", "error");
+            resetBtn();
+            return;
+        }
+
+        // Logic Switch (mimicking your table selection)
+        let tableName = 'mobile_photography'; // default for this form
+        
+        // Send to Fake Supabase
+        const { error } = await supabase.from(tableName).insert(data);
+        
+        if (!error) {
+            showMessage("🎉 Registration Successful!", "success");
+            form.reset();
+        } else {
+            showMessage("Error: " + error.message, "error");
+        }
+        
+        resetBtn();
+
+        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = 'form-message ' + type;
+            messageBox.style.display = 'block';
+            log(msg);
+        }
+
+        function resetBtn() {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    });
+});
+
+// Helper to print to the visual console below
+function log(msg) {
+    window.parent.postMessage({ type: 'log', message: msg }, '*');
+}`
+        };
+
+        // --- 2. EDITOR LOGIC ---
+        let currentTab = 'html';
+        const editor = document.getElementById('code-editor');
+        const highlighter = document.getElementById('highlight-layer');
+        const consoleLog = document.getElementById('console-log');
+
+        function switchTab(tab) {
+            currentTab = tab;
+            // Update buttons
+            document.querySelectorAll('.mode-toggle').forEach(b => b.classList.remove('active'));
             
-            // 📚 LESSON 12: PREVENT DEFAULT
-            // By default, forms refresh the page. We don't want that! 
-            // We want to handle it seamlessly with JS.
-            e.preventDefault();
+            // Activate the correct button safely (fixing the previous error)
+            const activeBtn = document.querySelector(`.mode-toggle[data-tab="${tab}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Set content
+            editor.value = fileContent[tab];
+            updateHighlight();
+            
+            // Toggle Console visibility (Only show for JS)
+            if (tab === 'js') {
+                consoleLog.style.display = 'block';
+            } else {
+                consoleLog.style.display = 'none';
+            }
+        }
 
-            // Reset UI states
-            messageBox.className = 'form-message'; 
-            messageBox.style.display = 'none';
-            const originalBtnText = submitBtn.innerText;
+        function updateHighlight() {
+            // Very basic syntax highlighting for demo purposes
+            let code = editor.value;
+            code = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Highlight comments (simple regex)
+            code = code.replace(/(\/\/.*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)/g, '<span style="color: #8b949e;">$1</span>');
+            
+            highlighter.innerHTML = code; 
+        }
 
-            // 3. Collect Data from the inputs
-            // FormData is a built-in tool to grab all fields at once
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+        function syncScroll() {
+            highlighter.scrollTop = editor.scrollTop;
+            highlighter.scrollLeft = editor.scrollLeft;
+        }
 
-            // 📚 LESSON 13: VALIDATION logic
-            // Check if the phone number looks right (Starts with 01, has 11 digits)
-            // regex (Regular Expression) is a pattern matcher.
-            const phoneRegex = /^01\d{9}$/;
-            if (!phoneRegex.test(data.phone)) {
-                showError('Invalid Phone Number! Must start with 01 and be 11 digits.');
-                return; // Stop the code here
+        function saveCurrentTab() {
+            fileContent[currentTab] = editor.value;
+        }
+
+        // --- 3. RUNNER LOGIC ---
+        function runCode() {
+            saveCurrentTab(); // Save whatever is currently being edited
+            
+            const frame = document.getElementById('preview-frame');
+            const doc = frame.contentDocument || frame.contentWindow.document;
+
+            // Clear Console
+            consoleLog.innerHTML = '<div style="color: #8b949e; font-style: italic;">// Console cleared. Ready for input...</div>';
+
+            doc.open();
+            
+            // Inject CSS
+            let html = fileContent.html;
+            // We find the <style> tag or head and inject our CSS
+            if (html.includes('</head>')) {
+                html = html.replace('</head>', `<style>${fileContent.css}</style></head>`);
+            } else {
+                html += `<style>${fileContent.css}</style>`;
             }
 
-            // Check if social link contains "facebook" or "instagram"
-            if (!data.socialLink.toLowerCase().includes('facebook') && !data.socialLink.toLowerCase().includes('instagram')) {
-                showError('Please provide a valid Facebook or Instagram link.');
-                return;
-            }
+            // Inject JS
+            // We wrap JS in a script tag and append to body
+            html += `<script>${fileContent.js}<\/script>`;
 
-            // 4. Set Loading State (Visual Feedback)
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="spinner"></div>';
+            doc.write(html);
+            doc.close();
+        }
 
-            try {
-                // 📚 LESSON 14: ASYNC / AWAIT & MOCKING API
-                // Usually, we would fetch() to a server here (like Supabase).
-                // Since we don't have a backend in this file, we simulate it.
+        // --- 4. MESSAGE LISTENER (For Console Logs) ---
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'log') {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
                 
-                console.log("Sending data to 'server'...", data);
+                if (event.data.message.includes('Error') || event.data.message.includes('❌')) {
+                    entry.classList.add('log-error');
+                } else if (event.data.message.includes('Success') || event.data.message.includes('🎉') || event.data.message.includes('✅')) {
+                    entry.classList.add('log-success');
+                } else {
+                    entry.classList.add('log-info');
+                }
                 
-                // 'await' pauses the code here until the fakeUpload is done.
-                await fakeDatabaseUpload(data);
-
-                // If we get here, it worked!
-                showSuccess('Registration Successful! Welcome to the revolution.');
-                form.reset(); // Clear the form
-
-            } catch (error) {
-                // If the fake database throws an error, we catch it here
-                showError(error.message);
-            } finally {
-                // 📚 LESSON 15: FINALLY
-                // This runs whether it succeeded OR failed.
-                // We always want to re-enable the button.
-                submitBtn.disabled = false;
-                submitBtn.innerText = originalBtnText;
+                entry.textContent = `> ${event.data.message}`;
+                consoleLog.appendChild(entry);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
             }
         });
 
-        // Helper function to show Red Error Box
-        function showError(msg) {
-            messageBox.textContent = msg;
-            messageBox.className = 'form-message error';
-            messageBox.style.display = 'block';
-        }
+        // Initialize
+        switchTab('html');
+        // Initial run
+        setTimeout(runCode, 100);
 
-        // Helper function to show Green Success Box
-        function showSuccess(msg) {
-            messageBox.textContent = msg;
-            messageBox.className = 'form-message success';
-            messageBox.style.display = 'block';
-        }
-
-        // 📚 LESSON 16: SIMULATING A BACKEND
-        // This function pretends to be a server like Supabase.
-        // It returns a "Promise" (an IOU that resolves in the future).
-        function fakeDatabaseUpload(data) {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // We flip a coin to simulate random network errors (10% chance of fail)
-                    const isNetworkError = Math.random() < 0.1; 
-                    
-                    if (isNetworkError) {
-                        reject(new Error("Network Error: Could not reach server. Try again!"));
-                    } else {
-                        resolve({ status: 200, message: "Saved" });
-                    }
-                }, 2000); // Wait 2000 milliseconds (2 seconds)
-            });
-        }
     </script>
 </body>
 </html>

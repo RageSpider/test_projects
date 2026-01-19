@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULPC Recruitment 2026 | Visual Arts</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fontshare & Google Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- React & DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Satoshi"', 'sans-serif'],
+                        display: ['"Cabinet Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'iso-black': '#050505',
+                        'iso-gray': '#121212',
+                        'iso-zinc': '#27272a',
+                        'tech-amber': '#F59E0B', 
+                        'tech-amber-dim': 'rgba(245, 158, 11, 0.2)',
+                    },
+                    backgroundImage: {
+                        'sensor-grid': "radial-gradient(circle, #1a1a1a 1px, transparent 1px)",
+                    },
+                    screens: {
+                        '3xl': '1800px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e1e1e1;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        /* Sensor Grid Background */
+        .sensor-bg {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 60px 60px; /* Bigger grid for more air */
+            background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #F59E0B; }
+
+        /* Minimal Tech Input */
+        .tech-input {
+            background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 0;
+        }
+        .tech-input:focus {
+            outline: none;
+            border-bottom-color: #F59E0B;
+            background: rgba(245, 158, 11, 0.02);
+            padding-left: 1rem; /* Animation on focus */
+        }
+        
+        /* Boxed input for mobile */
+        @media (max-width: 768px) {
+            .tech-input {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 4px;
+            }
+            .tech-input:focus {
+                border-color: #F59E0B;
+                padding-left: 0.75rem;
+            }
+        }
+
+        /* Checkbox Styling */
+        .tech-checkbox {
+            appearance: none;
+            width: 1.5em;
+            height: 1.5em;
+            border: 1px solid #444;
+            background: transparent;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            transition: all 0.3s;
+        }
+        .tech-checkbox:checked {
+            border-color: #F59E0B;
+            background: rgba(245, 158, 11, 0.2);
+        }
+        .tech-checkbox:checked::after {
+            content: '';
+            width: 0.6em;
+            height: 0.6em;
+            background: #F59E0B;
+        }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useLayoutEffect } = React;
+
+        // --- HUD HEADER COMPONENT ---
+        const HUDHeader = () => {
+            const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+            useEffect(() => {
+                const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="fixed top-0 left-0 w-full z-40 px-6 py-4 flex justify-between items-start font-mono text-[10px] md:text-xs text-white/40 pointer-events-none mix-blend-difference">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-tech-amber font-bold animate-pulse">REC ●</span>
+                        <span className="hidden md:inline">[RAW] 4K 60FPS</span>
+                    </div>
+                    <div className="text-right flex flex-col gap-1">
+                        <span>{time}</span>
+                        <span>BAT 92%</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- HERO SECTION ---
+        // Layout: Centered on Mobile, Split/Asymmetric on Desktop
+        const Hero = () => {
+            const titleRef = useRef(null);
+            const containerRef = useRef(null);
+
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    // Responsive Animations
+                    const mm = gsap.matchMedia();
+
+                    mm.add("(min-width: 1024px)", () => {
+                        // Desktop Animation: Stagger from left
+                         gsap.from(titleRef.current.children, {
+                            x: -100,
+                            opacity: 0,
+                            stagger: 0.1,
+                            duration: 1.5,
+                            ease: "power4.out",
+                            delay: 0.5
+                        });
+                    });
+
+                    mm.add("(max-width: 1023px)", () => {
+                        // Mobile Animation: Fade up
+                        gsap.from(titleRef.current.children, {
+                            y: 50,
+                            opacity: 0,
+                            stagger: 0.1,
+                            duration: 1.2,
+                            ease: "power2.out",
+                            delay: 0.5
+                        });
+                    });
+                    
+                    gsap.from(".hero-decoration", {
+                        scaleX: 0,
+                        duration: 2,
+                        ease: "expo.out",
+                        delay: 0.2
+                    });
+
+                }, containerRef);
+                return () => ctx.revert();
+            }, []);
+
+            return (
+                <header ref={containerRef} className="min-h-screen flex flex-col justify-center relative px-6 md:px-20 lg:px-32 3xl:px-48 pt-20 overflow-hidden">
+                    
+                    {/* Background Decorative Elements for Depth */}
+                    <div className="absolute top-1/4 right-0 w-[50vw] h-[1px] bg-white/5 hero-decoration hidden lg:block"></div>
+                    <div className="absolute bottom-1/4 left-0 w-[30vw] h-[1px] bg-white/5 hero-decoration hidden lg:block"></div>
+                    
+                    <div className="z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-end justify-between gap-12 lg:gap-24">
+                        
+                        {/* Main Title Block */}
+                        <div ref={titleRef} className="text-center lg:text-left flex-1">
+                            <div className="mb-6 flex items-center justify-center lg:justify-start gap-4 opacity-50">
+                                <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-tech-amber">Est. 2024</span>
+                                <div className="h-[1px] w-12 bg-tech-amber hero-decoration"></div>
+                            </div>
+                            
+                            <h1 className="font-display font-bold leading-[0.85] tracking-tighter text-white mb-4">
+                                <div className="overflow-hidden"><span className="block text-6xl sm:text-8xl lg:text-[10rem] xl:text-[11rem] 2xl:text-[13rem]">PHOTO</span></div>
+                                <div className="overflow-hidden"><span className="block text-6xl sm:text-8xl lg:text-[10rem] xl:text-[11rem] 2xl:text-[13rem] text-transparent text-stroke" style={{WebkitTextStroke: '2px #F59E0B'}}>GRAPHY</span></div>
+                            </h1>
+                            
+                            <div className="overflow-hidden mt-4 lg:mt-8">
+                                <span className="block font-display italic text-3xl sm:text-5xl lg:text-6xl text-white/30">
+                                    Recruitment '26
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Description Block - Shifts based on viewport */}
+                        <div className="lg:w-80 2xl:w-96 text-center lg:text-right lg:mb-12 hero-meta opacity-80">
+                            <p className="font-mono text-xs text-tech-amber uppercase tracking-[0.2em] mb-4">
+                                Phase_01 // Protocol
+                            </p>
+                            <p className="font-sans text-white/60 text-sm md:text-base leading-relaxed">
+                                Join the University Laboratory Photography Club. We document the unspoken narrative of campus life through the lens of precision and art.
+                            </p>
+                        </div>
+                    </div>
+                </header>
+            );
+        };
+
+        // --- SPECS SECTION ---
+        // Layout: 
+        // Mobile: Stacked Cards
+        // Tablet: 2 Column Grid
+        // Desktop: Deconstructed / Asymmetric
+        const Specs = () => {
+            const sectionRef = useRef(null);
+
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    ScrollTrigger.batch(".spec-item", {
+                        onEnter: batch => gsap.to(batch, {opacity: 1, y: 0, stagger: 0.15, duration: 1, ease: "power3.out"}),
+                        start: "top 85%"
+                    });
+                }, sectionRef);
+                return () => ctx.revert();
+            }, []);
+
+            return (
+                <section ref={sectionRef} className="py-32 md:py-48 bg-iso-black relative border-t border-white/5">
+                    <div className="max-w-[90vw] 2xl:max-w-7xl mx-auto px-6">
+                        
+                        <div className="mb-24 md:mb-32">
+                            <h2 className="font-display text-4xl md:text-7xl text-white mb-4">REQUIREMENTS</h2>
+                            <div className="w-full h-[1px] bg-white/10"></div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+                            
+                            {/* Target Subjects - Spans 5 cols on Desktop */}
+                            <div className="lg:col-span-5 space-y-12">
+                                <div className="flex items-baseline gap-4 mb-8">
+                                    <span className="font-mono text-tech-amber text-xs">01</span>
+                                    <h3 className="font-display text-2xl text-white uppercase tracking-wider">Target<br/>Subjects</h3>
+                                </div>
+                                <div className="space-y-6 md:pl-8">
+                                    {['Class VIII', 'Class IX (SSC 2028)', 'Class X (SSC 2027)', 'Class XI (HSC 2027)'].map((cls, i) => (
+                                        <div key={i} className="spec-item opacity-0 translate-y-10 border-l border-white/20 pl-6 py-2 hover:border-tech-amber transition-colors duration-500">
+                                            <span className="font-display text-2xl md:text-3xl lg:text-4xl text-white/80">{cls}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Spacer for Desktop Airiness */}
+                            <div className="hidden lg:block lg:col-span-2"></div>
+
+                            {/* Skills - Spans 5 cols on Desktop */}
+                            <div className="lg:col-span-5 space-y-12 lg:mt-32"> {/* Asymmetric top margin on desktop */}
+                                <div className="flex items-baseline gap-4 mb-8">
+                                    <span className="font-mono text-tech-amber text-xs">02</span>
+                                    <h3 className="font-display text-2xl text-white uppercase tracking-wider">Required<br/>Modules</h3>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4 md:pl-8">
+                                    {['Photography (DSLR)', 'Videography', 'Photo Editing', 'Graphics Design'].map((skill, i) => (
+                                        <div key={i} className="spec-item opacity-0 translate-y-10 group flex items-center justify-between p-6 border border-white/10 hover:bg-white/5 hover:border-tech-amber/50 transition-all duration-500">
+                                            <span className="font-sans text-lg text-white group-hover:tracking-wider transition-all">{skill}</span>
+                                            <i data-lucide="crosshair" className="w-4 h-4 text-tech-amber opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- FORM COMPONENT ---
+        // Layout:
+        // Mobile: Boxed container
+        // Desktop: Open, editorial list style, lots of whitespace
+        const RecruitmentForm = () => {
+            const [formData, setFormData] = useState({ fullName: '', class: '', section: '', shift: '', fbId: '', contact: '', device: '', skills: [], why: '' });
+            
+            const handleSkillChange = (skill) => {
+                setFormData(prev => {
+                    const skills = prev.skills.includes(skill) ? prev.skills.filter(s => s !== skill) : [...prev.skills, skill];
+                    return { ...prev, skills };
+                });
+            };
+
+            const handleSubmit = (e) => { e.preventDefault(); alert("Protocol Initiated. Data logged."); };
+            const skillOptions = ['Photography', 'Videography', 'Photo Editing', 'Graphics'];
+
+            return (
+                <section className="py-32 md:py-48 px-6 bg-iso-black relative">
+                     {/* Decorative 'Grid' Lines for large screens */}
+                    <div className="absolute inset-0 pointer-events-none hidden lg:block">
+                        <div className="absolute left-1/4 h-full w-[1px] bg-white/5"></div>
+                        <div className="absolute left-3/4 h-full w-[1px] bg-white/5"></div>
+                    </div>
+
+                    <div className="max-w-[90vw] 2xl:max-w-5xl mx-auto relative z-10">
+                        <div className="mb-24 lg:text-center">
+                            <h2 className="font-display text-5xl md:text-8xl text-white mb-4">APPLICATION</h2>
+                            <p className="font-mono text-xs text-tech-amber uppercase tracking-widest">Phase 1 Data Entry</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-16 lg:space-y-24">
+                            
+                            {/* Section 1: Identity */}
+                            <div className="space-y-12">
+                                <h3 className="font-mono text-xs text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">01 // Identity</h3>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Full Name</label>
+                                        <input type="text" required className="w-full py-4 text-xl md:text-3xl font-display tech-input" placeholder="e.g. John Doe" />
+                                    </div>
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Class Designation</label>
+                                        <select required className="w-full py-4 text-xl md:text-3xl font-display tech-input appearance-none bg-transparent cursor-pointer">
+                                            <option value="" className="bg-iso-black text-sm">Select Class...</option>
+                                            <option value="VIII" className="bg-iso-black text-sm">Class VIII</option>
+                                            <option value="IX" className="bg-iso-black text-sm">Class IX</option>
+                                            <option value="X" className="bg-iso-black text-sm">Class X</option>
+                                            <option value="XI" className="bg-iso-black text-sm">Class XI</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Section</label>
+                                        <input type="text" required className="w-full py-4 text-xl md:text-2xl font-display tech-input" placeholder="e.g. A" />
+                                    </div>
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Shift</label>
+                                        <div className="flex gap-8 pt-4">
+                                            {['Morning', 'Day'].map(shift => (
+                                                <label key={shift} className="flex items-center gap-3 cursor-pointer">
+                                                    <input type="radio" name="shift" className="tech-checkbox" />
+                                                    <span className="font-display text-lg text-white">{shift}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Section 2: Comms & Tech */}
+                            <div className="space-y-12">
+                                <h3 className="font-mono text-xs text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">02 // Specs</h3>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Contact No.</label>
+                                        <input type="tel" required className="w-full py-4 text-xl md:text-2xl font-display tech-input" placeholder="+880..." />
+                                    </div>
+                                    <div className="group">
+                                        <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Social Link</label>
+                                        <input type="url" required className="w-full py-4 text-xl md:text-2xl font-display tech-input" placeholder="facebook.com/..." />
+                                    </div>
+                                </div>
+                                <div className="group">
+                                    <label className="block font-sans text-sm text-white/50 mb-2 group-focus-within:text-tech-amber transition-colors">Equipment (Device Model)</label>
+                                    <input type="text" required className="w-full py-4 text-xl md:text-3xl font-display tech-input" placeholder="e.g. Canon 80D, iPhone 14..." />
+                                </div>
+                            </div>
+
+                            {/* Section 3: Proficiency */}
+                            <div className="space-y-12">
+                                <h3 className="font-mono text-xs text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">03 // Proficiency</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    {skillOptions.map(skill => (
+                                        <label key={skill} className="flex flex-col gap-4 cursor-pointer group p-6 border border-white/10 hover:bg-white/5 hover:border-tech-amber transition-all">
+                                            <div className="flex justify-between items-start">
+                                                <input type="checkbox" className="tech-checkbox" onChange={() => handleSkillChange(skill)} />
+                                                <span className="font-mono text-xs text-white/30 group-hover:text-tech-amber">0{skillOptions.indexOf(skill) + 1}</span>
+                                            </div>
+                                            <span className="font-display text-lg text-white">{skill}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                             {/* Section 4: Mission */}
+                             <div className="space-y-12">
+                                <h3 className="font-mono text-xs text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">04 // Mission</h3>
+                                <div className="group">
+                                    <label className="block font-sans text-sm text-white/50 mb-4 group-focus-within:text-tech-amber transition-colors">Why join ULPC?</label>
+                                    <textarea rows="2" className="w-full py-4 text-xl md:text-3xl font-display tech-input resize-none" placeholder="Your statement..."></textarea>
+                                </div>
+                            </div>
+
+                            {/* Submit */}
+                            <div className="pt-12 flex justify-center lg:justify-end">
+                                <button type="submit" className="group relative overflow-hidden bg-tech-amber text-black w-full md:w-auto px-16 py-6 font-bold uppercase tracking-widest font-mono text-sm hover:bg-white transition-colors duration-300">
+                                    <span className="relative z-10 flex items-center justify-center gap-4">
+                                        Transmit Data <i data-lucide="arrow-right" className="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- FOOTER ---
+        const Footer = () => {
+            return (
+                <footer className="border-t border-white/10 py-20 bg-iso-black text-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.03)_0%,_transparent_70%)]"></div>
+                    
+                    <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col items-center">
+                        <div className="mb-12">
+                            <h2 className="font-display text-[5rem] md:text-[8rem] lg:text-[12rem] leading-none text-white/5 hover:text-white/10 transition-colors cursor-default select-none">
+                                ULPC
+                            </h2>
+                        </div>
+                        
+                        <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-12">
+                            <a href="https://sites.google.com/view/ulpc/home" target="_blank" className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Website</a>
+                            <a href="https://www.instagram.com/ulpc.ig/" target="_blank" className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Instagram</a>
+                            <a href="https://www.facebook.com/universitylaboratoryphotographyclub/" target="_blank" className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Facebook</a>
+                        </div>
+
+                        <p className="font-mono text-[10px] text-white/20 uppercase tracking-[0.3em]">
+                            © 2026 University Laboratory Photography Club
+                        </p>
+                    </div>
+                </footer>
+            );
+        };
+
+        const App = () => {
+            useLayoutEffect(() => {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+                
+                lucide.createIcons();
+                gsap.registerPlugin(ScrollTrigger);
+            }, []);
+
+            return (
+                <main className="min-h-screen relative z-10">
+                    <div className="sensor-bg"></div>
+                    <div className="noise"></div>
+                    
+                    <HUDHeader />
+                    <Hero />
+                    <Specs />
+                    <RecruitmentForm />
+                    <Footer />
+                </main>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

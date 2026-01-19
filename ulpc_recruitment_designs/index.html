@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULPC Design Protocol | Select Interface</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fontshare & Google Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- React & DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Satoshi"', 'sans-serif'],
+                        display: ['"Cabinet Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'iso-black': '#050505',
+                        'tech-amber': '#F59E0B', 
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e1e1e1;
+            overflow: hidden;
+        }
+
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const DesignCard = ({ title, desc, link, index }) => {
+            const cardRef = useRef(null);
+
+            const handleMouseEnter = () => {
+                gsap.to(cardRef.current, { scale: 1.02, duration: 0.3, ease: "power2.out" });
+                gsap.to(cardRef.current.querySelector('.arrow-icon'), { x: 5, duration: 0.3 });
+                gsap.to(cardRef.current.querySelector('.card-border'), { opacity: 1, duration: 0.3 });
+            };
+
+            const handleMouseLeave = () => {
+                gsap.to(cardRef.current, { scale: 1, duration: 0.3, ease: "power2.out" });
+                gsap.to(cardRef.current.querySelector('.arrow-icon'), { x: 0, duration: 0.3 });
+                gsap.to(cardRef.current.querySelector('.card-border'), { opacity: 0, duration: 0.3 });
+            };
+
+            return (
+                <a 
+                    href={link}
+                    ref={cardRef}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="group relative block w-full max-w-md bg-white/5 border border-white/10 p-8 cursor-pointer overflow-hidden transition-colors hover:bg-white/10"
+                >
+                    <div className="card-border absolute inset-0 border border-tech-amber opacity-0 pointer-events-none transition-opacity"></div>
+                    
+                    <div className="flex justify-between items-start mb-6">
+                        <span className="font-mono text-xs text-tech-amber uppercase tracking-widest">Design_0{index + 1}</span>
+                        <i data-lucide="arrow-right" className="arrow-icon w-5 h-5 text-white opacity-50 group-hover:text-tech-amber group-hover:opacity-100 transition-colors"></i>
+                    </div>
+                    
+                    <h3 className="font-display text-3xl text-white mb-2 group-hover:text-tech-amber transition-colors">{title}</h3>
+                    <p className="font-sans text-sm text-white/50">{desc}</p>
+                    
+                    <div className="absolute bottom-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+                        <i data-lucide="layout" className="w-24 h-24 stroke-1"></i>
+                    </div>
+                </a>
+            );
+        };
+
+        const App = () => {
+            useEffect(() => {
+                lucide.createIcons();
+                
+                // Intro Animation
+                gsap.from(".design-card-container", {
+                    y: 50,
+                    opacity: 0,
+                    stagger: 0.1,
+                    duration: 1,
+                    ease: "power3.out",
+                    delay: 0.2
+                });
+            }, []);
+
+            return (
+                <main className="min-h-screen relative z-10 flex flex-col items-center justify-center p-6">
+                    <div className="scanlines"></div>
+                    <div className="noise"></div>
+                    
+                    <header className="text-center mb-16 relative z-20">
+                        <div className="inline-block border border-tech-amber/30 bg-tech-amber/5 px-3 py-1 mb-4 rounded-full">
+                            <span className="font-mono text-[10px] text-tech-amber uppercase tracking-widest">ULPC Internal Protocol</span>
+                        </div>
+                        <h1 className="font-display text-5xl md:text-7xl text-white mb-2 tracking-tight">INTERFACE SELECT</h1>
+                        <p className="font-sans text-white/40 max-w-lg mx-auto">Select a design iteration to initiate preview sequence.</p>
+                    </header>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl relative z-20">
+                        <div className="design-card-container">
+                            <DesignCard 
+                                index={0}
+                                title="High-Fidelity"
+                                desc="The initial sensor-grid aesthetic with boxed inputs. Compact and technical."
+                                link="design_1.html"
+                            />
+                        </div>
+                        <div className="design-card-container">
+                            <DesignCard 
+                                index={1}
+                                title="The Viewfinder"
+                                desc="Raw, brutalist, data-heavy layout inspired by camera HUDs and contact sheets."
+                                link="design_2.html"
+                            />
+                        </div>
+                        <div className="design-card-container">
+                            <DesignCard 
+                                index={2}
+                                title="Deconstructed"
+                                desc="Airy, editorial layout with expansive typography and responsive animations."
+                                link="design_3.html"
+                            />
+                        </div>
+                    </div>
+
+                    <footer className="fixed bottom-6 left-0 w-full text-center pointer-events-none z-20">
+                        <span className="font-mono text-[10px] text-white/20 uppercase tracking-[0.3em]">System Ready // v.3.0.1</span>
+                    </footer>
+                </main>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

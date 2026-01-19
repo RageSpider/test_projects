@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULPC Recruitment 2026 | Visual Arts</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fontshare & Google Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- React & DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Satoshi"', 'sans-serif'],
+                        display: ['"Cabinet Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'iso-black': '#050505',
+                        'iso-gray': '#1a1a1a',
+                        'iso-white': '#e1e1e1',
+                        'accent-orange': '#FF3B30', /* Classic "Rec" Dot Red/Orange */
+                    },
+                    cursor: {
+                        'crosshair': 'crosshair',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e1e1e1;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        /* Viewfinder Grid overlay */
+        .viewfinder-grid {
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.6;
+        }
+
+        /* Focus Blur Effect Utility */
+        .blur-in {
+            filter: blur(10px);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .blur-in.visible {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Crosshair Corner Elements */
+        .corner-bracket {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: rgba(255, 255, 255, 0.4);
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+        .corner-tl { top: 0; left: 0; border-width: 1px 0 0 1px; }
+        .corner-tr { top: 0; right: 0; border-width: 1px 1px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+        .corner-br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+
+        .hover-trigger:hover .corner-bracket {
+            width: 100%;
+            height: 100%;
+            border-color: #FF3B30;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        
+        /* Glitch Text Effect */
+        .glitch-wrapper { position: relative; display: inline-block; }
+        .glitch-wrapper::before, .glitch-wrapper::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+        }
+        .glitch-wrapper::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+        .glitch-wrapper::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim2 5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(13px, 9999px, 81px, 0); }
+            5% { clip: rect(78px, 9999px, 9px, 0); }
+            10% { clip: rect(15px, 9999px, 95px, 0); }
+            100% { clip: rect(36px, 9999px, 6px, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useLayoutEffect } = React;
+
+        // --- TECHNICAL HEADER (Metadata) ---
+        const MetaHeader = () => {
+            const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+            useEffect(() => {
+                const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="fixed top-0 left-0 w-full z-50 px-4 py-3 flex justify-between items-start font-mono text-[10px] md:text-xs text-white/50 mix-blend-difference pointer-events-none">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-accent-orange">REC ●</span>
+                        <span>ISO 800</span>
+                        <span>f/1.4</span>
+                        <span>1/125</span>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 text-right">
+                        <span>{time}</span>
+                        <span>BAT 84%</span>
+                        <span>RAW+JPEG</span>
+                        <span>[AF-C]</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- HERO SECTION ---
+        const Hero = () => {
+            const containerRef = useRef(null);
+            const textRef = useRef(null);
+
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    // Focus Pull Animation
+                    gsap.fromTo(textRef.current, 
+                        { filter: "blur(20px)", scale: 1.1, opacity: 0 },
+                        { filter: "blur(0px)", scale: 1, opacity: 1, duration: 2, ease: "power2.out", delay: 0.5 }
+                    );
+
+                    // Scroll Parallax for Hero Image
+                    gsap.to(".hero-img", {
+                        yPercent: 30,
+                        scale: 1.1,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: containerRef.current,
+                            start: "top top",
+                            end: "bottom top",
+                            scrub: true
+                        }
+                    });
+                }, containerRef);
+                return () => ctx.revert();
+            }, []);
+
+            return (
+                <section ref={containerRef} className="relative h-screen w-full flex items-center justify-center overflow-hidden border-b border-white/10">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <img 
+                            src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2670&auto=format&fit=crop" 
+                            alt="Camera Lens" 
+                            className="hero-img w-full h-full object-cover opacity-40 grayscale contrast-125"
+                        />
+                        <div className="absolute inset-0 bg-black/50"></div>
+                    </div>
+
+                    {/* Viewfinder Crosshair Center */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 opacity-30">
+                        <div className="w-[300px] h-[1px] bg-white"></div>
+                        <div className="h-[300px] w-[1px] bg-white absolute"></div>
+                        <div className="w-[20px] h-[20px] border border-white absolute"></div>
+                    </div>
+
+                    <div className="relative z-30 text-center px-4">
+                        <div ref={textRef}>
+                            <h1 className="font-display text-7xl md:text-[10rem] font-bold leading-[0.85] tracking-tighter text-white mix-blend-difference mb-4">
+                                <span className="block glitch-wrapper" data-text="CAPTURE">CAPTURE</span>
+                                <span className="block text-stroke-thin text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.8)' }}>THE NOW</span>
+                            </h1>
+                            <p className="font-mono text-xs md:text-sm text-accent-orange uppercase tracking-[0.2em] mt-8">
+                                ULPC Recruitment Phase_01 // 2026
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Scroll Trigger */}
+                    <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+                        <div className="w-[1px] h-16 bg-gradient-to-b from-white to-transparent animate-pulse"></div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- MANIFESTO SECTION ---
+        const Manifesto = () => {
+            const triggerRef = useRef(null);
+            
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    gsap.from(".word-reveal", {
+                        y: 50,
+                        opacity: 0,
+                        rotationX: -90,
+                        stagger: 0.05,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: triggerRef.current,
+                            start: "top 75%",
+                            end: "bottom 75%",
+                            toggleActions: "play none none reverse"
+                        }
+                    });
+                }, triggerRef);
+                return () => ctx.revert();
+            }, []);
+
+            const text = "Photography is not about looking, it's about feeling. If you can't feel what you're looking at, then you're never going to get others to feel anything when they look at your pictures.";
+
+            return (
+                <section ref={triggerRef} className="py-32 px-6 md:px-20 bg-iso-black relative border-b border-white/5">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="flex flex-col md:flex-row gap-12 items-start">
+                            <div className="md:w-1/4 sticky top-32">
+                                <span className="font-mono text-xs text-accent-orange uppercase border border-accent-orange px-2 py-1">[MANIFESTO]</span>
+                            </div>
+                            <div className="md:w-3/4">
+                                <p className="font-display text-3xl md:text-5xl leading-tight text-iso-white">
+                                    {text.split(" ").map((word, i) => (
+                                        <span key={i} className="word-reveal inline-block mr-3 origin-bottom">{word}</span>
+                                    ))}
+                                </p>
+                                <div className="mt-12 flex items-center gap-4 font-mono text-xs text-white/40">
+                                    <div className="h-[1px] w-20 bg-white/20"></div>
+                                    <span>Don McCullin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- GALLERY/SHOWCASE SECTION (Horizontal Scroll) ---
+        const Showcase = () => {
+            const sectionRef = useRef(null);
+            const containerRef = useRef(null);
+
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    const scrollWidth = containerRef.current.scrollWidth - window.innerWidth;
+                    
+                    gsap.to(containerRef.current, {
+                        x: -scrollWidth,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top top",
+                            end: `+=${scrollWidth}`,
+                            pin: true,
+                            scrub: 1,
+                            invalidateOnRefresh: true,
+                        }
+                    });
+                }, sectionRef);
+                return () => ctx.revert();
+            }, []);
+
+            const images = [
+                { id: "01", src: "https://images.unsplash.com/photo-1554048612-387768052bf7?q=80&w=2535&auto=format&fit=crop", title: "PORTRAITURE", meta: "85mm f/1.8" },
+                { id: "02", src: "https://images.unsplash.com/photo-1493863641943-9b68992a8d07?q=80&w=2658&auto=format&fit=crop", title: "STREET", meta: "35mm f/2.8" },
+                { id: "03", src: "https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?q=80&w=2574&auto=format&fit=crop", title: "ABSTRACT", meta: "MACRO 100mm" },
+                { id: "04", src: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2000&auto=format&fit=crop", title: "ANALOG", meta: "FILM 400" },
+            ];
+
+            return (
+                <section ref={sectionRef} className="relative h-screen bg-iso-black overflow-hidden flex items-center border-b border-white/5">
+                    <div className="absolute top-8 left-8 z-10">
+                        <span className="font-mono text-xs text-white/50 uppercase">[CONTACT_SHEET]</span>
+                    </div>
+                    
+                    <div ref={containerRef} className="flex gap-12 px-20">
+                        {images.map((img) => (
+                            <div key={img.id} className="relative group w-[60vh] h-[70vh] flex-shrink-0 bg-iso-gray overflow-hidden cursor-none">
+                                <div className="absolute top-4 left-4 z-20 font-mono text-xs text-white mix-blend-difference opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {img.id} // {img.meta}
+                                </div>
+                                <img 
+                                    src={img.src} 
+                                    alt={img.title}
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-100 group-hover:scale-110" 
+                                />
+                                <div className="absolute inset-0 border border-white/0 group-hover:border-white/20 transition-all duration-300 pointer-events-none">
+                                    <div className="corner-bracket corner-tl"></div>
+                                    <div className="corner-bracket corner-tr"></div>
+                                    <div className="corner-bracket corner-bl"></div>
+                                    <div className="corner-bracket corner-br"></div>
+                                </div>
+                                <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <h3 className="font-display text-4xl text-white tracking-tight">{img.title}</h3>
+                                </div>
+                            </div>
+                        ))}
+                        <div className="w-[40vw] flex items-center justify-center shrink-0 text-center">
+                            <h2 className="font-display text-6xl text-white/20">YOUR<br/>SHOT<br/>HERE</h2>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- DEPARTMENTS / ROLES ---
+        const Departments = () => {
+            const depts = [
+                { id: "01", name: "PHOTOGRAPHY", spec: "DSLR / MIRRORLESS / ANALOG" },
+                { id: "02", name: "CINEMATOGRAPHY", spec: "DIRECTION / COLOR GRADING" },
+                { id: "03", name: "POST-PRODUCTION", spec: "LIGHTROOM / DAVINCI" },
+                { id: "04", name: "CREATIVE DIRECTION", spec: "EDITORIAL / SET DESIGN" }
+            ];
+
+            return (
+                <section className="py-24 bg-iso-black">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="flex justify-between items-end mb-16 border-b border-white/10 pb-6">
+                            <h2 className="font-display text-4xl text-white uppercase">Departments</h2>
+                            <div className="font-mono text-xs text-accent-orange animate-pulse">● LIVE RECRUITMENT</div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-px bg-white/10 border border-white/10">
+                            {depts.map((dept) => (
+                                <div key={dept.id} className="group relative bg-iso-black p-8 md:p-12 hover:bg-white/5 transition-colors duration-300 hover-trigger overflow-hidden">
+                                    {/* Hover Corners */}
+                                    <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-white/0 group-hover:border-accent-orange transition-all duration-300"></div>
+                                    <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-white/0 group-hover:border-accent-orange transition-all duration-300"></div>
+                                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-white/0 group-hover:border-accent-orange transition-all duration-300"></div>
+                                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-white/0 group-hover:border-accent-orange transition-all duration-300"></div>
+
+                                    <div className="flex flex-col md:flex-row justify-between items-baseline gap-4 relative z-10">
+                                        <div className="flex items-baseline gap-6">
+                                            <span className="font-mono text-accent-orange text-sm">/{dept.id}</span>
+                                            <h3 className="font-display text-4xl md:text-5xl text-white group-hover:translate-x-4 transition-transform duration-500">{dept.name}</h3>
+                                        </div>
+                                        <span className="font-mono text-xs text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">[{dept.spec}]</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- FOOTER ---
+        const Footer = () => {
+            return (
+                <footer className="bg-iso-black pt-20 pb-10 px-6 border-t border-white/10 font-mono text-xs">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+                            <div className="col-span-2">
+                                <h2 className="font-display text-3xl text-white mb-6">UNIVERSITY LENS &<br/>PHOTOGRAPHY CLUB</h2>
+                                <p className="text-white/40 max-w-sm">
+                                    Developing perspectives since 2012. We are a collective of visual storytellers documenting the unspoken narrative of university life.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 className="text-white mb-4 uppercase tracking-widest">Sitemap</h4>
+                                <ul className="space-y-2 text-white/40">
+                                    <li><a href="#" className="hover:text-accent-orange hover:underline decoration-accent-orange underline-offset-4 transition-colors">Manifesto</a></li>
+                                    <li><a href="#" className="hover:text-accent-orange hover:underline decoration-accent-orange underline-offset-4 transition-colors">Gallery</a></li>
+                                    <li><a href="#" className="hover:text-accent-orange hover:underline decoration-accent-orange underline-offset-4 transition-colors">Workshops</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="text-white mb-4 uppercase tracking-widest">Connect</h4>
+                                <ul className="space-y-2 text-white/40">
+                                    <li><a href="#" className="hover:text-accent-orange transition-colors">Instagram</a></li>
+                                    <li><a href="#" className="hover:text-accent-orange transition-colors">Behance</a></li>
+                                    <li><a href="#" className="hover:text-accent-orange transition-colors">Email</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 gap-4">
+                            <div className="text-white/30">
+                                © 2026 ULPC. ALL RIGHTS RESERVED.
+                            </div>
+                            <div className="flex gap-4 text-white/30 uppercase">
+                                <span>Exp. 05/2026</span>
+                                <span>Dev. Process C-41</span>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        // --- APP SHELL ---
+        const App = () => {
+            useLayoutEffect(() => {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+                gsap.registerPlugin(ScrollTrigger);
+            }, []);
+
+            return (
+                <div className="min-h-screen bg-iso-black selection:bg-accent-orange selection:text-white">
+                    <div className="viewfinder-grid"></div>
+                    <div className="scanlines"></div>
+                    
+                    <MetaHeader />
+                    
+                    <main>
+                        <Hero />
+                        
+                        {/* Marquee Separator */}
+                        <div className="py-4 bg-accent-orange overflow-hidden border-y border-black">
+                            <div className="marquee-container font-display font-bold text-black text-lg md:text-xl uppercase tracking-widest">
+                                <div className="marquee-content">
+                                    APPLY NOW /// OPEN CALL 2026 /// SHOOT EDIT REPEAT /// APPLY NOW /// OPEN CALL 2026 /// SHOOT EDIT REPEAT ///  
+                                </div>
+                                <div className="marquee-content" aria-hidden="true">
+                                    APPLY NOW /// OPEN CALL 2026 /// SHOOT EDIT REPEAT /// APPLY NOW /// OPEN CALL 2026 /// SHOOT EDIT REPEAT ///  
+                                </div>
+                            </div>
+                        </div>
+
+                        <Manifesto />
+                        <Showcase />
+                        <Departments />
+                        
+                        {/* Call to Action - Big Button */}
+                        <section className="py-32 flex justify-center items-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-white/5 z-0"></div>
+                            <button className="relative z-10 group overflow-hidden bg-transparent border border-white/20 px-16 py-8 hover:border-accent-orange transition-colors duration-300">
+                                <div className="absolute inset-0 bg-accent-orange transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-in-out"></div>
+                                <span className="relative z-20 font-display text-4xl text-white group-hover:text-black uppercase tracking-widest flex items-center gap-4">
+                                    Start Application <i data-lucide="arrow-right" className="w-8 h-8"></i>
+                                </span>
+                            </button>
+                        </section>
+
+                        <Footer />
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -3,143 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Projects</title>
+    <title>Project Library</title>
     <link rel="stylesheet" href="webfonts/fonts.css">
 
     <style>
-        /* Font families:
-        font-family: 'Zoqula', serif;
-        font-family: 'Migra', serif;
+        /* Preserving User's Font Stack:
+           Headings: 'Zoqula'
+           Body/Links: 'Migra'
         */
 
-        /* --- Basic Setup --- */
-        body {
-            /* Using Migra as the fallback font family */
-            font-family: 'Migra', serif;
-            font-weight: 800; /* Use Extrabold by default */
-            
-            background: #1a1a1a;
-            background: radial-gradient(circle at 100% 0, #3a3a3a, #1a1a1a 40%);
-            color: #e8e8e8;
-            
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-gradient: radial-gradient(circle at 100% 0, #3a3a3a, #1a1a1a 40%);
+            --text-main: #e8e8e8;
+            --accent-gold: #d4b28b;
+            --glass-bg: rgba(30, 30, 30, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-shadow: 0 0 20px rgba(212, 178, 139, 0.15);
+        }
+
+        * {
             box-sizing: border-box;
         }
 
-        /* --- "Glass" Content Card --- */
-        .container {
+        body {
+            font-family: 'Migra', serif;
+            font-weight: 800;
+            background: var(--bg-dark);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            /* Center the main container comfortably */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Header Section --- */
+        header {
             width: 100%;
-            max-width: 600px;
-            padding: 2.5rem 3rem;
+            max-width: 1200px;
+            margin-bottom: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
+        }
+
+        h1 {
+            font-family: 'Zoqula', serif;
+            font-size: 4.5rem; /* Larger, more impactful */
+            font-weight: 400;
+            color: var(--accent-gold);
+            margin: 0 0 1.5rem 0;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            line-height: 1;
+        }
+
+        /* --- Search Bar --- */
+        .search-container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-family: 'Migra', serif;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(212, 178, 139, 0.2);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .search-input::placeholder {
+            color: rgba(232, 232, 232, 0.5);
+        }
+
+        /* --- Grid Layout --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* --- Card Design --- */
+        .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             
-            background: rgba(30, 30, 30, 0.65);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             
+            border: 1px solid var(--glass-border);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        /* --- Elegant Heading (Now Zoqula) --- */
-        h1 {
-            font-family: 'Zoqula', serif;
-            font-size: 3.2rem;
-            font-weight: 400; /* Zoqula is Regular */
-            color: #d4b28b; /* The gold/bronze color */
-            margin: 0 0 2rem 0;
-            letter-spacing: 0.5px;
-        }
-
-        /* --- Link Styles --- */
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .links a {
-            font-family: 'Migra-Extrabold', serif;
-            font-weight: 800; /* Use Extrabold for links */
-            letter-spacing: 0.5px; /* Give the bold text space */
+            padding: 2rem;
             
-            display: block;
-            padding: 1rem;
-            background: transparent;
-            color: #e8e8e8;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            text-align: left;
-            padding-left: 2rem;
-            
-            /* ACCESSIBILITY FIX: Brighter resting border */
-            border: 1px solid #888;
-            
-            /* ACCESSIBILITY FIX: Subtle shadow to lift text */
-            text-shadow: 0 0 5px rgba(0,0,0,0.5); 
-            
+            color: var(--text-main);
             position: relative;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             
+            /* Ensure height matches content but stretches nicely */
+            min-height: 180px; 
+        }
+
+        /* Decorative background number/element */
+        .card::before {
+            content: ''; 
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-family: 'Zoqula', serif;
+            font-size: 8rem;
+            color: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            transition: transform 0.4s ease;
+            z-index: 0;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card h2 {
+            font-family: 'Migra', serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin: 0 0 1rem 0;
+            color: #e8e8e8;
+            /* Limit lines for very very long titles if needed, but flex allows growth */
+        }
+
+        /* The arrow icon */
+        .card-icon {
+            align-self: flex-end;
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            opacity: 0.7;
+            transform: translateX(0);
             transition: all 0.3s ease;
         }
-        
-        /* --- "Fancy" Hover Effect: Arrow slide-in --- */
 
-        /* 1. The arrow (hidden by default) */
-        .links a::after {
-            content: '\2192'; /* '→' */
-            position: absolute;
-            right: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            color: #d4b28b;
-            transition: right 0.3s ease, opacity 0.3s ease;
+        /* --- Hover Effects --- */
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+            box-shadow: var(--card-hover-shadow);
         }
 
-        /* 2. The hover state */
-        .links a:hover {
-            color: #d4b28b;
-            border-color: #d4b28b;
-            transform: scale(1.02);
-            
-            /* ACCESSIBILITY FIX: Add a glow on hover */
-            text-shadow: 0 0 8px rgba(212, 178, 139, 0.5);
+        .card:hover h2 {
+            color: var(--accent-gold);
         }
-        
-        /* 3. The arrow on hover (unchanged) */
-        .links a:hover::after {
-            right: 20px;
+
+        .card:hover .card-icon {
             opacity: 1;
+            transform: translateX(5px) rotate(-45deg); /* Arrow moves and points up-right */
         }
 
+        .card:hover::before {
+            transform: scale(1.1) rotate(5deg);
+            color: rgba(212, 178, 139, 0.05);
+        }
+
+        /* --- No Results Message --- */
+        .no-results {
+            display: none;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr; /* Full width cards on mobile */
+            }
+        }
     </style>
 </head>
 <body>
 
-    <main class="container">
-        <h1>View All Links</h1>
+    <header>
+        <h1>PROJECT LIBRARY</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search projects...">
+        </div>
+    </header>
+
+    <main class="grid-container" id="projectGrid">
+        <!-- Cards generated from your original links -->
         
-        <div class="links">
-            <a href="rajukscraped.html">Rajuk Scraped Website</a>
-            <a href="/fontchecker/fontchecker.html">Font Checker</a>
-            <a href="fontviewer.html">Font Viewer(Premium Fonts)</a>
-            <a href="freefontviewer/freefontviewer.html">Free Font Viewer</a>
-            <a href="websitebuilder/websitebuilder.html">Website Builder</a>
-            <a href="ulicvscode/ulicvscode.html">ULIC SPA - VSCode Theme</a>
-            <a href="googlechrome/googlechrome.html">Google Chrome Inspired Website</a>
-			<a href="yearbook/cover.html">Yearbook Cover concept<a/>
-            
+        <a href="rajukscraped.html" class="card">
+            <div class="card-content">
+                <h2>Rajuk Scraped Website</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="/fontchecker/fontchecker.html" class="card">
+            <div class="card-content">
+                <h2>Font Checker</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="fontviewer.html" class="card">
+            <div class="card-content">
+                <h2>Font Viewer (Premium Fonts)</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="freefontviewer/freefontviewer.html" class="card">
+            <div class="card-content">
+                <h2>Free Font Viewer</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="websitebuilder/websitebuilder.html" class="card">
+            <div class="card-content">
+                <h2>Website Builder</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="ulicvscode/ulicvscode.html" class="card">
+            <div class="card-content">
+                <h2>ULIC SPA - VSCode Theme</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="googlechrome/googlechrome.html" class="card">
+            <div class="card-content">
+                <h2>Google Chrome Inspired Website</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="yearbook/cover.html" class="card">
+            <div class="card-content">
+                <h2>Yearbook Cover Concept</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="sci_fi_ui/index.html" class="card">
+            <div class="card-content">
+                <h2>Sci-Fi UI</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="frbd_code_explained.html" class="card">
+            <div class="card-content">
+                <h2>Frame of Revolution: Bangladesh 2.0 Code Explained</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <!-- Handling the long title gracefully with the grid card system -->
+        <a href="hsc_26_trinity_crest" class="card">
+            <div class="card-content">
+                <h2>ULAB College Section Crest Concept (A, B, H)</h2>
+                <!-- I kept the full concept in mind but maybe shortened the display title for impact, 
+                     or the CSS will handle the full text wrapping perfectly -->
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <a href="ulpc_recruitment_designs/index.html" class="card">
+            <div class="card-content">
+                <h2>ULPC Recruitment Design Concept</h2>
+            </div>
+            <span class="card-icon">&rarr;</span>
+        </a>
+
+        <div class="no-results" id="noResults">
+            No projects found matching your search.
         </div>
     </main>
+
+    <script>
+        // Simple search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            let hasVisible = false;
+
+            cards.forEach(card => {
+                const title = card.querySelector('h2').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'flex'; // Restore flex display
+                    hasVisible = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (!hasVisible) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 </html>

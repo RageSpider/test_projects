@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULPC Recruitment 2026 | Visual Arts</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fontshare & Google Fonts -->
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@200,300,400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- React & DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Satoshi"', 'sans-serif'],
+                        display: ['"Cabinet Grotesk"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'iso-black': '#050505',
+                        'iso-gray': '#121212',
+                        'iso-zinc': '#27272a',
+                        'tech-amber': '#F59E0B', 
+                        'tech-amber-dim': 'rgba(245, 158, 11, 0.2)',
+                    },
+                    backgroundImage: {
+                        'sensor-grid': "radial-gradient(circle, #1a1a1a 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e1e1e1;
+            overflow-x: hidden;
+            cursor: crosshair; /* Camera viewfinder vibe */
+        }
+
+        /* Sensor Grid Background */
+        .sensor-bg {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 40px 40px;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #F59E0B; }
+
+        /* Input Styling */
+        .tech-input {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .tech-input:focus {
+            outline: none;
+            border-color: #F59E0B;
+            background: rgba(245, 158, 11, 0.05);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        /* Checkbox Styling */
+        .tech-checkbox {
+            appearance: none;
+            width: 1.25em;
+            height: 1.25em;
+            border: 1px solid #555;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tech-checkbox:checked {
+            border-color: #F59E0B;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .tech-checkbox:checked::after {
+            content: '✕';
+            font-size: 0.8em;
+            color: #F59E0B;
+            font-weight: bold;
+        }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useLayoutEffect } = React;
+
+        // --- HUD HEADER COMPONENT ---
+        const HUDHeader = () => {
+            const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+            useEffect(() => {
+                const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="fixed top-0 left-0 w-full z-40 px-6 py-4 flex justify-between items-start font-mono text-[10px] md:text-xs text-white/40 pointer-events-none mix-blend-difference">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-tech-amber font-bold animate-pulse">REC ●</span>
+                        <span>[RAW] 4K 60FPS</span>
+                    </div>
+                    <div className="text-right flex flex-col gap-1">
+                        <span>{time}</span>
+                        <span>BAT 92%</span>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- HERO SECTION ---
+        const Hero = () => {
+            const titleRef = useRef(null);
+
+            useLayoutEffect(() => {
+                const ctx = gsap.context(() => {
+                    gsap.from(".hero-line", {
+                        scaleX: 0,
+                        duration: 1.5,
+                        ease: "expo.inOut"
+                    });
+                    
+                    gsap.from(titleRef.current.children, {
+                        y: 100,
+                        opacity: 0,
+                        stagger: 0.1,
+                        duration: 1.2,
+                        ease: "power4.out",
+                        delay: 0.5
+                    });
+
+                    gsap.from(".hero-meta", {
+                        opacity: 0,
+                        y: 20,
+                        duration: 1,
+                        delay: 1.2
+                    });
+                });
+                return () => ctx.revert();
+            }, []);
+
+            return (
+                <header className="min-h-[80vh] flex flex-col items-center justify-center relative px-6 pt-20">
+                    <div className="text-center max-w-5xl z-10">
+                        {/* Decorative Top Line */}
+                        <div className="mb-8 flex items-center justify-center gap-4 opacity-50 hero-meta">
+                            <div className="h-[1px] w-12 bg-tech-amber hero-line origin-right"></div>
+                            <span className="font-mono text-[10px] uppercase tracking-[0.4em] text-white">Est. 2024</span>
+                            <div className="h-[1px] w-12 bg-tech-amber hero-line origin-left"></div>
+                        </div>
+                        
+                        {/* Main Title */}
+                        <div ref={titleRef} className="overflow-hidden">
+                            <h1 className="font-display text-6xl md:text-9xl font-bold leading-[0.9] tracking-tighter text-white mb-2">
+                                <div className="overflow-hidden"><span className="block">PHOTOGRAPHER</span></div>
+                                <div className="overflow-hidden"><span className="block text-tech-amber/90">RECRUITMENT</span></div>
+                            </h1>
+                            <div className="overflow-hidden">
+                                <span className="block font-display italic text-4xl md:text-6xl text-white/20 mt-2">2026 Cohort</span>
+                            </div>
+                        </div>
+
+                        {/* Tagline */}
+                        <div className="mt-12 hero-meta">
+                            <div className="inline-block px-4 py-2 border border-white/10 bg-white/5 backdrop-blur-sm">
+                                <span className="font-mono text-[10px] md:text-xs uppercase tracking-[0.5em] text-tech-amber font-semibold">
+                                    SNAP.SHARE.INSPIRE
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <p className="mt-8 font-sans text-white/60 max-w-xl mx-auto leading-relaxed hero-meta text-sm md:text-base">
+                            Join the University Laboratory Photography Club. We document the unspoken narrative of campus life through the lens of precision and art.
+                        </p>
+                    </div>
+
+                    {/* Scroll Indicator */}
+                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 hero-meta">
+                        <span className="font-mono text-[9px] uppercase tracking-widest">Scroll to Focus</span>
+                        <div className="w-[1px] h-12 bg-gradient-to-b from-tech-amber to-transparent"></div>
+                    </div>
+                </header>
+            );
+        };
+
+        // --- ELIGIBILITY & SKILLS ---
+        const Specs = () => {
+            const sectionRef = useRef(null);
+
+            useLayoutEffect(() => {
+                gsap.fromTo(".spec-card", 
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        stagger: 0.2,
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top 80%",
+                        }
+                    }
+                );
+            }, []);
+
+            return (
+                <section ref={sectionRef} className="py-24 border-y border-white/10 bg-iso-gray/30 relative">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-tech-amber/50 to-transparent"></div>
+                    
+                    <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+                        {/* Eligibility */}
+                        <div className="spec-card">
+                            <div className="flex items-center gap-3 mb-6">
+                                <i data-lucide="target" className="text-tech-amber w-5 h-5"></i>
+                                <h3 className="font-mono text-sm uppercase tracking-widest text-white">Target Subjects</h3>
+                            </div>
+                            <div className="space-y-4 pl-8 border-l border-white/10">
+                                <p className="font-sans text-white/70 leading-relaxed">
+                                    Seeking dedicated visual operators from the following sectors:
+                                </p>
+                                <ul className="font-display text-xl md:text-2xl text-white space-y-2">
+                                    <li className="flex items-center gap-2"><span className="text-tech-amber text-sm">01</span> Class VIII</li>
+                                    <li className="flex items-center gap-2"><span className="text-tech-amber text-sm">02</span> Class IX (SSC 2028)</li>
+                                    <li className="flex items-center gap-2"><span className="text-tech-amber text-sm">03</span> Class X (SSC 2027)</li>
+                                    <li className="flex items-center gap-2"><span className="text-tech-amber text-sm">04</span> Class XI (HSC 2027)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Skills */}
+                        <div className="spec-card">
+                            <div className="flex items-center gap-3 mb-6">
+                                <i data-lucide="aperture" className="text-tech-amber w-5 h-5"></i>
+                                <h3 className="font-mono text-sm uppercase tracking-widest text-white">Required Modules</h3>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 pl-8 border-l border-white/10">
+                                {['Photography (DSLR)', 'Videography', 'Photo Editing', 'Graphics Design'].map((skill, i) => (
+                                    <div key={i} className="group flex items-center justify-between p-4 bg-white/5 border border-white/5 hover:border-tech-amber/50 transition-colors">
+                                        <span className="font-sans text-white">{skill}</span>
+                                        <i data-lucide="check" className="w-4 h-4 text-tech-amber opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // --- FORM COMPONENT ---
+        const RecruitmentForm = () => {
+            const [formData, setFormData] = useState({
+                fullName: '',
+                class: '',
+                section: '',
+                shift: '',
+                fbId: '',
+                contact: '',
+                device: '',
+                skills: [],
+                why: ''
+            });
+
+            const handleSkillChange = (skill) => {
+                setFormData(prev => {
+                    const skills = prev.skills.includes(skill)
+                        ? prev.skills.filter(s => s !== skill)
+                        : [...prev.skills, skill];
+                    return { ...prev, skills };
+                });
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                alert("Protocol Initiated. Data logged.");
+            };
+
+            const skillOptions = ['Photography', 'Videography', 'Photo Editing', 'Graphics Designing'];
+
+            return (
+                <section className="py-32 px-6 relative max-w-4xl mx-auto">
+                    <div className="mb-16 text-center">
+                        <h2 className="font-display text-4xl md:text-5xl text-white mb-2">Initialize Application</h2>
+                        <div className="font-mono text-xs text-tech-amber uppercase tracking-widest">Phase 1 Data Entry</div>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-8 bg-iso-zinc/20 p-8 md:p-12 border border-white/10 backdrop-blur-md relative overflow-hidden">
+                        {/* Decorative Corner Markers */}
+                        <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-tech-amber"></div>
+                        <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-tech-amber"></div>
+                        <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-tech-amber"></div>
+                        <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-tech-amber"></div>
+
+                        {/* Name & Class Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Full Name</label>
+                                <input type="text" required className="w-full p-3 font-sans tech-input" placeholder="e.g. John Doe" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Class Designation</label>
+                                <select required className="w-full p-3 font-sans tech-input appearance-none">
+                                    <option value="" className="bg-iso-black">Select Class...</option>
+                                    <option value="VIII" className="bg-iso-black">Class VIII</option>
+                                    <option value="IX" className="bg-iso-black">Class IX (SSC 2028)</option>
+                                    <option value="X" className="bg-iso-black">Class X (SSC 2027)</option>
+                                    <option value="XI" className="bg-iso-black">Class XI (HSC 2027)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Section & Shift Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Section</label>
+                                <input type="text" required className="w-full p-3 font-sans tech-input" placeholder="e.g. A" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Shift Protocol</label>
+                                <select required className="w-full p-3 font-sans tech-input appearance-none">
+                                    <option value="" className="bg-iso-black">Select Shift...</option>
+                                    <option value="Morning" className="bg-iso-black">Morning</option>
+                                    <option value="Day" className="bg-iso-black">Day</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Contact Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Comm Frequency (Phone)</label>
+                                <input type="tel" required className="w-full p-3 font-sans tech-input" placeholder="+880..." />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="font-mono text-xs text-white/50 uppercase">Social Uplink (FB Link)</label>
+                                <input type="url" required className="w-full p-3 font-sans tech-input" placeholder="facebook.com/..." />
+                            </div>
+                        </div>
+
+                        {/* Device Info */}
+                        <div className="space-y-2">
+                            <label className="font-mono text-xs text-white/50 uppercase">Equipment Specs (Device Info)</label>
+                            <input type="text" required className="w-full p-3 font-sans tech-input" placeholder="e.g. Canon 80D, iPhone 14 Pro, etc." />
+                        </div>
+
+                        {/* Skills Checkboxes */}
+                        <div className="space-y-4">
+                            <label className="font-mono text-xs text-white/50 uppercase block">Technical Proficiencies</label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {skillOptions.map(skill => (
+                                    <label key={skill} className="flex items-center gap-3 cursor-pointer group">
+                                        <input type="checkbox" className="tech-checkbox" onChange={() => handleSkillChange(skill)} />
+                                        <span className="font-sans text-sm text-white/70 group-hover:text-white transition-colors">{skill}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Why Join */}
+                        <div className="space-y-2">
+                            <label className="font-mono text-xs text-white/50 uppercase">Mission Statement (Why Join?)</label>
+                            <textarea rows="4" className="w-full p-3 font-sans tech-input" placeholder="Briefly describe your motivation..."></textarea>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="pt-6">
+                            <button type="submit" className="w-full group relative overflow-hidden bg-tech-amber text-black font-bold py-4 px-8 uppercase tracking-widest font-mono text-sm hover:bg-white transition-colors duration-300">
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                    Transmit Data <i data-lucide="send" className="w-4 h-4"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            );
+        };
+
+        // --- FOOTER ---
+        const Footer = () => {
+            return (
+                <footer className="border-t border-white/10 py-20 bg-black text-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(245,158,11,0.05)_0%,_transparent_50%)]"></div>
+                    
+                    <div className="relative z-10 max-w-4xl mx-auto px-6">
+                        <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-12">
+                            <a href="https://sites.google.com/view/ulpc/home" target="_blank" className="font-mono text-[10px] uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Website</a>
+                            <a href="https://www.instagram.com/ulpc.ig/" target="_blank" className="font-mono text-[10px] uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Instagram</a>
+                            <a href="https://www.facebook.com/universitylaboratoryphotographyclub/" target="_blank" className="font-mono text-[10px] uppercase tracking-widest text-white/50 hover:text-tech-amber transition-colors">Facebook</a>
+                        </div>
+
+                        <div className="flex flex-col items-center">
+                            <h2 className="font-display text-4xl text-white mb-2 tracking-widest">ULPC</h2>
+                            <p className="font-mono text-[10px] text-white/30 uppercase tracking-[0.3em]">
+                                University Laboratory Photography Club © 2026
+                            </p>
+                        </div>
+                    </div>
+                </footer>
+            );
+        };
+
+        const App = () => {
+            useLayoutEffect(() => {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+                
+                // Initialize Icons
+                lucide.createIcons();
+                
+                // Register GSAP ScrollTrigger
+                gsap.registerPlugin(ScrollTrigger);
+            }, []);
+
+            return (
+                <main className="min-h-screen relative z-10">
+                    <div className="sensor-bg"></div>
+                    <div className="noise"></div>
+                    
+                    <HUDHeader />
+                    <Hero />
+                    <Specs />
+                    <RecruitmentForm />
+                    <Footer />
+                </main>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
