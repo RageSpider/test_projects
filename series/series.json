@@ -1,0 +1,80 @@
+[
+  {
+    "id": "death_8",
+    "title": "DEATH 8",
+    "link": "death_8/index.html",
+    "tags": ["Psychological Horror", "Survival", "Surreal"],
+    "desc": "8 distinct realities (Grids) anchored by human vessels. The protagonist is trapped in a dream state where perception dictates survival.",
+    "icon": "fa-skull",
+    "accent": "#ef4444",
+    "lastUpdated": "2026-01-26",
+    "startDate": "2026-01-25",
+    "finishDate": null,
+    "status": "Ongoing"
+  },
+  {
+    "id": "hope_deception",
+    "title": "HOPE / DECEPTION",
+    "link": "placeholder_name_hope_deception/index.html",
+    "tags": ["Psychological Thriller", "Mystery", "Drama"],
+    "desc": "A protagonist forced through a relentless cycle of trust and betrayal. Who is the puppet master, and is hope just another trap?",
+    "icon": "fa-masks-theater",
+    "accent": "#f59e0b",
+    "lastUpdated": "2028-01-15",
+    "startDate": "2028-01-01",
+    "finishDate": null,
+    "status": "Drafting"
+  },
+  {
+    "id": "31st_june",
+    "title": "31st June",
+    "link": "31st_june/index.html",
+    "tags": ["Time Loop", "Sci-Fi", "Mystery"],
+    "desc": "An anomaly resets time to June 1st. You must solve the paradox before the calendar reaches a date that shouldn't exist: June 31st.",
+    "icon": "fa-clock",
+    "accent": "#a855f7",
+    "lastUpdated": "2028-12-01",
+    "startDate": "2028-11-15",
+    "finishDate": null,
+    "status": "Drafting"
+  },
+  {
+    "id": "202what",
+    "title": "202What?",
+    "link": "202what/index.html",
+    "tags": ["Alt-History", "Chaos", "Satire"],
+    "desc": "2020 starts normal. By 2029, reality has shifted into absolute madness. A decade where historical events spiral into the absurd.",
+    "icon": "fa-question",
+    "accent": "#eab308",
+    "lastUpdated": "2028-02-20",
+    "startDate": "2028-01-01",
+    "finishDate": null,
+    "status": "Drafting"
+  },
+  {
+    "id": "p_physics",
+    "title": "P for Physics, K for Murder",
+    "link": "p_for_physics_k_for_murder/index.html",
+    "tags": ["Dark Crime", "Noir", "Horror"],
+    "desc": "Intelligence weaponized. A gritty look at how the laws of physics are applied to commit horrific crimes against the innocent.",
+    "icon": "fa-atom",
+    "accent": "#64748b",
+    "lastUpdated": "2028-08-15",
+    "startDate": "2028-06-01",
+    "finishDate": null,
+    "status": "Drafting"
+  },
+  {
+    "id": "eng_not_needed",
+    "title": "English Not Needed",
+    "link": "english_not_needed/index.html",
+    "tags": ["Tragedy", "Drama", "Slice of Life"],
+    "desc": "A stubborn refusal to learn a language leads to a catastrophic misunderstanding. A story about communication, regret, and silence.",
+    "icon": "fa-language",
+    "accent": "#14b8a6",
+    "lastUpdated": "2028-05-10",
+    "startDate": "2028-04-01",
+    "finishDate": null,
+    "status": "Drafting"
+  }
+]

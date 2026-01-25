@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After One</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        // Using CSS variables defined in style block for dynamic OKLCH theming
+                        primary: 'var(--color-primary)',
+                        'primary-hover': 'var(--color-primary-hover)',
+                        'primary-soft': 'var(--color-primary-soft)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- DYNAMIC THEMING ENGINE (OKLCH) --- */
+        :root {
+            /* Default Hue (Blue-ish) */
+            --brand-hue: 260; 
+            
+            /* Light Mode Surface Colors */
+            --bg-body: #ffffff;
+            --bg-card: #f8fafc;
+            --bg-surface: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            
+            /* Dynamic Primary Colors */
+            --color-primary: oklch(0.55 0.2 var(--brand-hue));
+            --color-primary-hover: oklch(0.45 0.2 var(--brand-hue));
+            --color-primary-soft: oklch(0.96 0.05 var(--brand-hue));
+        }
+
+        .dark {
+            /* Dark Mode Surface Colors */
+            --bg-body: #09090b;
+            --bg-card: #121212;
+            --bg-surface: #1e1e22;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #27272a;
+
+            /* Dynamic Primary Colors (Adjusted lightness for dark mode) */
+            --color-primary: oklch(0.65 0.2 var(--brand-hue));
+            --color-primary-hover: oklch(0.75 0.2 var(--brand-hue));
+            --color-primary-soft: oklch(0.2 0.05 var(--brand-hue));
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-border {
+            border-color: var(--border-color);
+        }
+
+        /* Utilities */
+        .glass-nav {
+            background: var(--bg-body);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        /* Custom Range Slider for Hue */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            border-radius: 8px;
+            height: 6px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #000;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-primary selection:text-white">
+
+    <!-- NAVIGATION -->
+    <nav class="glass-nav sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            
+            <!-- Brand -->
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="resetHome()">
+                <div class="flex flex-col">
+                    <span class="font-serif font-bold text-2xl tracking-tight leading-none group-hover:text-primary transition-colors">After One</span>
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)] font-medium">Archive</span>
+                </div>
+            </div>
+
+            <!-- Desktop Search -->
+            <div class="hidden md:block flex-1 max-w-md mx-10 relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
+                <input type="text" id="searchInput" placeholder="Search library..." 
+                    class="w-full bg-[var(--bg-surface)] border border-transparent focus:border-primary rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none transition-all placeholder-[var(--text-muted)] text-[var(--text-main)]">
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-3 sm:gap-6">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" class="text-[var(--text-muted)] hover:text-primary transition-colors p-2" title="Toggle Theme">
+                    <i id="themeIcon" class="fas fa-moon text-lg"></i>
+                </button>
+
+                <!-- My List -->
+                <button onclick="toggleMyList()" id="btnMyList" class="hidden sm:flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-primary transition-colors">
+                    <i class="fas fa-bookmark"></i>
+                    <span>My List</span>
+                </button>
+
+                <!-- Profile Dropdown -->
+                <div class="relative group z-50">
+                    <button class="flex items-center gap-2 focus:outline-none">
+                        <div id="navUserAvatar" class="w-10 h-10 rounded-full bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-lg text-primary hover:ring-2 hover:ring-primary hover:ring-offset-2 hover:ring-offset-[var(--bg-body)] transition-all">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </button>
+                    
+                    <!-- Dropdown -->
+                    <div class="absolute right-0 mt-3 w-56 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right p-2">
+                        <div class="px-3 py-2 border-b border-[var(--border-color)] mb-2">
+                            <p id="navUserName" class="text-sm font-bold truncate">Guest</p>
+                            <p class="text-xs text-[var(--text-muted)]">Reader</p>
+                        </div>
+                        <button onclick="openModal('userModal')" class="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[var(--bg-surface)] transition-colors flex items-center gap-3">
+                            <i class="fas fa-id-card text-[var(--text-muted)]"></i> Profile Settings
+                        </button>
+                        <button onclick="openModal('settingsModal')" class="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[var(--bg-surface)] transition-colors flex items-center gap-3">
+                            <i class="fas fa-sliders text-[var(--text-muted)]"></i> App Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10">
+
+        <!-- Header Area -->
+        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border-color)] pb-8">
+            <div>
+                <h1 id="pageTitle" class="text-4xl md:text-5xl font-serif font-medium mb-3">Library</h1>
+                <p id="pageSubtitle" class="text-[var(--text-muted)] text-lg font-light">Explore the collection of narratives.</p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Sort</span>
+                <div class="relative">
+                    <select id="sortSelect" class="appearance-none bg-[var(--bg-surface)] border border-[var(--border-color)] pl-4 pr-10 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer">
+                        <option value="status">Status (Default)</option>
+                        <option value="newest">Recently Updated</option>
+                        <option value="az">Title (A-Z)</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] pointer-events-none"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Continue Reading (Dynamic) -->
+        <div id="continueReading" class="hidden mb-12 fade-in">
+            <div class="bg-[var(--color-primary-soft)] border border-primary/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-primary text-[var(--bg-body)] flex items-center justify-center text-xl">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Jump back in</p>
+                        <h3 id="lastReadTitle" class="text-xl font-serif font-bold">Story Title</h3>
+                    </div>
+                </div>
+                <a id="lastReadLink" href="#" class="px-6 py-2 bg-primary text-[var(--bg-body)] font-medium rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 whitespace-nowrap">
+                    Continue Reading
+                </a>
+            </div>
+        </div>
+
+        <!-- Grid -->
+        <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards injected via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden py-32 text-center fade-in">
+            <div class="w-20 h-20 bg-[var(--bg-surface)] rounded-full flex items-center justify-center mx-auto mb-6 text-[var(--text-muted)] text-3xl">
+                <i class="fas fa-ghost"></i>
+            </div>
+            <h3 class="text-2xl font-serif mb-2">It's quiet here.</h3>
+            <p class="text-[var(--text-muted)] mb-6">No stories match your criteria.</p>
+            <button onclick="resetHome()" class="text-primary hover:underline font-medium">Clear all filters</button>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-[var(--border-color)] mt-auto bg-[var(--bg-surface)]">
+        <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <span class="font-serif font-bold text-xl block mb-1">After One</span>
+                <p class="text-sm text-[var(--text-muted)]">Local browser-based narrative engine.</p>
+            </div>
+            <div class="text-sm text-[var(--text-muted)] font-mono">
+                &copy; <span id="year"></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    
+    <!-- User Profile Modal -->
+    <div id="userModal" class="fixed inset-0 z-[100] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('userModal')"></div>
+        <!-- Content -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-2xl overflow-hidden fade-in p-0">
+            <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center">
+                <h3 class="font-serif text-xl font-bold">Edit Profile</h3>
+                <button onclick="closeModal('userModal')" class="text-[var(--text-muted)] hover:text-primary"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <form id="userForm" class="p-6 space-y-6">
+                <!-- Icon Picker -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-3">Choose Persona</label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <!-- Icons generated by JS -->
+                        <div id="iconGrid" class="contents"></div>
+                    </div>
+                </div>
+
+                <!-- Name Input -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">Display Name</label>
+                    <input type="text" id="userNameInput" class="w-full bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" placeholder="Enter your name">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-primary text-[var(--bg-body)] font-bold rounded-lg hover:opacity-90 transition-opacity">Save Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('settingsModal')"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-2xl overflow-hidden fade-in">
+            <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center">
+                <h3 class="font-serif text-xl font-bold">App Settings</h3>
+                <button onclick="closeModal('settingsModal')" class="text-[var(--text-muted)] hover:text-primary"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-8">
+                
+                <!-- Appearance -->
+                <div>
+                    <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-palette text-primary"></i> Appearance
+                    </h4>
+                    
+                    <div class="space-y-4">
+                        <!-- Hue Slider -->
+                        <div>
+                            <div class="flex justify-between text-xs text-[var(--text-muted)] mb-2">
+                                <span>Accent Color</span>
+                                <span id="hueValueDisplay">Blue</span>
+                            </div>
+                            <input type="range" id="hueSlider" min="0" max="360" class="w-full cursor-pointer" oninput="updateHue(this.value)">
+                        </div>
+
+                        <!-- Theme Buttons -->
+                        <div class="flex gap-3">
+                            <button onclick="setThemeMode('light')" class="flex-1 py-2 border border-[var(--border-color)] rounded-lg hover:border-primary hover:text-primary transition-colors text-sm">Light</button>
+                            <button onclick="setThemeMode('dark')" class="flex-1 py-2 border border-[var(--border-color)] rounded-lg hover:border-primary hover:text-primary transition-colors text-sm">Dark</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-px bg-[var(--border-color)]"></div>
+
+                <!-- Data -->
+                <div>
+                    <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-database text-primary"></i> Data Management
+                    </h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="exportData()" class="flex flex-col items-center justify-center p-4 border border-[var(--border-color)] rounded-xl hover:bg-[var(--bg-surface)] transition-colors group">
+                            <i class="fas fa-download text-2xl mb-2 text-[var(--text-muted)] group-hover:text-primary"></i>
+                            <span class="text-xs font-bold">Backup Data</span>
+                        </button>
+                        <label class="flex flex-col items-center justify-center p-4 border border-[var(--border-color)] rounded-xl hover:bg-[var(--bg-surface)] transition-colors cursor-pointer group">
+                            <input type="file" class="hidden" accept=".json" onchange="importData(this)">
+                            <i class="fas fa-upload text-2xl mb-2 text-[var(--text-muted)] group-hover:text-primary"></i>
+                            <span class="text-xs font-bold">Restore Data</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        // --- CONFIG ---
+        const ICONS = ['fa-user', 'fa-ghost', 'fa-dragon', 'fa-robot', 'fa-cat', 'fa-crow', 'fa-bolt', 'fa-star', 'fa-gem', 'fa-crown'];
+        const KEYS = { USER: 'ao_user', DATA: 'ao_data', THEME: 'ao_theme' };
+        
+        // --- STATE ---
+        let state = {
+            series: [],
+            user: JSON.parse(localStorage.getItem(KEYS.USER)) || { name: 'Guest', icon: 'fa-user' },
+            bookmarks: [], // stored in DATA
+            lastRead: null, // stored in DATA
+            filters: { search: '', mode: 'all', sort: 'status' },
+            theme: JSON.parse(localStorage.getItem(KEYS.THEME)) || { mode: 'dark', hue: 260 }
+        };
+
+        // --- INIT ---
+        async function init() {
+            // Apply Theme Immediately
+            applyTheme();
+            
+            // Load Series
+            try {
+                const res = await fetch('series.json');
+                if(!res.ok) throw new Error();
+                state.series = await res.json();
+            } catch (e) {
+                state.series = []; // Handle error gracefully in UI
+                document.getElementById('grid').innerHTML = '<div class="col-span-full text-center p-10 text-[var(--text-muted)]">Could not load library database.</div>';
+            }
+
+            // Load Local Data (Bookmarks/History)
+            const localData = JSON.parse(localStorage.getItem(KEYS.DATA)) || { bookmarks: [], lastRead: null };
+            state.bookmarks = localData.bookmarks;
+            state.lastRead = localData.lastRead;
+
+            // Render
+            renderUser();
+            renderGrid();
+            renderContinueReading();
+            setupIconPicker();
+        }
+
+        // --- THEME ENGINE ---
+        function applyTheme() {
+            // Mode
+            if (state.theme.mode === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = 'fas fa-sun';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeIcon').className = 'fas fa-moon';
+            }
+            
+            // Hue
+            document.documentElement.style.setProperty('--brand-hue', state.theme.hue);
+            document.getElementById('hueSlider').value = state.theme.hue;
+            
+            // Save
+            localStorage.setItem(KEYS.THEME, JSON.stringify(state.theme));
+        }
+
+        function toggleTheme() {
+            state.theme.mode = state.theme.mode === 'dark' ? 'light' : 'dark';
+            applyTheme();
+        }
+
+        function setThemeMode(mode) {
+            state.theme.mode = mode;
+            applyTheme();
+        }
+
+        function updateHue(val) {
+            state.theme.hue = val;
+            applyTheme();
+        }
+
+        // --- RENDERERS ---
+        function renderUser() {
+            document.getElementById('navUserName').textContent = state.user.name;
+            document.getElementById('navUserAvatar').innerHTML = `<i class="fas ${state.user.icon}"></i>`;
+            document.getElementById('userNameInput').value = state.user.name;
+            
+            // Update active icon in picker
+            document.querySelectorAll('.icon-option').forEach(btn => {
+                if (btn.dataset.icon === state.user.icon) {
+                    btn.classList.add('bg-primary', 'text-[var(--bg-body)]');
+                    btn.classList.remove('bg-[var(--bg-surface)]', 'text-[var(--text-muted)]');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-[var(--bg-body)]');
+                    btn.classList.add('bg-[var(--bg-surface)]', 'text-[var(--text-muted)]');
+                }
+            });
+        }
+
+        function renderContinueReading() {
+            const container = document.getElementById('continueReading');
+            if (!state.lastRead) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            const series = state.series.find(s => s.id === state.lastRead);
+            if (!series) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('lastReadTitle').textContent = series.title;
+            const btn = document.getElementById('lastReadLink');
+            btn.href = series.link;
+            btn.onclick = () => trackRead(series.id);
+            container.classList.remove('hidden');
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            let items = state.series.filter(item => {
+                const q = state.filters.search.toLowerCase();
+                const matchesSearch = item.title.toLowerCase().includes(q) || 
+                                      item.desc.toLowerCase().includes(q) ||
+                                      (item.tags && item.tags.some(t => t.toLowerCase().includes(q)));
+                
+                if (state.filters.mode === 'bookmarks') return matchesSearch && state.bookmarks.includes(item.id);
+                return matchesSearch;
+            });
+
+            // Sort logic
+            items.sort((a, b) => {
+                if (state.filters.sort === 'status') {
+                    const priority = { 'Ongoing': 1, 'Complete': 2, 'Drafting': 3 };
+                    return (priority[a.status] || 99) - (priority[b.status] || 99);
+                }
+                if (state.filters.sort === 'newest') return new Date(b.lastUpdated || 0) - new Date(a.lastUpdated || 0);
+                if (state.filters.sort === 'az') return a.title.localeCompare(b.title);
+                return 0;
+            });
+
+            if (items.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+            } else {
+                document.getElementById('emptyState').classList.add('hidden');
+                
+                items.forEach(item => {
+                    const isBookmarked = state.bookmarks.includes(item.id);
+                    const el = document.createElement('div');
+                    el.className = 'theme-card rounded-xl p-8 flex flex-col hover:border-primary transition-colors duration-300 group relative overflow-hidden';
+                    
+                    // Status Badge Logic
+                    let statusClass = '';
+                    if (item.status === 'Ongoing') statusClass = 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
+                    else if (item.status === 'Complete') statusClass = 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+                    else statusClass = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+
+                    el.innerHTML = `
+                        <!-- Subtle BG Gradient -->
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] opacity-[0.03] group-hover:opacity-[0.08] transition-opacity pointer-events-none -mr-20 -mt-20"></div>
+
+                        <div class="relative z-10 flex flex-col flex-grow">
+                            <!-- Meta Top -->
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider border ${statusClass}">
+                                    ${item.status}
+                                </span>
+                                <div class="flex gap-3">
+                                    <button onclick="toggleBookmark('${item.id}')" class="text-lg transition-colors hover:scale-110 ${isBookmarked ? 'text-primary' : 'text-[var(--text-muted)] hover:text-primary'}">
+                                        <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Title & Desc -->
+                            <a href="${item.link}" onclick="trackRead('${item.id}')" class="block group-hover:text-primary transition-colors">
+                                <h2 class="text-2xl font-serif font-bold mb-3 leading-tight">${item.title}</h2>
+                            </a>
+                            <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-6 flex-grow">
+                                ${item.desc}
+                            </p>
+
+                            <!-- Footer -->
+                            <div class="pt-6 border-t border-[var(--border-color)] flex items-center justify-between mt-auto">
+                                <div class="flex gap-2">
+                                    ${(item.tags || []).slice(0, 2).map(t => `<span class="text-xs text-[var(--text-muted)] bg-[var(--bg-surface)] px-2 py-1 rounded">${t}</span>`).join('')}
+                                </div>
+                                <a href="${item.link}" onclick="trackRead('${item.id}')" class="w-10 h-10 rounded-full border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)] hover:bg-primary hover:text-[var(--bg-body)] hover:border-primary transition-all">
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(el);
+                });
+            }
+
+            // Headers
+            if (state.filters.mode === 'bookmarks') {
+                document.getElementById('pageTitle').textContent = 'My List';
+                document.getElementById('pageSubtitle').textContent = `${items.length} saved narratives.`;
+                document.getElementById('btnMyList').classList.add('text-primary');
+            } else {
+                document.getElementById('pageTitle').textContent = 'Library';
+                document.getElementById('pageSubtitle').textContent = 'Explore the collection of narratives.';
+                document.getElementById('btnMyList').classList.remove('text-primary');
+            }
+        }
+
+        // --- ACTIONS ---
+        function toggleBookmark(id) {
+            if (state.bookmarks.includes(id)) state.bookmarks = state.bookmarks.filter(b => b !== id);
+            else state.bookmarks.push(id);
+            saveData();
+            renderGrid();
+        }
+
+        function trackRead(id) {
+            state.lastRead = id;
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem(KEYS.DATA, JSON.stringify({ bookmarks: state.bookmarks, lastRead: state.lastRead }));
+        }
+
+        function setupIconPicker() {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = ICONS.map(icon => `
+                <button type="button" class="icon-option w-10 h-10 rounded-lg flex items-center justify-center text-lg bg-[var(--bg-surface)] text-[var(--text-muted)] hover:ring-2 hover:ring-primary transition-all" 
+                    data-icon="${icon}" onclick="selectIcon('${icon}')">
+                    <i class="fas ${icon}"></i>
+                </button>
+            `).join('');
+        }
+
+        function selectIcon(icon) {
+            state.user.icon = icon;
+            renderUser();
+        }
+
+        // --- GLOBAL UI HANDLERS ---
+        function resetHome() {
+            state.filters.mode = 'all';
+            state.filters.search = '';
+            document.getElementById('searchInput').value = '';
+            renderGrid();
+        }
+
+        function toggleMyList() {
+            state.filters.mode = state.filters.mode === 'all' ? 'bookmarks' : 'all';
+            renderGrid();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // --- FORMS & EVENTS ---
+        document.getElementById('userForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('userNameInput').value;
+            if (name) state.user.name = name;
+            localStorage.setItem(KEYS.USER, JSON.stringify(state.user));
+            closeModal('userModal');
+            renderUser();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            state.filters.search = e.target.value;
+            renderGrid();
+        });
+
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            state.filters.sort = e.target.value;
+            renderGrid();
+        });
+
+        // --- IMPORT/EXPORT ---
+        function exportData() {
+            const data = { user: state.user, bookmarks: state.bookmarks, lastRead: state.lastRead, theme: state.theme };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'after_one_backup.json';
+            a.click();
+        }
+
+        function importData(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const d = JSON.parse(e.target.result);
+                    if(d.user && d.bookmarks) {
+                        localStorage.setItem(KEYS.USER, JSON.stringify(d.user));
+                        localStorage.setItem(KEYS.DATA, JSON.stringify({ bookmarks: d.bookmarks, lastRead: d.lastRead }));
+                        if (d.theme) localStorage.setItem(KEYS.THEME, JSON.stringify(d.theme));
+                        location.reload();
+                    }
+                } catch(err) { alert('Invalid File'); }
+            };
+            reader.readAsText(input.files[0]);
+        }
+
+        // Boot
+        init();
+
+    </script>
+</body>
+</html>
