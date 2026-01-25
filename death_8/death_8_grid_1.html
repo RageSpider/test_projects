@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEATH 8: GRID 1 [ROOM 8]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@400;700&family=Nosifer&family=Rubik+Glitch&family=Creepster&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-red: #ff003c;
+            --dark-blood: #4a0000;
+            --void-black: #050505;
+            --term-green: #00ff41;
+            --signal-yellow: #fcee0a;
+        }
+
+        body {
+            background-color: #000;
+            color: #d1d1d1;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            cursor: crosshair;
+        }
+
+        /* --- CRT & ATMOSPHERE FX --- */
+        .scanlines {
+            position: fixed; top: 0; left: 0; w: 100%; h: 100%; pointer-events: none; z-index: 50;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            animation: scrollLines 10s linear infinite;
+        }
+        @keyframes scrollLines { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 51;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%);
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
+        }
+
+        .crt-flicker {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 49;
+            background: rgba(18, 16, 16, 0.1);
+            opacity: 0.1;
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker { 0% { opacity: 0.05; } 50% { opacity: 0.1; } 100% { opacity: 0.05; } }
+
+        .rgb-split {
+            text-shadow: 2px 0 var(--neon-red), -2px 0 blue;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .font-header { font-family: 'Syncopate', sans-serif; }
+        .font-horror { font-family: 'Nosifer', cursive; }
+        .font-glitch { font-family: 'Rubik Glitch', cursive; }
+        
+        .text-glow { text-shadow: 0 0 10px var(--neon-red); }
+        .text-glow-green { text-shadow: 0 0 10px var(--term-green); }
+
+        /* --- LAYOUT SYSTEM --- */
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden;
+            background-color: var(--void-black);
+            z-index: 10;
+        }
+        .page.active { display: flex; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-red); }
+
+        /* --- RESPONSIVE MAP (ASPECT RATIO LOCK) --- */
+        #map-wrapper {
+            width: 95%; max-width: 1000px; margin: 0 auto;
+            position: relative;
+        }
+        #map-container {
+            position: relative; width: 100%;
+            padding-bottom: 100%; /* 1:1 Aspect Ratio on Mobile */
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.1);
+        }
+        @media (min-width: 768px) {
+            #map-container { padding-bottom: 70%; } /* Wider on Desktop */
+        }
+
+        /* Nodes - Percent Based Positioning */
+        .node {
+            position: absolute; transform: translate(-50%, -50%); z-index: 20;
+            width: 24%; height: 12%; 
+            display: flex; align-items: center; justify-content: center;
+            background: #050505; border: 1px solid #555;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .node:hover {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 15px var(--neon-red);
+            z-index: 30; background: #111; transform: translate(-50%, -50%) scale(1.1);
+        }
+        .node-content { text-align: center; width: 100%; pointer-events: none; }
+        .node-label { font-size: 0.5rem; letter-spacing: 1px; margin-bottom: 2px; }
+        .node-title { font-weight: bold; font-size: 0.65rem; line-height: 1.1; }
+        
+        @media(min-width: 768px) {
+            .node { width: 140px; height: 70px; }
+            .node-label { font-size: 0.6rem; }
+            .node-title { font-size: 0.8rem; }
+        }
+
+        /* SVG Lines */
+        #map-lines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none;
+        }
+        .path-line { stroke: #444; stroke-width: 2; vector-effect: non-scaling-stroke; }
+        .path-line-dash { stroke: #444; stroke-width: 1; stroke-dasharray: 4,4; vector-effect: non-scaling-stroke; }
+
+        /* --- UI ELEMENTS --- */
+        .btn-glitch {
+            position: relative; padding: 15px 40px; border: 1px solid var(--neon-red);
+            color: var(--neon-red); background: transparent; font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer; overflow: hidden;
+            transition: 0.3s; font-weight: bold;
+        }
+        .btn-glitch:hover { background: var(--neon-red); color: black; box-shadow: 0 0 20px var(--neon-red); }
+        
+        .back-btn {
+            position: fixed; bottom: 30px; right: 30px; z-index: 90;
+            background: black; border: 1px solid white; color: white;
+            padding: 10px 20px; font-family: 'Share Tech Mono'; cursor: pointer;
+            text-transform: uppercase; font-size: 0.8rem;
+        }
+        .back-btn:hover { background: white; color: black; }
+
+        .sys-log {
+            font-size: 0.6rem; color: #555; font-family: 'Share Tech Mono';
+            position: absolute; bottom: 10px; left: 10px;
+            pointer-events: none; white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FX LAYERS -->
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
+    <div class="vignette"></div>
+    <div id="transition-curtain" class="fixed inset-0 bg-black z-[100] pointer-events-none opacity-0 flex items-center justify-center">
+        <div class="font-glitch text-6xl text-red-600 animate-pulse">LOADING...</div>
+    </div>
+
+    <!-- ================= PAGE 1: INTRO ================= -->
+    <div id="page-intro" class="page active justify-center items-center text-center bg-black">
+        <!-- Dynamic Background -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop')] bg-cover opacity-20 mix-blend-hard-light"></div>
+        
+        <div class="relative z-20 flex flex-col items-center">
+            <h2 class="text-sm md:text-xl text-gray-500 tracking-[0.8em] mb-4 font-header">SERIES: DEATH 8</h2>
+            <h1 class="text-6xl md:text-9xl font-glitch rgb-split mb-2 text-white">ROOM 8</h1>
+            <p class="text-red-600 tracking-[0.5em] text-xs md:text-sm animate-pulse mb-12 font-bold border-b border-red-600 pb-4">GRID 01 // ENTRY 01</p>
+            
+            <div class="max-w-md w-full bg-black/80 border-l-4 border-red-600 p-6 text-left shadow-[0_0_50px_rgba(255,0,0,0.2)] backdrop-blur-md">
+                <p class="text-green-500 text-xs mb-2">> SYSTEM_READY</p>
+                <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                    Welcome to the Nightmare Grid.
+                    <br>8 Rooms. 8 Hours.
+                    <br>Sleep: 10:00 PM. Wake: 06:00 AM.
+                </p>
+                <div class="text-xs space-y-1 font-bold">
+                    <p class="text-red-500">[!] INJURY IN DREAM = REALITY WOUND</p>
+                    <p class="text-red-500">[!] SYSTEM DEATH = TERMINATION</p>
+                </div>
+            </div>
+
+            <button onclick="navTo('page-map')" class="btn-glitch mt-12">INITIALIZE</button>
+        </div>
+        
+        <div class="absolute bottom-5 text-[0.5rem] text-gray-600 tracking-widest">
+            BY ENTERING, YOU CONSENT TO PSYCHOLOGICAL TRAUMA.
+        </div>
+    </div>
+
+    <!-- ================= PAGE 2: MAP HUB ================= -->
+    <div id="page-map" class="page bg-[#080808]">
+        <header class="p-6 md:p-8 flex justify-between items-end border-b border-gray-800 bg-black/90">
+            <div>
+                <h2 class="text-3xl md:text-5xl font-header text-white text-glow">GRID 01</h2>
+                <p class="text-xs text-red-500 tracking-widest mt-1 animate-pulse">STATUS: ACTIVE // NIGHT 1</p>
+            </div>
+            <div class="text-right hidden md:block">
+                <p class="text-gray-600 text-xs">DEATH 8 SERIES</p>
+                <div class="flex items-center justify-end gap-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                    <p class="text-green-500 text-sm font-bold">LIVE FEED</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow flex items-center justify-center p-4">
+            <div id="map-wrapper">
+                <div id="map-container">
+                    
+                    <!-- SVG PATHS -->
+                    <svg id="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <!-- 1 -> 2 -->
+                        <line x1="50" y1="10" x2="50" y2="25" class="path-line" />
+                        <!-- 2 -> 4 & 3 -->
+                        <line x1="50" y1="25" x2="25" y2="40" class="path-line" />
+                        <line x1="50" y1="25" x2="75" y2="40" class="path-line" />
+                        <!-- 4 -> 6 & 3 -> 5 -->
+                        <line x1="25" y1="40" x2="25" y2="60" class="path-line" />
+                        <line x1="75" y1="40" x2="75" y2="60" class="path-line" />
+                        <!-- Cross (Locked visual) -->
+                        <line x1="25" y1="60" x2="40" y2="75" class="path-line-dash" />
+                        <line x1="75" y1="60" x2="60" y2="75" class="path-line-dash" />
+                        <!-- Merge to 7 & 8 -->
+                        <line x1="40" y1="75" x2="30" y2="90" class="path-line" />
+                        <line x1="60" y1="75" x2="70" y2="90" class="path-line" />
+                    </svg>
+
+                    <!-- NODES -->
+                    
+                    <!-- R1 -->
+                    <div onclick="openRoom('room-1')" class="node" style="top: 10%; left: 50%; border-color: #fff;">
+                        <div class="node-content">
+                            <div class="node-label text-green-500">START</div>
+                            <div class="node-title text-white">01: REALITY</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R2 -->
+                    <div onclick="openRoom('room-2')" class="node" style="top: 25%; left: 50%;">
+                        <div class="node-content">
+                            <div class="node-label text-yellow-500">GATEWAY</div>
+                            <div class="node-title text-gray-300">02: SIGNAL</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R4 -->
+                    <div onclick="openRoom('room-4')" class="node" style="top: 40%; left: 25%;">
+                        <div class="node-content">
+                            <div class="node-label text-yellow-500">PUZZLE</div>
+                            <div class="node-title text-gray-300">04: STUDY</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R3 -->
+                    <div onclick="openRoom('room-3')" class="node" style="top: 40%; left: 75%;">
+                        <div class="node-content">
+                            <div class="node-label text-blue-400">PHYSICS</div>
+                            <div class="node-title text-gray-300">03: FOAM</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R6 -->
+                    <div onclick="openRoom('room-6')" class="node" style="top: 60%; left: 25%; border-color: #800000; background: #0f0000;">
+                        <div class="node-content">
+                            <div class="node-label text-red-500 animate-pulse">PSYCHE</div>
+                            <div class="node-title text-red-600">06: SEX ROOM</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R5 -->
+                    <div onclick="openRoom('room-5')" class="node" style="top: 60%; left: 75%;">
+                        <div class="node-content">
+                            <div class="node-label text-red-500">LETHAL</div>
+                            <div class="node-title text-gray-300">05: METAL</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R7 -->
+                    <div onclick="openRoom('room-7')" class="node" style="top: 90%; left: 30%;">
+                        <div class="node-content">
+                            <div class="node-label text-red-500">JUDGMENT</div>
+                            <div class="node-title text-gray-300">07: CROWS</div>
+                        </div>
+                    </div>
+                    
+                    <!-- R8 -->
+                    <div onclick="openRoom('room-8')" class="node" style="top: 90%; left: 70%; border-color: #00ff41;">
+                        <div class="node-content">
+                            <div class="node-label text-green-500">SUPPLY</div>
+                            <div class="node-title text-green-500">08: MARKET</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Live System Log -->
+                    <div id="sys-log" class="sys-log">
+                        > SYSTEM MONITORING...
+                    </div>
+
+                </div>
+            </div>
+        </main>
+        
+        <div class="text-center pb-8">
+            <button onclick="openEndgame()" class="text-xs border border-red-800 text-red-800 px-4 py-2 hover:bg-red-900 hover:text-white transition-colors uppercase font-bold">>> View Endgame Protocols <<</button>
+        </div>
+    </div>
+
+    <!-- ================= ROOM TEMPLATES ================= -->
+
+    <!-- ROOM 1 -->
+    <div id="room-1" class="page bg-black">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1633055979809-5a9534238716?q=80&w=2070&auto=format&fit=crop')] bg-cover opacity-20"></div>
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-5xl md:text-8xl text-white font-bold mb-4 mix-blend-difference">01 // REALITY</h1>
+            <div class="w-full h-1 bg-white mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-black/80 p-6 border border-gray-800">
+                    <p class="text-green-500 tracking-widest mb-4 font-bold">[ SAFE ZONE ]</p>
+                    <p class="text-gray-300 mb-4">You wake up here. It looks like your apartment, but the shadows are too long.</p>
+                    <ul class="list-disc pl-5 text-gray-400 space-y-3 text-sm">
+                        <li><strong class="text-white">Healing:</strong> Return here to heal any injury.</li>
+                        <li><strong class="text-white">Fasting:</strong> You cannot consume food/drink here.</li>
+                        <li><strong class="text-white">Strategy:</strong> Raid the fridge. Take meat. Save it for Room 7.</li>
+                    </ul>
+                </div>
+                <div class="border border-green-900 bg-black p-4 font-mono text-xs text-green-500 h-fit">
+                    > LOCATION: BEDROOM<br>
+                    > TIME: 22:05:00<br>
+                    > HEART_RATE: 110 BPM<br>
+                    > STATUS: <span class="animate-pulse">AWAKE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 2 -->
+    <div id="room-2" class="page bg-[#0a0a0a]">
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-5xl md:text-8xl text-yellow-500 font-header mb-4 text-glow">02 // SIGNAL</h1>
+            <div class="w-full h-1 bg-yellow-900 mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <p class="text-yellow-500 tracking-widest mb-4 font-bold">[ THE GATEWAY ]</p>
+                    <p class="text-gray-400 mb-6 text-justify">A rusted industrial shaft plunging into darkness. The elevator uses a heavy manual crank.</p>
+                    <div class="p-6 border-l-4 border-yellow-600 bg-yellow-900/10">
+                        <h3 class="font-bold text-white mb-2">MECHANIC: SYNC CHECK</h3>
+                        <p class="text-sm text-gray-400">Operating the crank requires effort. It forces you to realize: You are not alone. Wait for others or risk getting stuck.</p>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="w-48 h-48 border-[10px] border-yellow-900 rounded-full flex items-center justify-center animate-[spin_8s_linear_infinite] shadow-[0_0_50px_rgba(150,100,0,0.2)]">
+                        <div class="w-1 h-full bg-yellow-900"></div>
+                        <div class="h-1 w-full bg-yellow-900 absolute"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 3 -->
+    <div id="room-3" class="page bg-gray-100 text-black">
+        <canvas id="foam-canvas" class="absolute inset-0 opacity-20 pointer-events-none"></canvas>
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-6xl md:text-8xl font-bold mb-4 tracking-tighter">03 // FOAM</h1>
+            <div class="w-full h-1 bg-black mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <p class="text-blue-600 font-bold tracking-widest mb-4">[ PHYSICS TRAP ]</p>
+                    <p class="text-gray-800 text-lg mb-4">A white void. Soft. Silent. Frictionless.</p>
+                    <ul class="list-disc pl-5 text-gray-800 font-medium space-y-2">
+                        <li><strong>Newton's Nightmare:</strong> Infinite acceleration. No brakes.</li>
+                        <li><strong>The Threat:</strong> The room is safe (Invincible). The Exit is fatal.</li>
+                        <li><strong>Logic:</strong> Exit velocity > 50mph = Death in Room 5.</li>
+                    </ul>
+                </div>
+                <div class="flex items-center justify-center border-4 border-black p-10 bg-white shadow-2xl rotate-2">
+                    <h2 class="text-5xl font-black text-center uppercase leading-none">SLOW<br>DOWN</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 4 -->
+    <div id="room-4" class="page bg-[#d6cfc5] text-black">
+        <div id="formulas-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-6xl md:text-8xl font-serif italic mb-4">04 // Study</h1>
+            <div class="w-full h-1 bg-black mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-white p-8 shadow-2xl border border-gray-400 z-20">
+                    <p class="text-red-900 font-bold tracking-widest mb-4">[ THE EXAM ]</p>
+                    <p class="font-serif italic text-xl mb-6">"Retention is survival."</p>
+                    <div class="space-y-4 font-serif text-sm">
+                        <p>1. You receive 10 pages of questions.</p>
+                        <p>2. Locking an answer vanishes the text.</p>
+                        <p>3. <span class="font-bold">Tools:</span> Calculators must be brought from Room 8.</p>
+                        <p class="text-red-600 font-bold mt-4 uppercase">Wrong Answer = Termination.</p>
+                    </div>
+                </div>
+                <div class="relative bg-white p-10 shadow-xl border border-gray-300 -rotate-1 z-10 handwritten font-serif text-xl">
+                    <p class="mb-8">Q: Calculate the trajectory of your regret.</p>
+                    <p class="border-b-2 border-black pb-2 text-gray-400">Answer: ____________________</p>
+                    <p class="text-xs text-red-600 font-sans font-bold mt-4 uppercase tracking-widest">Passed Condition: 10/10 Correct</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 5 -->
+    <div id="room-5" class="page bg-black">
+        <div class="absolute inset-0 bg-[radial-gradient(circle,rgba(80,0,0,0.5)_0%,rgba(0,0,0,1)_100%)]"></div>
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-6xl md:text-9xl text-red-600 font-horror mb-4 animate-pulse text-glow">05 // METAL</h1>
+            <div class="w-full h-1 bg-red-800 mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <p class="text-red-500 font-bold tracking-widest mb-4">[ LETHAL ZONE ]</p>
+                    <p class="text-gray-400 mb-6">Spinning blades. Pistons. Rust. Blood. The smell of iron.</p>
+                    <div class="bg-red-900/10 p-6 border border-red-900 backdrop-blur-md">
+                        <h3 class="text-red-500 font-bold mb-2">SAFE MODE PROTOCOL</h3>
+                        <p class="text-sm text-gray-300">Survive the sequence <strong>ONCE</strong>. The traps will then ignore you, turning this room into a safe highway.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 h-64 opacity-80">
+                    <div class="bg-gray-800 border-b-8 border-red-700 animate-[bounce_1.2s_infinite]"></div>
+                    <div class="bg-gray-800 border-t-8 border-red-700 animate-[bounce_1.6s_infinite]"></div>
+                    <div class="bg-gray-800 border-b-8 border-red-700 animate-[bounce_1.5s_infinite]"></div>
+                    <div class="bg-gray-800 border-t-8 border-red-700 animate-[bounce_0.8s_infinite]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 6 -->
+    <div id="room-6" class="page bg-[#0f0000]">
+        <!-- Heartbeat BG -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="w-[60vw] h-[60vw] bg-red-600 rounded-full blur-[150px] animate-[pulse_2s_ease-in-out_infinite] opacity-20"></div>
+        </div>
+        
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full text-center md:text-left">
+            <h1 class="text-6xl md:text-8xl text-red-500 font-header mb-4 tracking-widest text-glow">06 // DESIRE</h1>
+            <p class="text-pink-600 tracking-[0.5em] mb-12 font-bold uppercase">The Congruence Test</p>
+            
+            <div class="grid md:grid-cols-2 gap-12 bg-black/50 p-10 border border-red-900 backdrop-blur-md shadow-2xl">
+                <div>
+                    <h3 class="text-3xl text-white mb-4 font-header">MANIFESTATION</h3>
+                    <p class="text-gray-300 leading-relaxed mb-6">
+                        You will face the person you desire most (not your legal partner).
+                        This is a test of <strong class="text-red-500">SELF-AWARENESS</strong>.
+                    </p>
+                </div>
+                <div class="font-mono text-xs space-y-6 text-left">
+                    <div class="border-b border-gray-700 pb-2">
+                        <span class="text-gray-500 block mb-1">SCENARIO A</span>
+                        <span class="text-white">LOYAL HEART + SEX = <span class="text-red-600 font-bold bg-red-900/20 px-2">DEATH (BETRAYAL)</span></span>
+                    </div>
+                    <div class="border-b border-gray-700 pb-2">
+                        <span class="text-gray-500 block mb-1">SCENARIO B</span>
+                        <span class="text-white">DISLOYAL HEART + ABSTAIN = <span class="text-red-600 font-bold bg-red-900/20 px-2">DEATH (DENIAL)</span></span>
+                    </div>
+                    <div class="border-b border-gray-700 pb-2">
+                        <span class="text-gray-500 block mb-1">SCENARIO C</span>
+                        <span class="text-white">DISLOYAL HEART + SEX = <span class="text-green-500 font-bold bg-green-900/20 px-2">SURVIVE (SOCIAL RUIN)</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 7 -->
+    <div id="room-7" class="page bg-black">
+        <canvas id="crow-canvas" class="absolute inset-0 pointer-events-none opacity-40"></canvas>
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-6xl md:text-9xl text-gray-500 font-horror mb-4">07 // CROWS</h1>
+            <div class="w-full h-1 bg-gray-800 mb-8"></div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <p class="text-red-600 font-bold tracking-widest mb-4">[ THE JUDGMENT ]</p>
+                    <p class="text-gray-400 mb-6">Thousands of eyes. Logic fails here.</p>
+                    <div class="border-l-4 border-white pl-6 py-4 space-y-4 bg-gray-900/50">
+                        <p class="text-gray-300 italic">"It is not about your heart. It is about your <strong class="text-white">PERFORMANCE</strong>."</p>
+                        <p class="text-sm text-gray-400">Hate the crows but bow respectfully? <span class="text-green-500 font-bold">PASS.</span></p>
+                        <p class="text-sm text-gray-400">Love them but step on a feather? <span class="text-red-600 font-bold">DEATH.</span></p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center justify-center p-8 border border-gray-800 rounded-full aspect-square w-64 mx-auto bg-gray-900/50 shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                    <span class="text-6xl mb-4">0)0(0</span>
+                    <p class="text-xs text-center text-gray-500 tracking-widest">TRIBUTE REQUIRED<br>(FROM ROOM 1)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM 8 -->
+    <div id="room-8" class="page bg-black font-mono">
+        <div class="relative z-10 p-6 md:p-12 max-w-6xl mx-auto w-full">
+            <h1 class="text-6xl md:text-8xl text-green-500 font-header mb-4 text-glow-green">08 // MARKET</h1>
+            <div class="w-full h-1 bg-green-900 mb-4"></div>
+            
+            <!-- Marquee -->
+            <div class="w-full bg-green-900/20 border-y border-green-500 h-12 flex items-center overflow-hidden mb-12">
+                <div class="whitespace-nowrap animate-[marquee_15s_linear_infinite] text-green-400 text-sm font-bold">
+                    STOCK UPDATE: [CALCULATOR: 1 LEFT] /// [FLASHLIGHT: 5 LEFT] /// [TABLET: OUT OF STOCK] /// WARNING: EXITING ROOM TRIGGERS 10 MIN LOCKOUT ///
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <p class="text-green-500 font-bold tracking-widest mb-4">[ SUPPLY DEPOT ]</p>
+                    <p class="text-gray-400 mb-4">Infinite devices. Limited stock. The smell of burning silicon.</p>
+                    <ul class="list-disc pl-5 text-gray-500 text-sm space-y-2">
+                        <li><strong>Inventory:</strong> 200 items. Only 40 active.</li>
+                        <li><strong>Rule:</strong> Items rotate when one is taken.</li>
+                        <li><strong>Lockout:</strong> Exit = 10 Minute Ban.</li>
+                        <li><strong>Purpose:</strong> Essential for Room 4 (Study).</li>
+                    </ul>
+                </div>
+                <div class="border border-green-500 p-6 bg-black shadow-[0_0_20px_rgba(0,255,0,0.2)] text-xs text-green-500">
+                    <div class="border-b border-green-800 pb-2 mb-4">
+                        > ITEM: SCIENTIFIC_CALC_V2<br>
+                        > STATUS: <span class="animate-pulse text-white font-bold">IN_STOCK</span><br>
+                        > QTY: 01<br>
+                    </div>
+                    <div>
+                        > ITEM: SMARTPHONE_LOCKED<br>
+                        > STATUS: <span class="text-red-500 font-bold">OUT_OF_STOCK</span><br>
+                        > NEXT_ROTATION: 14:00 MIN<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENDGAME -->
+    <div id="endgame-screen" class="page bg-white text-black">
+        <div class="p-6 md:p-12 max-w-5xl mx-auto w-full">
+            <h1 class="text-5xl md:text-8xl font-black mb-8 text-center border-b-8 border-black pb-6 uppercase">Endgame Protocol</h1>
+            
+            <div class="border-8 border-black p-8 mb-12 relative">
+                <span class="absolute top-0 right-0 bg-black text-white px-4 py-2 font-bold text-sm tracking-widest">OPTION B: THE STAYER</span>
+                <h2 class="text-5xl font-glitch mb-4 text-red-600">BLACK SUIT</h2>
+                <p class="text-2xl mb-8 font-bold">Condition: Pass 5 Rooms. Choose to <span class="underline">STAY</span> until 6 AM.</p>
+                <div class="grid grid-cols-2 gap-8 text-sm">
+                    <div class="bg-black text-white p-6">
+                        <h3 class="text-red-500 font-bold mb-2 text-xl">POWER</h3>
+                        <p>Immune to System Death. Traps cannot kill you. Crows ignore you.</p>
+                    </div>
+                    <div class="bg-gray-200 p-6">
+                        <h3 class="text-red-600 font-bold mb-2 text-xl">COST</h3>
+                        <p>Pain is real. Injuries persist. Requires Room 1 healing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h3 class="text-4xl font-horror mb-8 text-red-600">KARMA CONSEQUENCE</h3>
+                <div class="flex flex-col md:flex-row justify-center gap-12">
+                    <div class="text-left border-l-8 border-green-500 pl-6">
+                        <span class="block font-black text-2xl">HELP OTHERS</span>
+                        <span class="text-gray-500 font-bold">Reality Blessing (Luck++)</span>
+                    </div>
+                    <div class="text-left border-l-8 border-red-500 pl-6">
+                        <span class="block font-black text-2xl">BETRAY OTHERS</span>
+                        <span class="text-gray-500 font-bold">Reality Curse (Luck--)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="navTo('page-map')" class="back-btn z-[99]">RETURN TO MAP</button>
+
+    <script>
+        // --- NAVIGATION & TRANSITIONS ---
+        function navTo(pageId) {
+            const curtain = document.getElementById('transition-curtain');
+            const current = document.querySelector('.page.active');
+            const next = document.getElementById(pageId);
+            const backBtn = document.querySelector('.back-btn');
+
+            backBtn.style.display = (pageId === 'page-intro' || pageId === 'page-map') ? 'none' : 'block';
+
+            anime.timeline()
+                .add({ targets: curtain, opacity: [0, 1], duration: 200, easing: 'linear' })
+                .add({
+                    targets: curtain, opacity: [1, 0], duration: 600, delay: 200, easing: 'linear',
+                    begin: () => {
+                        current.classList.remove('active');
+                        next.classList.add('active');
+                        // Trigger room specific anims
+                        if(pageId === 'room-3') animFoam();
+                        if(pageId === 'room-4') animMath();
+                        if(pageId === 'room-7') animCrows();
+                        if(pageId === 'page-map') startSystemLog();
+                    }
+                });
+        }
+        function openRoom(id) { navTo(id); }
+        function openEndgame() { navTo('endgame-screen'); }
+
+        // --- ANIMATIONS ---
+        
+        // 1. Foam (Room 3)
+        function animFoam() {
+            const c = document.getElementById('foam-canvas');
+            if(!c) return;
+            const ctx = c.getContext('2d');
+            const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
+            resize();
+            let balls = Array(40).fill().map(() => ({
+                x: Math.random()*c.width, y: Math.random()*c.height,
+                dx: (Math.random()-0.5)*10, dy: (Math.random()-0.5)*10, r: Math.random()*30+5
+            }));
+            function draw() {
+                if(!document.getElementById('room-3').classList.contains('active')) return;
+                ctx.clearRect(0,0,c.width,c.height);
+                balls.forEach(b => {
+                    b.x+=b.dx; b.y+=b.dy;
+                    if(b.x<0||b.x>c.width) b.dx*=-1; if(b.y<0||b.y>c.height) b.dy*=-1;
+                    ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+                    ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fill(); 
+                    ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.stroke();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // 2. Math (Room 4)
+        function animMath() {
+            const el = document.getElementById('formulas-container');
+            el.innerHTML = '';
+            const symbols = ["∫", "∑", "π", "∞", "√", "∂", "∆", "e", "θ"];
+            const interval = setInterval(() => {
+                if(!document.getElementById('room-4').classList.contains('active')) { clearInterval(interval); return; }
+                const d = document.createElement('div');
+                d.className = 'formula-float text-4xl font-serif';
+                d.innerText = symbols[Math.floor(Math.random()*symbols.length)];
+                d.style.left = Math.random()*90+'%'; d.style.top = Math.random()*90+'%';
+                el.appendChild(d);
+                anime({ targets: d, translateY: -150, opacity: [0,0.4,0], duration: 4000, easing:'linear', complete:()=>d.remove() });
+            }, 400);
+        }
+
+        // 3. Crows (Room 7)
+        function animCrows() {
+            const c = document.getElementById('crow-canvas');
+            if(!c) return;
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            let eyes = Array(50).fill().map(() => ({
+                x: Math.random()*c.width, y: Math.random()*c.height, blink: Math.random()*200
+            }));
+            function draw() {
+                if(!document.getElementById('room-7').classList.contains('active')) return;
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.fillStyle = "#8b0000";
+                eyes.forEach(e => {
+                    e.blink++;
+                    if(e.blink%200 < 190) {
+                        ctx.beginPath(); ctx.arc(e.x,e.y,2,0,Math.PI*2); ctx.arc(e.x+8,e.y,2,0,Math.PI*2); ctx.fill();
+                        ctx.shadowColor="red"; ctx.shadowBlur=6;
+                    } else ctx.shadowBlur=0;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // 4. System Log (Map)
+        function startSystemLog() {
+            const log = document.getElementById('sys-log');
+            const msgs = [
+                "> SCANNING BIO-SIGNATURES...",
+                "> PLAYER 402: HEART STOPPED [ROOM 5]",
+                "> PLAYER 09: PASSED [ROOM 2]",
+                "> WARNING: REALITY BLEED DETECTED",
+                "> STOCK UPDATE: ROOM 8 ROTATION IN 3 MIN",
+                "> HOST STATUS: STABLE",
+                "> VIEWERS: 4,203,111 CONNECTED"
+            ];
+            let i = 0;
+            const interval = setInterval(() => {
+                if(!document.getElementById('page-map').classList.contains('active')) { clearInterval(interval); return; }
+                if(i >= msgs.length) i = 0;
+                log.innerText = msgs[i] + "\n" + (msgs[i+1] || "");
+                i++;
+            }, 2000);
+        }
+
+        // Init
+        navTo('page-intro');
+
+    </script>
+</body>
+</html>
