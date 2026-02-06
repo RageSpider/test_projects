@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do You Like Me?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Permanent+Marker&family=Architects+Daughter&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --paper-color: #fdfbf7;
+            --line-color: #a2aebb;
+            --margin-color: #ef4444;
+            --ink-blue: #1e3a8a;
+            --desk-wood: #855E42;
+        }
+
+        body {
+            background-color: var(--desk-wood);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            font-family: 'Indie Flower', cursive;
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Note Paper */
+        .notebook-paper {
+            width: 90%;
+            max-width: 500px;
+            min-height: 600px;
+            background-color: var(--paper-color);
+            position: relative;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+            transform: rotate(-2deg);
+            padding: 40px 30px 30px 60px; /* Left padding for margin line */
+            transition: transform 0.3s ease;
+            transform-origin: center;
+        }
+
+        .notebook-paper:hover {
+            transform: rotate(0deg) scale(1.01);
+        }
+
+        /* Crumple Animation */
+        @keyframes crumple {
+            0% { transform: rotate(0deg) scale(1); }
+            40% { transform: rotate(5deg) scale(0.9); }
+            100% { transform: rotate(720deg) scale(0); opacity: 0; }
+        }
+
+        .crumpling {
+            animation: crumple 0.6s ease-in forwards;
+            pointer-events: none; /* Prevent clicks while animating */
+        }
+
+        /* Slide In Animation */
+        @keyframes slideIn {
+            0% { transform: translateY(120vh) rotate(-10deg); opacity: 0; }
+            70% { transform: translateY(-20px) rotate(-2deg); opacity: 1; }
+            100% { transform: translateY(0) rotate(-2deg); opacity: 1; }
+        }
+
+        .sliding {
+            animation: slideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Lined Paper Pattern */
+        .paper-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(transparent, transparent 29px, var(--line-color) 30px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Red Margin Line */
+        .paper-lines::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 40px;
+            width: 2px;
+            background-color: var(--margin-color);
+            opacity: 0.6;
+        }
+
+        /* Holes */
+        .holes {
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            z-index: 10;
+        }
+
+        .hole {
+            width: 15px;
+            height: 15px;
+            background-color: var(--desk-wood);
+            border-radius: 50%;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Content Styles */
+        .content {
+            position: relative;
+            z-index: 10;
+            color: var(--ink-blue);
+        }
+
+        h1 {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transform: rotate(-1deg);
+            line-height: 1.2;
+            min-height: 3.6rem; /* Prevent layout jump */
+        }
+
+        p {
+            font-size: 1.5rem;
+            line-height: 30px; /* Match grid line height */
+            margin-bottom: 1.5rem;
+        }
+
+        /* Polaroid Photo */
+        .polaroid {
+            background: white;
+            padding: 10px 10px 30px 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            transform: rotate(3deg);
+            width: 80%;
+            margin: 0 auto 2rem auto;
+            transition: transform 0.3s;
+        }
+        
+        .polaroid:hover {
+            transform: rotate(1deg) scale(1.05);
+            z-index: 20;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            /* Placeholder grayscale filter */
+            filter: sepia(0.3);
+        }
+
+        /* Checkboxes */
+        .check-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            font-size: 1.8rem;
+            font-family: 'Architects Daughter', cursive;
+        }
+
+        .check-box-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .box {
+            width: 25px;
+            height: 25px;
+            border: 2px solid var(--ink-blue);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        /* Doodle Checkmark */
+        .checkmark {
+            display: none;
+            width: 20px;
+            height: 20px;
+            /* Simple SVG Checkmark inline */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .crossed-out {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .crossed-out svg {
+            width: 100%;
+            height: 100%;
+            stroke: #ef4444;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        /* Sticky Tape */
+        .tape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            width: 100px;
+            height: 30px;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(2deg);
+            z-index: 20;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Doodle Decorations */
+        .doodle {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.8;
+            z-index: 5;
+        }
+
+        .doodle-heart {
+            color: #ef4444;
+            font-size: 2rem;
+            bottom: 20px;
+            right: 20px;
+            transform: rotate(15deg);
+        }
+
+        .doodle-arrow {
+            width: 40px;
+            position: absolute;
+            right: -30px;
+            top: 5px;
+        }
+
+        /* Success Overlay */
+        .success-msg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg) scale(0);
+            background: #fff;
+            padding: 20px;
+            border: 2px solid var(--ink-blue);
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+            z-index: 50;
+            text-align: center;
+            font-family: 'Permanent Marker', cursive;
+            width: 80%;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .success-msg.show {
+            transform: translate(-50%, -50%) rotate(-5deg) scale(1);
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .notebook-paper {
+                width: 95%;
+                padding: 30px 20px 20px 40px;
+            }
+            h1 { font-size: 2rem; }
+            .polaroid { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notebook-paper" id="paper">
+        <div class="tape"></div>
+        <div class="holes">
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+            <div class="hole"></div>
+        </div>
+        <div class="paper-lines"></div>
+
+        <div class="content">
+            <h1 id="main-title">Will you be my Valentine?</h1>
+            
+            <!-- Polaroid -->
+            <div class="polaroid">
+                <!-- Using a cute placeholder, replace src with your image -->
+                <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Us" class="mb-2">
+                <div class="text-center font-hand text-gray-600 text-lg">Us? ❤️</div>
+            </div>
+
+            <p class="text-center mt-6">
+                I've had a crush on you since... well, forever. <br>
+                Circle one:
+            </p>
+
+            <div class="check-container">
+                <!-- Yes Option -->
+                <div class="check-box-wrapper" onclick="pickYes()">
+                    <div class="box" id="yes-box">
+                        <div class="checkmark" id="yes-mark"></div>
+                    </div>
+                    <span>YES</span>
+                </div>
+
+                <!-- No Option -->
+                <!-- Removed dodging behavior -->
+                <div class="check-box-wrapper" id="no-wrapper" onclick="rejectLove()">
+                    <div class="box" id="no-box">
+                        <div class="checkmark" id="no-mark"></div>
+                    </div>
+                    <span>NO</span>
+                </div>
+            </div>
+            
+            <div class="doodle doodle-heart">xoxo</div>
+        </div>
+
+        <!-- Success Message Popup -->
+        <div class="success-msg" id="success-popup">
+            <h2 class="text-3xl text-red-500 mb-2">YAY!!!</h2>
+            <p class="text-xl">See you after school! <br>(aka date night)</p>
+            <div class="text-4xl mt-4 text-red-500">❤️</div>
+        </div>
+    </div>
+
+    <script>
+        let attempts = 0;
+        const messages = [
+            "Wait, seriously?",
+            "I think my pen slipped...",
+            "Okay, one more try!",
+            "You're playing hard to get!",
+            "Pretty please?"
+        ];
+
+        function pickYes() {
+            // Visual feedback
+            document.getElementById('yes-mark').style.display = 'block';
+            document.getElementById('yes-box').style.borderColor = '#ef4444';
+            
+            // Wait slightly then celebrate
+            setTimeout(() => {
+                triggerSuccess();
+            }, 300);
+        }
+
+        function rejectLove() {
+            // 1. Trigger Crumple Animation
+            const paper = document.getElementById('paper');
+            paper.classList.remove('sliding'); // remove slide in case it's there
+            paper.classList.add('crumpling');
+            
+            // 2. Wait for animation to finish, then reset and slide back in
+            setTimeout(() => {
+                // Reset State
+                paper.classList.remove('crumpling');
+                
+                // Change Title Text
+                const title = document.getElementById('main-title');
+                if (attempts < messages.length) {
+                    title.innerText = messages[attempts];
+                    attempts++;
+                } else {
+                    title.innerText = "Okay, I'm running out of paper!";
+                }
+                
+                // Add Slide In Animation
+                paper.classList.add('sliding');
+                
+                // Play a paper crumple sound if we had one, 
+                // but for now the visual is strong enough.
+                
+            }, 600); // Wait 600ms matching animation duration
+        }
+
+        function triggerSuccess() {
+            document.getElementById('success-popup').classList.add('show');
+            
+            // Paper Confetti
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 60 };
+
+            var random = function(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                // Colors: Red pen, Blue ink, White paper
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#ef4444', '#1e3a8a', '#ffffff'],
+                    shapes: ['circle', 'square'], // Looks like paper bits
+                    scalar: 1.2
+                });
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#ef4444', '#1e3a8a', '#ffffff'],
+                    shapes: ['circle', 'square'],
+                    scalar: 1.2
+                });
+            }, 250);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Complete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pcb-dark: #101216;
+            --trace-dim: #3a2e22;
+            --trace-active: #f59e0b;
+            --led-off: #451a1a;
+            --led-on: #ef4444;
+            --copper: #b45309;
+        }
+
+        body {
+            background-color: var(--pcb-dark);
+            color: #fbbf24;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(#2d2d2d 1px, transparent 1px),
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 20px 20px, 100px 100px, 100px 100px;
+        }
+
+        /* PCB Board Container */
+        .pcb-board {
+            width: 90%;
+            max-width: 600px;
+            background: #1a1c23;
+            border: 4px solid #333;
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            box-shadow: 
+                0 0 0 2px #000,
+                0 20px 50px rgba(0,0,0,0.5),
+                inset 0 0 100px rgba(0,0,0,0.5);
+        }
+
+        /* Screw Holes */
+        .screw {
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #ddd 20%, #999 60%, #555 100%);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+            border: 1px solid #000;
+        }
+        .tl { top: 10px; left: 10px; }
+        .tr { top: 10px; right: 10px; }
+        .bl { bottom: 10px; left: 10px; }
+        .br { bottom: 10px; right: 10px; }
+        .screw::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #666;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .screw::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 100%;
+            width: 2px;
+            background: #666;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        /* Text Styles */
+        h1 {
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Circuit Traces (SVG) */
+        .circuit-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .trace {
+            fill: none;
+            stroke: var(--trace-dim);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.5s ease;
+        }
+
+        .trace-glow {
+            fill: none;
+            stroke: var(--trace-active);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0;
+            filter: drop-shadow(0 0 5px var(--trace-active));
+        }
+
+        .active .trace-glow {
+            opacity: 1;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: flowCurrent 2s ease-out forwards;
+        }
+
+        @keyframes flowCurrent {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Heart LED */
+        .led-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .led-heart {
+            fill: var(--led-off);
+            transition: fill 0.3s;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+        }
+
+        .active .led-heart {
+            fill: var(--led-on);
+            filter: drop-shadow(0 0 20px var(--led-on)) drop-shadow(0 0 40px var(--led-on));
+            animation: pulse-light 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-light {
+            from { filter: drop-shadow(0 0 15px var(--led-on)) drop-shadow(0 0 30px var(--led-on)); }
+            to { filter: drop-shadow(0 0 25px var(--led-on)) drop-shadow(0 0 50px var(--led-on)); }
+        }
+
+        /* Component Styling */
+        .component-label {
+            font-size: 10px;
+            color: #666;
+            font-family: monospace;
+            position: absolute;
+        }
+
+        /* Buttons/Switches */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .switch-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-toggle {
+            background: linear-gradient(180deg, #333 0%, #111 100%);
+            border: 2px solid #555;
+            color: #888;
+            padding: 15px 30px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 5px 0 #000;
+            transition: all 0.1s;
+        }
+
+        .btn-toggle:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #000;
+        }
+
+        /* Yes Button Specifics */
+        .btn-yes:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+            text-shadow: 0 0 5px #f59e0b;
+        }
+
+        .active .btn-yes {
+            background: #f59e0b;
+            color: #000;
+            box-shadow: 0 0 20px #f59e0b;
+            border-color: #f59e0b;
+            pointer-events: none;
+        }
+
+        /* No Button Specifics */
+        .btn-no:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .blown-fuse {
+            background: #111 !important;
+            border-color: #333 !important;
+            color: #333 !important;
+            cursor: not-allowed;
+            pointer-events: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blown-fuse::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, transparent 70%);
+        }
+
+        /* Spark Animation */
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 50;
+        }
+
+        @keyframes flySpark {
+            0% { transform: translate(0,0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        /* Success Text */
+        .status-display {
+            background: #000;
+            border: 1px solid #333;
+            color: #333;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 10px;
+            margin-top: 20px;
+            text-align: center;
+            min-height: 44px;
+        }
+
+        .status-display.active {
+            color: #f59e0b;
+            text-shadow: 0 0 5px #f59e0b;
+            border-color: #f59e0b;
+        }
+        
+        .status-display.error {
+            color: #ef4444;
+            text-shadow: 0 0 5px #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* Wire connector visuals */
+        .wire-point {
+            width: 12px;
+            height: 12px;
+            background: #b45309; /* Copper */
+            border-radius: 50%;
+            border: 2px solid #5c2b05;
+            position: absolute;
+            z-index: 5;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pcb-board">
+        <div class="screw tl"></div>
+        <div class="screw tr"></div>
+        <div class="screw bl"></div>
+        <div class="screw br"></div>
+
+        <!-- Component Labels -->
+        <div class="component-label" style="top: 20px; left: 40px;">R1: 10kΩ</div>
+        <div class="component-label" style="top: 20px; right: 40px;">VCC: 5V</div>
+        <div class="component-label" style="bottom: 20px; left: 40px;">GND</div>
+
+        <!-- SVG Traces -->
+        <svg class="circuit-layer" viewBox="0 0 600 500" preserveAspectRatio="none">
+            <!-- Background Traces (Always visible) -->
+            <path class="trace" d="M150,400 L150,350 L300,350 L300,250" /> <!-- No Button Trace -->
+            <path class="trace" d="M450,400 L450,350 L300,350 L300,250" /> <!-- Yes Button Trace -->
+            <path class="trace" d="M300,130 L300,50" /> <!-- Top of LED to Power -->
+            
+            <!-- Active Traces (Animated) -->
+            <!-- From YES button to LED -->
+            <path id="power-trace" class="trace-glow" d="M450,400 L450,350 L300,350 L300,250" />
+            
+            <!-- From Top to LED (simulated circuit completion) -->
+            <path id="led-trace" class="trace-glow" d="M300,50 L300,130" />
+        </svg>
+
+        <!-- Soldering Points (Visuals) -->
+        <div class="wire-point" style="bottom: 125px; left: 144px;"></div> <!-- No Btn Top -->
+        <div class="wire-point" style="bottom: 125px; right: 144px;"></div> <!-- Yes Btn Top -->
+        <div class="wire-point" style="top: 130px; left: 50%; transform: translateX(-50%);"></div> <!-- LED Bottom -->
+        <div class="wire-point" style="top: 50px; left: 50%; transform: translateX(-50%);"></div> <!-- Power Top -->
+
+        <div class="text-center relative z-10">
+            <h1 class="text-3xl md:text-4xl mb-2 text-amber-500">PROJECT: VALENTINE</h1>
+            <p class="text-amber-700/80 font-mono text-sm uppercase tracking-widest mb-8">Warning: High Voltage Attraction</p>
+        </div>
+
+        <div class="led-container" id="led-container">
+            <svg class="led-heart w-24 h-24" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+
+        <div class="status-display" id="status-display">
+            STATUS: CIRCUIT OPEN (WAITING FOR INPUT)
+        </div>
+
+        <div class="controls">
+            <div class="switch-box">
+                <button id="btn-no" class="btn-toggle btn-no" onclick="shortCircuit(this)">OPEN</button>
+                <span class="text-xs text-gray-500 font-mono">SW_REJECT</span>
+            </div>
+            
+            <div class="switch-box">
+                <button id="btn-yes" class="btn-toggle btn-yes" onclick="completeCircuit()">CLOSE</button>
+                <span class="text-xs text-gray-500 font-mono">SW_ACCEPT</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function completeCircuit() {
+            const board = document.querySelector('.pcb-board');
+            const status = document.getElementById('status-display');
+            const btnYes = document.getElementById('btn-yes');
+
+            // Add active class to trigger CSS animations
+            board.classList.add('active');
+            
+            // Update Text
+            status.innerText = "STATUS: CONNECTION ESTABLISHED // VOLTAGE STABLE";
+            status.classList.remove('error');
+            status.classList.add('active');
+            
+            btnYes.innerText = "CONNECTED";
+
+            // Sparks / Confetti
+            triggerSparks();
+        }
+
+        function shortCircuit(btn) {
+            const status = document.getElementById('status-display');
+            const rect = btn.getBoundingClientRect();
+            
+            // 1. Create Explosion/Spark particles locally around button
+            for(let i=0; i<20; i++) {
+                createSpark(rect.left + rect.width/2, rect.top + rect.height/2);
+            }
+
+            // 2. Visual Damage
+            btn.classList.add('blown-fuse');
+            btn.innerText = "FUSE BLOWN";
+            btn.style.borderColor = "#333";
+            btn.style.color = "#444";
+            
+            // 3. Shake Effect on Board
+            const board = document.querySelector('.pcb-board');
+            board.animate([
+                { transform: 'translate(1px, 1px) rotate(0deg)' },
+                { transform: 'translate(-1px, -2px) rotate(-1deg)' },
+                { transform: 'translate(-3px, 0px) rotate(1deg)' },
+                { transform: 'translate(3px, 2px) rotate(0deg)' },
+                { transform: 'translate(1px, -1px) rotate(1deg)' },
+                { transform: 'translate(0, 0) rotate(0deg)' }
+            ], {
+                duration: 300,
+                iterations: 1
+            });
+
+            // 4. Update Status
+            status.innerText = "ERROR: RESISTANCE IS FUTILE. TRY OTHER SWITCH.";
+            status.classList.add('error');
+        }
+
+        function createSpark(x, y) {
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            document.body.appendChild(spark);
+            
+            // Random direction
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 100 + 50;
+            const tx = Math.cos(angle) * velocity + 'px';
+            const ty = Math.sin(angle) * velocity + 'px';
+            
+            // Set styles
+            spark.style.left = x + 'px';
+            spark.style.top = y + 'px';
+            spark.style.backgroundColor = Math.random() > 0.5 ? '#fbbf24' : '#ffffff';
+            spark.style.setProperty('--tx', tx);
+            spark.style.setProperty('--ty', ty);
+            
+            spark.style.animation = `flySpark ${Math.random() * 0.5 + 0.3}s ease-out forwards`;
+            
+            setTimeout(() => {
+                spark.remove();
+            }, 1000);
+        }
+
+        function triggerSparks() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            var random = function(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                // Electric colors
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#f59e0b', '#fbbf24', '#ffffff'],
+                    shapes: ['square'], // "Sparks"
+                    scalar: 0.8
+                });
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#f59e0b', '#fbbf24', '#ffffff'],
+                    shapes: ['square'],
+                    scalar: 0.8
+                });
+            }, 250);
+        }
+    </script>
+</body>
+</html>

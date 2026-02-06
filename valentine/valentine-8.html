@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monochrome Love</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --cursor-size: 300px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Bodoni Moda', serif;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            cursor: none; /* Hide default cursor */
+            transition: background-color 1s cubic-bezier(0.16, 1, 0.3, 1), color 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body.inverted {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+        }
+
+        /* Film Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.15;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            animation: grainAnim 1s steps(4) infinite;
+        }
+
+        @keyframes grainAnim {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-5%, -5%); }
+            40% { transform: translate(-5%, 5%); }
+            60% { transform: translate(5%, -5%); }
+            80% { transform: translate(5%, 5%); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Custom Spotlight Cursor */
+        .cursor-spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+            mix-blend-mode: exclusion;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            transition: width 0.3s, height 0.3s;
+        }
+
+        /* Interactive Elements */
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 5rem;
+            line-height: 1;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: -2px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards 0.5s;
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards 1s;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 4rem;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards 1.5s;
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
+            padding: 1.5rem 3rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Button Hover Effect */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--text-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .btn:hover {
+            color: var(--bg-color); /* Invert text color on hover */
+        }
+
+        .btn:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* The "No" Vanish Animation */
+        @keyframes implode {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.1); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; width: 0; padding: 0; margin: 0; border: 0; }
+        }
+
+        .vanished {
+            animation: implode 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+            pointer-events: none;
+        }
+
+        /* Success Message */
+        .success-msg {
+            position: absolute;
+            bottom: 3rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .title { font-size: 3rem; }
+            .controls { flex-direction: column; gap: 1.5rem; }
+            .btn { width: 100%; text-align: center; }
+            .cursor-spotlight { display: none; } /* No cursor on touch */
+            body { cursor: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="cursor-spotlight" id="cursor"></div>
+
+    <div class="container">
+        <h1 class="title">Be Mine.</h1>
+        <p class="subtitle">Simple. Direct. Forever.</p>
+
+        <div class="controls" id="btn-group">
+            <button class="btn" onclick="acceptProposal()" onmouseenter="expandCursor()" onmouseleave="shrinkCursor()">
+                Yes
+            </button>
+            <button class="btn" id="btn-no" onclick="vanishNo()" onmouseenter="expandCursor()" onmouseleave="shrinkCursor()">
+                No
+            </button>
+        </div>
+
+        <div class="success-msg" id="success-msg">
+            EST. 2026 • THE END
+        </div>
+    </div>
+
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const root = document.documentElement;
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        function expandCursor() {
+            root.style.setProperty('--cursor-size', '150px'); // Smaller focused spotlight
+        }
+
+        function shrinkCursor() {
+            root.style.setProperty('--cursor-size', '300px'); // Big ambient light
+        }
+
+        // Interaction Logic
+        function vanishNo() {
+            const btnNo = document.getElementById('btn-no');
+            
+            // 1. Play a subtle text change first
+            btnNo.innerText = "Void";
+            btnNo.style.borderStyle = "dotted";
+            
+            // 2. Implode
+            setTimeout(() => {
+                btnNo.classList.add('vanished');
+            }, 300);
+        }
+
+        function acceptProposal() {
+            // 1. Invert Colors
+            document.body.classList.add('inverted');
+            
+            // 2. Hide Buttons gracefully
+            const controls = document.getElementById('btn-group');
+            controls.style.opacity = '0';
+            controls.style.pointerEvents = 'none';
+
+            // 3. Change Text
+            const title = document.querySelector('.title');
+            const subtitle = document.querySelector('.subtitle');
+            
+            setTimeout(() => {
+                title.innerText = "Us.";
+                subtitle.innerText = "Black & White & You.";
+                document.getElementById('success-msg').style.opacity = '0.5';
+                
+                // 4. Fire Black Confetti
+                fireNoirConfetti();
+            }, 800);
+        }
+
+        function fireNoirConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 120, zIndex: 0 };
+
+            var random = function(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                // Black, Dark Grey, Light Grey
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#000000', '#333333', '#888888'],
+                    scalar: 1.2
+                });
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#000000', '#333333', '#888888'],
+                    scalar: 1.2
+                });
+            }, 250);
+        }
+    </script>
+</body>
+</html>

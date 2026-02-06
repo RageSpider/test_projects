@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Question for You</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --burgundy: #2C040C;
+            --red-velvet: #800020;
+        }
+
+        body {
+            background-color: var(--burgundy);
+            background-image: radial-gradient(circle at center, #4a0e1e 0%, #1a0205 100%);
+            color: var(--gold-light);
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Prevent bouncing on mobile */
+            overscroll-behavior: none;
+        }
+
+        .font-majestic {
+            font-family: 'Cinzel', serif;
+        }
+
+        .font-script {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Gold Gradient Text */
+        .text-gold-gradient {
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+            /* Fix for some browsers clipping gradient text */
+            padding-bottom: 0.1em; 
+            padding-top: 0.1em;
+        }
+
+        /* Golden Border Effect */
+        .gold-border {
+            border: 2px solid transparent;
+            border-image: linear-gradient(to bottom right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C) 1;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            /* Ensure content doesn't touch border */
+            box-sizing: border-box; 
+        }
+
+        /* Floating Hearts Background */
+        .heart-bg {
+            position: fixed;
+            color: rgba(128, 0, 32, 0.4);
+            animation: float 15s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Envelope Animation */
+        .envelope-container {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        
+        .envelope {
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        .envelope:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Button Styles */
+        .btn-majestic {
+            background: linear-gradient(135deg, #B38728 0%, #FBF5B7 50%, #AA771C 100%);
+            color: #2C040C;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(179, 135, 40, 0.4);
+            /* Prevent text selection */
+            user-select: none;
+        }
+
+        .btn-majestic:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(179, 135, 40, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .glass-panel {
+            background: rgba(44, 4, 12, 0.85); /* Slightly darker for better contrast */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            /* Ensure text wrapping */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Utility for fade transitions */
+        .fade-enter {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hidden-custom {
+            display: none !important;
+        }
+
+        /* Pulse for the heart */
+        .heart-beat {
+            animation: beat 1.5s infinite;
+        }
+
+        @keyframes beat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center relative selection:bg-yellow-200 selection:text-red-900 w-full h-screen overflow-hidden">
+
+    <!-- Background Hearts Generator (Handled by JS) -->
+    <div id="bg-hearts"></div>
+
+    <!-- STAGE 1: The Envelope -->
+    <div id="stage-envelope" class="z-10 text-center transition-all duration-700 w-full px-4 flex flex-col items-center justify-center h-full absolute inset-0">
+        <div class="envelope-container group" onclick="openEnvelope()">
+            <div class="envelope w-64 h-48 sm:w-80 sm:h-60 bg-[#1a0505] gold-border relative flex items-center justify-center rounded-lg shadow-2xl mx-auto">
+                <!-- Wax Seal -->
+                <div class="absolute z-20 w-16 h-16 rounded-full bg-red-700 shadow-lg border-2 border-red-900 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <span class="font-script text-3xl text-gold-light opacity-80">Love</span>
+                </div>
+                <div class="absolute inset-0 border-t-2 border-white/10 rounded-lg"></div>
+                <div class="text-gold-light font-majestic text-sm absolute bottom-4 tracking-widest opacity-70">TAP TO OPEN</div>
+            </div>
+            <h1 class="mt-8 font-majestic text-xl sm:text-2xl md:text-3xl text-gold-gradient tracking-widest uppercase px-2">For My Beloved</h1>
+        </div>
+    </div>
+
+    <!-- STAGE 2: The Letter -->
+    <div id="stage-letter" class="hidden-custom z-10 w-full px-4 flex flex-col items-center justify-center h-full absolute inset-0">
+        <div class="glass-panel p-6 sm:p-8 md:p-12 rounded-xl shadow-2xl relative text-center gold-border w-[90%] max-w-2xl mx-auto">
+            <div class="mb-4 md:mb-6">
+                <svg class="w-10 h-10 md:w-12 md:h-12 mx-auto text-yellow-500 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            
+            <p class="font-majestic text-lg md:text-xl text-yellow-200 mb-4 md:mb-6 tracking-widest">DEAREST,</p>
+            
+            <p class="font-serif text-base md:text-xl leading-relaxed text-gray-200 mb-4 md:mb-6 italic px-2">
+                "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine."
+            </p>
+            
+            <p class="font-serif text-sm md:text-md leading-relaxed text-gray-300 mb-6 md:mb-8 px-2">
+                Every moment we share becomes a treasured memory. You are my sun, my moon, and all my stars. Today, I want to ask you something special...
+            </p>
+
+            <button onclick="showProposal()" class="btn-majestic px-6 py-2 md:px-8 md:py-3 rounded-full font-majestic font-bold text-base md:text-lg tracking-wider uppercase">
+                Read On
+            </button>
+        </div>
+    </div>
+
+    <!-- STAGE 3: The Proposal -->
+    <div id="stage-proposal" class="hidden-custom z-10 w-full px-4 text-center flex flex-col items-center justify-center h-full absolute inset-0">
+        <!-- Added max-height and overflow-y-auto to ensure it fits on small landscape screens -->
+        <div class="glass-panel p-6 md:p-10 rounded-2xl shadow-2xl gold-border w-[95%] max-w-3xl mx-auto flex flex-col items-center">
+            <h1 class="font-script text-3xl sm:text-5xl md:text-7xl mb-2 sm:mb-4 text-gold-gradient py-2 leading-tight">Will you be my...</h1>
+            <h2 class="font-majestic text-2xl sm:text-4xl md:text-6xl mb-8 sm:mb-12 text-red-500 text-shadow-glow leading-tight" style="text-shadow: 0 0 20px rgba(255,0,0,0.4);">VALENTINE?</h2>
+            
+            <!-- Button Container: Switched to Flexbox for reliable positioning -->
+            <div class="relative w-full min-h-[120px] flex flex-col md:flex-row items-center justify-center gap-6">
+                <button onclick="acceptProposal()" class="btn-majestic px-8 py-3 md:px-12 md:py-4 rounded-full font-bold text-lg md:text-2xl shadow-lg z-20">
+                    YES!
+                </button>
+                
+                <!-- The No Button: Removed absolute positioning for initial state to ensure visibility -->
+                <button id="no-btn" onmouseover="moveButton()" onclick="moveButton()" ontouchstart="moveButton()" class="px-6 py-3 md:px-8 md:py-4 rounded-full font-majestic font-bold text-base md:text-xl border border-yellow-700 text-yellow-700 bg-black/20 backdrop-blur-sm transition-all duration-300">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 4: Success -->
+    <div id="stage-success" class="hidden-custom z-10 text-center w-full px-4 flex flex-col items-center justify-center h-full absolute inset-0">
+        <div class="relative w-full max-w-4xl">
+            <div class="heart-beat text-red-600 mb-6">
+                <svg class="w-24 h-24 md:w-32 md:h-32 mx-auto filter drop-shadow-[0_0_15px_rgba(220,20,60,0.8)]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            <h1 class="font-script text-4xl sm:text-6xl md:text-8xl text-gold-gradient mb-6 leading-tight">She Said Yes!</h1>
+            <p class="font-majestic text-lg md:text-2xl text-yellow-100 tracking-wide mb-8 px-4">
+                You've made me the happiest person alive.<br>I love you, forever & always.
+            </p>
+            <div class="text-xs md:text-sm text-yellow-500/50 font-majestic tracking-[0.3em]">FEBRUARY 14</div>
+        </div>
+    </div>
+
+    <script>
+        // Generate floating background hearts
+        function createHearts() {
+            const container = document.getElementById('bg-hearts');
+            const heartCount = 15; // Reduced slightly for mobile performance
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-bg');
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // Transition Logic
+        function transition(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+
+            hideEl.style.opacity = '0';
+            hideEl.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                hideEl.classList.add('hidden-custom');
+                showEl.classList.remove('hidden-custom');
+                showEl.classList.add('fade-enter');
+                
+                // Trigger reflow
+                void showEl.offsetWidth;
+                
+                showEl.classList.add('fade-enter-active');
+            }, 500);
+        }
+
+        function openEnvelope() {
+            transition('stage-envelope', 'stage-letter');
+        }
+
+        function showProposal() {
+            transition('stage-letter', 'stage-proposal');
+            // Ensure button is positioned correctly initially
+            const btn = document.getElementById('no-btn');
+            // Reset position if needed or set initial random slightly offset
+        }
+
+        // The "No" button runner logic - Improved for Mobile
+        function moveButton() {
+            const btn = document.getElementById('no-btn');
+            
+            // CRITICAL FIX: Move button to body to avoid transform context issues.
+            // When an element is fixed inside a transformed parent (like our fade-in stage),
+            // 'fixed' becomes relative to the parent, not the window. 
+            // This moves it to the body so screen coordinates work correctly.
+            if (btn.parentNode !== document.body) {
+                document.body.appendChild(btn);
+                btn.style.zIndex = "100"; // Ensure it stays on top of glass panels
+            }
+            
+            // Get safe viewport dimensions (subtracting padding/button size)
+            const padding = 20;
+            const btnWidth = btn.offsetWidth;
+            const btnHeight = btn.offsetHeight;
+            
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            
+            // Calculate random position within the viewport
+            const newX = Math.max(padding, Math.random() * maxX);
+            const newY = Math.max(padding, Math.random() * maxY);
+
+            // Apply Fixed position to break out of the flex container constraints completely
+            btn.style.position = 'fixed';
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+            btn.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'; // Snappy movement
+            
+            // Funny flavor text changes
+            const phrases = ["Are you sure?", "Think again!", "Really?", "Try the other one!", "Nope!", "Can't catch me!"];
+            btn.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+            
+            // Randomize rotation slightly for chaos
+            const rotation = (Math.random() * 20) - 10;
+            btn.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        function acceptProposal() {
+            // Hide the No button explicitly in case it was moved to body
+            const noBtn = document.getElementById('no-btn');
+            if (noBtn) noBtn.style.display = 'none';
+
+            transition('stage-proposal', 'stage-success');
+            fireConfetti();
+            
+            // Continuous fireworks
+            let end = Date.now() + 5 * 1000;
+            let colors = ['#D4AF37', '#800020', '#ffffff'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var random = function(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#D4AF37', '#ffffff'] // Gold and White
+                });
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#800020', '#ff0000'] // Red and Burgundy
+                });
+            }, 250);
+        }
+
+        // Initialize
+        createHearts();
+    </script>
+</body>
+</html>

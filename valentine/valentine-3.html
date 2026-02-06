@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Report: Vitals Critical</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --medical-blue: #3b82f6;
+            --medical-cyan: #06b6d4;
+            --alert-red: #ef4444;
+            --stable-green: #10b981;
+            --monitor-bg: #0f172a;
+            --grid-line: rgba(6, 182, 212, 0.1);
+        }
+
+        body {
+            background-color: var(--monitor-bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            /* Mobile viewport fix */
+            height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Medical Grid Background */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-grid::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--monitor-bg) 90%);
+        }
+
+        /* Monitor Container */
+        .monitor-panel {
+            position: relative;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.1);
+            width: 90%;
+            max-width: 600px;
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .panel-critical {
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.2);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Header Bar */
+        .panel-header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mono-text {
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 0.05em;
+        }
+
+        /* Heartbeat Animation Canvas */
+        .ecg-container {
+            position: relative;
+            height: 120px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* SVG Heartbeat Line */
+        .ecg-line {
+            fill: none;
+            stroke: var(--medical-cyan);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 4px var(--medical-cyan));
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2s linear infinite;
+            transition: stroke 0.5s, filter 0.5s;
+        }
+
+        .ecg-line.critical-1 {
+            stroke: #fbbf24; /* Warning Yellow */
+            filter: drop-shadow(0 0 4px #fbbf24);
+            animation-duration: 3s; /* Slower */
+        }
+
+        .ecg-line.critical-2 {
+            stroke: #ef4444; /* Critical Red */
+            filter: drop-shadow(0 0 4px #ef4444);
+            animation-duration: 5s; /* Very Slow */
+        }
+        
+        .ecg-line.flatline {
+            stroke: #ef4444;
+            filter: drop-shadow(0 0 4px #ef4444);
+            animation: none;
+            stroke-dasharray: 0;
+            stroke-dashoffset: 0;
+            d: path('M0,100 L1000,100'); /* Flat line override */
+        }
+
+        @keyframes drawLine {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .ecg-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            background: linear-gradient(90deg, transparent, var(--monitor-bg));
+            z-index: 2;
+        }
+
+        /* Blinking Status Light */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--stable-green);
+            box-shadow: 0 0 10px var(--stable-green);
+            animation: pulse-dot 2s infinite;
+        }
+
+        .status-dot.warning {
+            background-color: #fbbf24;
+            box-shadow: 0 0 10px #fbbf24;
+            animation: pulse-fast 1s infinite;
+        }
+
+        .status-dot.critical {
+            background-color: var(--alert-red);
+            box-shadow: 0 0 10px var(--alert-red);
+            animation: pulse-fast 0.3s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Content Area */
+        .panel-body {
+            padding: 24px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+
+        .label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .value {
+            color: white;
+            font-weight: 500;
+        }
+
+        .diagnosis-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--medical-blue);
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+            transition: all 0.3s;
+        }
+
+        .diagnosis-box.warning {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--alert-red);
+        }
+
+        /* Buttons */
+        .btn-group {
+            position: relative;
+        }
+
+        .btn-medical {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--medical-blue);
+            color: white;
+            border: none;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            position: relative; /* Ensure tape sticks to button container */
+        }
+
+        .btn-secondary:hover {
+            border-color: #64748b;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Medical Tape Styling */
+        .medical-tape {
+            position: absolute;
+            background-color: rgba(245, 245, 245, 0.9);
+            height: 24px;
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cc0000;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: bold;
+            font-size: 11px;
+            pointer-events: none; /* Let clicks pass through if needed, but visually blocks */
+            transform: rotate(-2deg);
+            white-space: nowrap;
+            overflow: hidden;
+            width: 110%;
+            left: -5%;
+        }
+
+        .tape-1 { top: 10%; transform: rotate(5deg); }
+        .tape-2 { top: 40%; transform: rotate(-3deg); }
+        .tape-3 { top: 70%; transform: rotate(2deg); background-color: #ef4444; color: white; border: none; opacity: 0.9; }
+
+        /* Success State */
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .success-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Heart Rate Number Animation */
+        .bpm-value {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: var(--medical-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        
+        .bpm-value.critical {
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Responsive */
+        @media (min-width: 640px) {
+            .btn-group {
+                display: flex;
+                gap: 16px;
+            }
+            .btn-medical {
+                margin-bottom: 0;
+            }
+            /* Adjust tape for side-by-side buttons */
+            .medical-tape {
+                width: 120%;
+                left: -10%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="monitor-panel" id="main-panel">
+        <!-- Header -->
+        <div class="panel-header">
+            <div class="flex items-center gap-3">
+                <div class="status-dot" id="status-light"></div>
+                <span class="mono-text text-sm text-cyan-400">PATIENT MONITOR // V.2.14</span>
+            </div>
+            <div class="mono-text text-xs text-slate-400" id="clock">00:00:00</div>
+        </div>
+
+        <!-- ECG Graph -->
+        <div class="ecg-container flex items-end pb-2 px-4 justify-between">
+            <div class="ecg-overlay"></div>
+            <!-- Animated SVG Graph -->
+            <svg class="absolute bottom-0 left-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 200">
+                <path id="heart-path" class="ecg-line" d="M0,100 L100,100 L110,100 L120,50 L130,150 L140,100 L160,100 L170,100 L180,80 L190,100 L250,100 L260,100 L270,50 L280,150 L290,100 L310,100 L400,100 L410,100 L420,50 L430,150 L440,100 L460,100 L550,100 L560,100 L570,50 L580,150 L590,100 L610,100 L700,100 L710,100 L720,50 L730,150 L740,100 L760,100 L850,100 L860,100 L870,50 L880,150 L890,100 L910,100 L1000,100" />
+            </svg>
+            
+            <!-- Floating Stats -->
+            <div class="absolute top-4 left-4 z-10">
+                <div class="label mb-1">HEART RATE</div>
+                <div class="bpm-value mono-text" id="bpm-display"><span id="bpm">72</span> <span class="text-sm align-top opacity-70">BPM</span></div>
+            </div>
+            
+            <div class="absolute top-4 right-4 z-10 text-right">
+                <div class="label mb-1">O2 SAT</div>
+                <div class="text-xl text-green-400 mono-text" id="o2-sat">99%</div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="panel-body">
+            <div class="data-row">
+                <span class="label">Patient Name</span>
+                <span class="value">My Beloved</span>
+            </div>
+            <div class="data-row">
+                <span class="label">Condition</span>
+                <span class="value text-right" id="condition-text">Acute Butterflies</span>
+            </div>
+
+            <div class="diagnosis-box" id="diag-box">
+                <div class="mono-text text-blue-400 text-sm mb-1">DIAGNOSIS:</div>
+                <p class="text-sm leading-relaxed text-slate-200" id="diag-text">
+                    Patient exhibits classic signs of Lovesickness. Condition is chronic and incurable.
+                </p>
+                <div class="mono-text text-blue-400 text-sm mt-3 mb-1">RECOMMENDED TREATMENT:</div>
+                <p class="text-lg font-semibold text-white">
+                    Will you be my Valentine?
+                </p>
+            </div>
+
+            <div class="btn-group mt-6 relative h-16"> 
+                <button onclick="acceptTreatment()" class="btn-medical btn-primary z-10">
+                    [ ACCEPT TREATMENT ]
+                </button>
+                
+                <!-- The No Button Container (for tape application) -->
+                <div id="no-btn-container" class="relative w-full md:w-full">
+                    <button onclick="refuseTreatment()" id="btn-refuse" class="btn-medical btn-secondary">
+                        [ REFUSE ]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Overlay -->
+        <div id="success-view" class="success-overlay">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_#10b981]">
+                <svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-2">VITALS STABILIZED</h2>
+            <p class="text-slate-400 mono-text mb-8">Treatment Successful</p>
+            
+            <div class="diagnosis-box border-l-green-500 bg-green-500/10 w-3/4">
+                <p class="text-center text-green-200">
+                    "You're just what the doctor ordered."
+                </p>
+            </div>
+            <button onclick="location.reload()" class="mt-8 text-sm text-slate-500 hover:text-white transition-colors">
+                Re-examine Patient
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Variables
+        let bpmBase = 72;
+        let refusalCount = 0;
+        let isCritical = false;
+        let isFlatline = false;
+
+        // BPM Simulation
+        function updateBPM() {
+            if (isFlatline) return;
+            
+            const variance = isCritical ? 20 : 5;
+            const bpm = bpmBase + Math.floor(Math.random() * variance) - (variance/2);
+            document.getElementById('bpm').innerText = Math.max(0, bpm);
+        }
+        setInterval(updateBPM, 2000);
+
+        // Refusal Logic
+        function refuseTreatment() {
+            refusalCount++;
+            const panel = document.getElementById('main-panel');
+            const heartPath = document.getElementById('heart-path');
+            const statusLight = document.getElementById('status-light');
+            const btnContainer = document.getElementById('no-btn-container');
+            const diagText = document.getElementById('diag-text');
+            const diagBox = document.getElementById('diag-box');
+            const bpmDisplay = document.getElementById('bpm-display');
+
+            // Stage 1: Warning
+            if (refusalCount === 1) {
+                bpmBase = 55;
+                document.getElementById('bpm').innerText = 55;
+                document.getElementById('o2-sat').innerText = "92%";
+                document.getElementById('o2-sat').classList.add('text-yellow-400');
+                document.getElementById('o2-sat').classList.remove('text-green-400');
+                
+                statusLight.classList.remove('status-dot');
+                statusLight.classList.add('status-dot', 'warning');
+                
+                heartPath.classList.add('critical-1');
+                diagText.innerText = "WARNING: Patient rejecting affection. Heart rate dropping. Emotional levels unstable.";
+                diagBox.classList.add('warning');
+                
+                // Add Tape
+                addTape(btnContainer, "DO NOT TOUCH", "tape-1");
+            }
+            // Stage 2: Critical
+            else if (refusalCount === 2) {
+                bpmBase = 35;
+                isCritical = true;
+                panel.classList.add('panel-critical');
+                
+                document.getElementById('bpm').innerText = 35;
+                document.getElementById('o2-sat').innerText = "85%";
+                document.getElementById('o2-sat').classList.replace('text-yellow-400', 'text-red-500');
+                
+                statusLight.classList.replace('warning', 'critical');
+                bpmDisplay.classList.add('critical');
+                
+                heartPath.classList.remove('critical-1');
+                heartPath.classList.add('critical-2');
+                
+                diagText.innerText = "CRITICAL FAILURE: Heartbreak imminent. Immediate intervention required.";
+                
+                // Add Tape
+                addTape(btnContainer, "RESTRICTED ACCESS", "tape-2");
+            }
+            // Stage 3: Flatline
+            else if (refusalCount === 3) {
+                bpmBase = 0;
+                isFlatline = true;
+                document.getElementById('bpm').innerText = 0;
+                document.getElementById('o2-sat').innerText = "ERR";
+                
+                heartPath.setAttribute('d', 'M0,100 L1000,100'); // Force flat line
+                heartPath.classList.add('flatline');
+                
+                diagText.innerText = "CODE BLUE: PATIENT FLATLINING. ADMINISTER 'YES' STAT!";
+                
+                // Add Final Tape & Disable
+                addTape(btnContainer, "OUT OF ORDER", "tape-3");
+                document.getElementById('btn-refuse').disabled = true;
+                document.getElementById('btn-refuse').style.opacity = "0.5";
+                document.getElementById('btn-refuse').style.cursor = "not-allowed";
+            }
+        }
+
+        function addTape(container, text, className) {
+            const tape = document.createElement('div');
+            tape.className = `medical-tape ${className}`;
+            tape.innerText = text;
+            container.appendChild(tape);
+        }
+
+        function acceptTreatment() {
+            const successView = document.getElementById('success-view');
+            successView.classList.add('success-visible');
+            
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var random = function(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#3b82f6', '#06b6d4', '#ffffff'] 
+                });
+                confetti({
+                    ...defaults, 
+                    particleCount,
+                    origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#10b981', '#ffffff', '#3b82f6'] 
+                });
+            }, 250);
+        }
+    </script>
+</body>
+</html>
