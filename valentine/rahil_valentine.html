@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Valentine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --burgundy: #2C040C;
+            --red-velvet: #800020;
+        }
+
+        body {
+            background-color: var(--burgundy);
+            background-image: radial-gradient(circle at center, #4a0e1e 0%, #1a0205 100%);
+            color: var(--gold-light);
+            font-family: 'Lato', sans-serif;
+            /* We lock the body height but allow stages to scroll internally */
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
+            overscroll-behavior: none;
+        }
+
+        /* Subtle Grain Texture Overlay */
+        .texture-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .font-majestic { font-family: 'Cinzel', serif; }
+        .font-script { font-family: 'Great Vibes', cursive; }
+
+        .text-gold-gradient {
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+            padding-bottom: 0.1em;
+            padding-top: 0.1em;
+        }
+
+        .gold-border {
+            border: 2px solid transparent;
+            border-image: linear-gradient(to bottom right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C) 1;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            box-sizing: border-box; 
+        }
+
+        .heart-bg {
+            position: fixed;
+            color: rgba(128, 0, 32, 0.4);
+            animation: float 15s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        .envelope-container { perspective: 1000px; cursor: pointer; }
+        .envelope { transform-style: preserve-3d; transition: transform 0.6s ease; }
+        .envelope:hover { transform: translateY(-10px); }
+
+        .btn-majestic {
+            background: linear-gradient(135deg, #B38728 0%, #FBF5B7 50%, #AA771C 100%);
+            color: #2C040C;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(179, 135, 40, 0.4);
+            user-select: none;
+            /* Ensure tap targets are good */
+            touch-action: manipulation;
+        }
+        .btn-majestic:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(179, 135, 40, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .glass-panel {
+            background: rgba(44, 4, 12, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Stage Containers: Critical for scroll */
+        .stage-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto; /* Allow vertical scroll */
+            overflow-x: hidden;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            /* This centering method is safer for scrollable content than justify-center */
+            padding: 1rem; 
+        }
+
+        /* Inner wrapper ensures margins act correctly for centering */
+        .stage-inner {
+            margin: auto; /* This centers content if small, allows top scroll if tall */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: min-content; /* Ensure it takes up space */
+        }
+
+        .fade-enter { opacity: 0; transform: scale(0.95); }
+        .fade-enter-active {
+            opacity: 1; transform: scale(1);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hidden-custom { display: none !important; }
+
+        .heart-beat { animation: beat 1.5s infinite; }
+        @keyframes beat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+
+        /* --- Updated Image Styles --- */
+        
+        .scrapbook-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px; /* Tighter gap */
+            width: 100%;
+            padding: 8px;
+        }
+
+        .scrapbook-item {
+            position: relative;
+            background: #fff;
+            padding: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            border-radius: 2px;
+            aspect-ratio: 1/1;
+        }
+        
+        .scrapbook-item:nth-child(1) { transform: rotate(-2deg); }
+        .scrapbook-item:nth-child(2) { transform: rotate(3deg); margin-top: 5px; }
+        .scrapbook-item:nth-child(3) { transform: rotate(1deg); margin-top: -5px;}
+        .scrapbook-item:nth-child(4) { transform: rotate(-3deg); }
+
+        .scrapbook-item:hover {
+            transform: scale(1.05) rotate(0deg);
+            z-index: 10;
+        }
+
+        .scrapbook-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .tape {
+            position: absolute;
+            width: 30%;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            top: -5px;
+            left: 35%;
+            transform: rotate(-1deg);
+            backdrop-filter: blur(2px);
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, z-index 0.3s;
+            position: relative;
+        }
+        .polaroid:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 50;
+        }
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="texture-overlay"></div>
+    <div id="bg-hearts"></div>
+
+    <!-- STAGE 1: The Envelope -->
+    <div id="stage-envelope" class="stage-container">
+        <div class="stage-inner">
+            <div class="envelope-container group" onclick="openEnvelope()">
+                <div class="envelope w-64 h-48 sm:w-80 sm:h-60 bg-[#1a0505] gold-border relative flex items-center justify-center rounded-lg shadow-2xl mx-auto">
+                    <div class="absolute z-20 w-16 h-16 rounded-full bg-red-700 shadow-lg border-2 border-red-900 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span class="font-script text-3xl text-gold-light opacity-80">Love</span>
+                    </div>
+                    <div class="absolute inset-0 border-t-2 border-white/10 rounded-lg"></div>
+                    <div class="text-gold-light font-majestic text-sm absolute bottom-4 tracking-widest opacity-70">TAP TO OPEN</div>
+                </div>
+                <h1 class="mt-8 font-majestic text-xl sm:text-2xl md:text-3xl text-gold-gradient tracking-widest uppercase px-2 text-center">For My Beloved</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 2: The Letter -->
+    <div id="stage-letter" class="hidden-custom stage-container">
+        <div class="stage-inner py-10">
+            <div class="glass-panel p-6 sm:p-8 md:p-12 rounded-xl shadow-2xl relative text-center gold-border w-full max-w-xl mx-auto">
+                <div class="mb-4">
+                    <svg class="w-8 h-8 md:w-12 md:h-12 mx-auto text-yellow-500 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                
+                <p class="font-majestic text-lg md:text-xl text-yellow-200 mb-4 tracking-widest uppercase">Hey Pari,</p>
+                
+                <p class="font-serif text-base md:text-xl leading-relaxed text-gray-200 mb-4 italic px-2">
+                    "It's been a while since we started this journey together, and during this whole time, I've been the happiest I've ever been."
+                </p>
+                
+                <p class="font-serif text-sm md:text-md leading-relaxed text-gray-300 mb-6 px-1">
+                    We both faced ups and downs, yet we're still here, standing together, happily as ever. I always love to see you and be around you. You truly make me happy. I love you with my whole heart, and I always will. It's our first time celebrating Valentine's together, and hopefully, many more are to come.
+                </p>
+
+                <button onclick="showProposal()" class="btn-majestic px-6 py-2 md:px-8 md:py-3 rounded-full font-majestic font-bold text-sm md:text-lg tracking-wider uppercase">
+                    Read On
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 3: The Proposal -->
+    <div id="stage-proposal" class="hidden-custom stage-container">
+        <div class="stage-inner py-6">
+            <div class="glass-panel p-4 md:p-8 rounded-2xl shadow-2xl gold-border w-full max-w-lg mx-auto flex flex-col items-center relative">
+                
+                <!-- Compact Scrapbook Grid for Mobile -->
+                <!-- Max width limited to prevent it taking whole screen on phones -->
+                <div class="w-full max-w-[280px] sm:max-w-sm md:max-w-md mb-4 relative">
+                    <div class="scrapbook-grid" id="scrapbook-container">
+                        <!-- Images injected via JS -->
+                    </div>
+                </div>
+
+                <div class="relative z-20 text-center w-full">
+                    <h1 class="font-script text-3xl sm:text-5xl md:text-6xl mb-1 text-gold-gradient leading-tight">Will you be my...</h1>
+                    <h2 class="font-majestic text-3xl sm:text-5xl md:text-7xl mb-6 text-red-500 text-shadow-glow leading-tight" style="text-shadow: 0 0 20px rgba(255,0,0,0.4);">VALENTINE?</h2>
+                    
+                    <div class="relative w-full flex flex-col sm:flex-row items-center justify-center gap-4 min-h-[60px]">
+                        <button onclick="acceptProposal()" class="btn-majestic w-32 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-gold/50 z-20">
+                            YES!
+                        </button>
+                        
+                        <button id="no-btn" onmouseover="moveButton()" onclick="moveButton()" ontouchstart="moveButton()" class="w-32 py-3 rounded-full font-majestic font-bold text-lg border border-yellow-700 text-yellow-700 bg-black/20 backdrop-blur-sm transition-all duration-300">
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STAGE 4: Success -->
+    <div id="stage-success" class="hidden-custom stage-container">
+        <div class="stage-inner py-10">
+            <div class="relative w-full max-w-4xl flex flex-col items-center text-center">
+                
+                <div class="heart-beat text-red-600 mb-4">
+                    <svg class="w-16 h-16 md:w-20 md:h-20 mx-auto filter drop-shadow-[0_0_15px_rgba(220,20,60,0.8)]" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                
+                <h1 class="font-script text-4xl sm:text-6xl md:text-7xl text-gold-gradient mb-2 leading-tight">She Said Yes!</h1>
+                <p class="font-majestic text-sm md:text-xl text-yellow-100 tracking-wide mb-8 px-4">
+                    You've made me the happiest person alive.<br>I love you, forever & always.
+                </p>
+
+                <!-- Polaroid Gallery -->
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-8 pb-8 w-full px-2" id="polaroid-gallery">
+                    <!-- Polaroids injected via JS -->
+                </div>
+
+                <div class="text-xs md:text-sm text-yellow-500/50 font-majestic tracking-[0.3em] pb-8 mt-2">FEBRUARY 14</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const imagePaths = [
+            'rahilvalentine/1.jpg', 
+            'rahilvalentine/2.jpg', 
+            'rahilvalentine/3.jpg', 
+            'rahilvalentine/4.jpg',
+            'rahilvalentine/5.jpg', 
+            'rahilvalentine/6.jpg', 
+            'rahilvalentine/7.jpg', 
+            'rahilvalentine/8.jpg'
+        ];
+
+        // --- Init Functions ---
+
+        function initScrapbook() {
+            const container = document.getElementById('scrapbook-container');
+            container.innerHTML = ''; // Clear previous if any
+            // Use first 4 images for scrapbook
+            const photos = imagePaths.slice(0, 4);
+            
+            photos.forEach((src, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'scrapbook-item';
+                
+                const tape = document.createElement('div');
+                tape.className = 'tape';
+                wrapper.appendChild(tape);
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = "Our Memory";
+                img.onerror = function() { this.src = `https://placehold.co/500x500/2C040C/D4AF37?text=Memory+${index+1}`; };
+                
+                wrapper.appendChild(img);
+                container.appendChild(wrapper);
+            });
+        }
+
+        function initPolaroidGallery() {
+            const container = document.getElementById('polaroid-gallery');
+            container.innerHTML = '';
+            // Use last 4 images
+            const galleryImages = imagePaths.slice(4, 8); 
+            
+            galleryImages.forEach((src, index) => {
+                const wrapper = document.createElement('div');
+                // Smaller size for mobile to prevent overflow
+                wrapper.className = "polaroid w-24 sm:w-32 md:w-48 aspect-[4/5] flex-shrink-0 cursor-pointer";
+                
+                const rotate = (Math.random() * 6) - 3;
+                // Reduce vertical random offset on mobile
+                const marginY = window.innerWidth < 640 ? 0 : (Math.random() * 20);
+                
+                wrapper.style.transform = `rotate(${rotate}deg) translateY(${marginY}px)`;
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = "w-full h-[85%] object-cover mb-1";
+                img.onerror = function() { this.src = `https://placehold.co/400x500/2C040C/D4AF37?text=Love+${index+5}`; };
+                
+                const caption = document.createElement('div');
+                caption.className = "h-[15%] flex items-center justify-center font-script text-gray-400 text-sm";
+                caption.innerText = "Love";
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(caption);
+                container.appendChild(wrapper);
+            });
+        }
+
+        // --- Core Logic ---
+
+        function createHearts() {
+            const container = document.getElementById('bg-hearts');
+            const heartCount = 15;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-bg');
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                heart.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        function transition(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            hideEl.style.opacity = '0';
+            hideEl.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                hideEl.classList.add('hidden-custom');
+                showEl.classList.remove('hidden-custom');
+                showEl.classList.add('fade-enter');
+                void showEl.offsetWidth;
+                showEl.classList.add('fade-enter-active');
+            }, 500);
+        }
+
+        function openEnvelope() { transition('stage-envelope', 'stage-letter'); }
+        
+        function showProposal() { 
+            transition('stage-letter', 'stage-proposal'); 
+            initScrapbook(); 
+        }
+
+        function moveButton() {
+            const btn = document.getElementById('no-btn');
+            // Move to body to avoid clipping by stage container overflow
+            if (btn.parentNode !== document.body) {
+                document.body.appendChild(btn);
+                btn.style.zIndex = "100";
+            }
+            
+            const padding = 20;
+            const btnWidth = btn.offsetWidth;
+            const btnHeight = btn.offsetHeight;
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            
+            const newX = Math.max(padding, Math.random() * maxX);
+            const newY = Math.max(padding, Math.random() * maxY);
+
+            btn.style.position = 'fixed';
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+            btn.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            
+            const phrases = ["Are you sure?", "Think again!", "Really?", "Try the other one!", "Nope!", "Can't catch me!", "Look here!", "Missed me!"];
+            btn.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+            btn.style.transform = `rotate(${(Math.random() * 30) - 15}deg)`;
+        }
+
+        function acceptProposal() {
+            const noBtn = document.getElementById('no-btn');
+            if (noBtn) noBtn.style.display = 'none';
+
+            transition('stage-proposal', 'stage-success');
+            initPolaroidGallery(); 
+            fireConfetti();
+            
+            let end = Date.now() + 5 * 1000;
+            let colors = ['#D4AF37', '#800020', '#ffffff'];
+
+            (function frame() {
+                confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            var random = function(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                
+                confetti({ ...defaults, particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 }, colors: ['#D4AF37', '#ffffff'] });
+                confetti({ ...defaults, particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 }, colors: ['#800020', '#ff0000'] });
+            }, 250);
+        }
+
+        createHearts();
+    </script>
+</body>
+</html>
