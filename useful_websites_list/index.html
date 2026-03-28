@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome Useful Websites</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans for a premium, modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="design.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <span>AwesomeWeb</span>
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search 300+ premium resources...">
+                <button id="clearSearch" class="hidden"><i class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="nav-actions">
+                <button id="viewToggle" class="icon-btn" title="Toggle View">
+                    <i class="fa-solid fa-list"></i>
+                </button>
+                <button id="themeToggle" class="icon-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <a href="https://github.com/atakanaltok/awesome-useful-websites" target="_blank" class="icon-btn github-btn" title="GitHub">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+                <button id="mobileMenuBtn" class="icon-btn mobile-only">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar glass" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Library</h3>
+                <button id="closeSidebar" class="icon-btn mobile-only"><i class="fa-solid fa-times"></i></button>
+            </div>
+            
+            <ul class="filter-list">
+                <li>
+                    <button class="category-btn active" data-category="All">
+                        <i class="fa-solid fa-globe"></i> All Websites
+                        <span class="count badge-all">0</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="category-btn" data-category="Favorites">
+                        <i class="fa-solid fa-heart fav-icon"></i> Favorites
+                        <span class="count badge-fav">0</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-header mt-4">
+                <h3>Categories</h3>
+            </div>
+            <ul class="filter-list" id="categoryList">
+                <!-- Categories injected via JS -->
+            </ul>
+
+            <div class="sidebar-footer">
+                <p>Curated by Atakan Altok</p>
+                <p class="license">CC BY 4.0 License</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div>
+                    <h1 id="currentCategoryTitle">All Websites</h1>
+                    <p id="statsText" class="subtitle">Loading resources...</p>
+                </div>
+                
+                <div class="tag-legend">
+                    <span class="tag tag-paid"><i class="fa-solid fa-dollar-sign"></i> Paid</span>
+                    <span class="tag tag-student"><i class="fa-solid fa-graduation-cap"></i> Student</span>
+                    <span class="tag tag-down"><i class="fa-solid fa-triangle-exclamation"></i> Down</span>
+                </div>
+            </header>
+
+            <!-- Loading Skeleton -->
+            <div id="loader" class="loader">
+                <div class="spinner"></div>
+                <p>Synthesizing database...</p>
+            </div>
+
+            <!-- Websites Grid -->
+            <div id="websitesContainer" class="grid-view hidden">
+                <!-- Cards injected via JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon"><i class="fa-solid fa-ghost"></i></div>
+                <h2>No results found</h2>
+                <p>Try adjusting your search query or category filter.</p>
+                <button id="resetFilters" class="btn-primary">Reset Filters</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- External JS -->
+    <script src="functions.js"></script>
+</body>
+</html>

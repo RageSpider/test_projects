@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 YouTube-Style Presentation Topics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            850: '#1f2937',
+                            900: '#111827',
+                            950: '#030712',
+                        },
+                        brand: {
+                            DEFAULT: '#8b5cf6', // Violet
+                            light: '#a78bfa',
+                            dark: '#6d28d9',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-white flex items-center gap-2">
+                        <i data-lucide="vault" class="text-brand h-8 w-8"></i>
+                        The Presentation Vault
+                    </h1>
+                    <p class="text-gray-400 mt-1 text-sm">100 curated topics for high-production, video-essay style decks.</p>
+                </div>
+                
+                <!-- Search -->
+                <div class="relative w-full md:w-96">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5"></i>
+                    <input type="text" id="searchInput" placeholder="Search topics or keywords..." 
+                        class="w-full bg-gray-900 border border-gray-700 rounded-full py-2 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all">
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="flex gap-2 mt-6 overflow-x-auto scrollbar-hide pb-2" id="categoryFilters">
+                <!-- Buttons injected by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-4 flex justify-between items-center text-sm text-gray-400">
+            <span id="resultCount">Showing 100 topics</span>
+            <button id="randomBtn" class="flex items-center gap-1 hover:text-white transition-colors">
+                <i data-lucide="shuffle" class="h-4 w-4"></i> Random Topic
+            </button>
+        </div>
+        
+        <div id="topicsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Cards injected by JS -->
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-dark text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+        <i data-lucide="check-circle" class="h-5 w-5"></i>
+        <span>Copied to clipboard!</span>
+    </div>
+
+    <script>
+        // Data Vault: 100 Topics
+        const topics = [
+            // Design & UI
+            { id: 1, category: "Design & UI", title: "The Death of the Physical Button", desc: "How touchscreens took over the world and why our brains secretly miss the tactile feedback of old tech." },
+            { id: 2, category: "Design & UI", title: "The Typography of Trust", desc: "Why you wouldn't trust a bank using Comic Sans. How fonts secretly carry subconscious meaning and manipulate authority." },
+            { id: 3, category: "Design & UI", title: "The Blanding of Brands", desc: "Why every unique corporate and fashion logo over the last 10 years devolved into the exact same boring, flat, sans-serif font." },
+            { id: 4, category: "Design & UI", title: "The Illusion of Choice (Dark Patterns)", desc: "How apps use malicious UI design to trick you into clicking things, subscribing, or surrendering your data." },
+            { id: 5, category: "Design & UI", title: "Skeuomorphism vs. Flat Design", desc: "The visual war between early Apple's leather-and-wood interfaces and the hyper-minimalist flat design of today." },
+            { id: 6, category: "Design & UI", title: "The Psychology of the Progress Bar", desc: "Why loading bars stutter and pause on purpose to make you feel like the computer is 'working hard'." },
+            { id: 7, category: "Design & UI", title: "The 'Save' Icon Paradox", desc: "Why we still use a floppy disk to represent saving data, and the concept of 'digital fossils' in UI." },
+            { id: 8, category: "Design & UI", title: "The Anatomy of a Notification", desc: "How the specific color (red) and pitch of notification sounds are engineered to mimic human baby cries for instant attention." },
+            { id: 9, category: "Design & UI", title: "Dark Mode Psychology", desc: "Is dark mode actually better for your eyes, or does it just make us feel like elite hackers? The visual science behind the toggle." },
+            { id: 10, category: "Design & UI", title: "The Hamburger Menu Debate", desc: "How three little lines conquered web design, hiding massive amounts of information to keep screens clean." },
+            { id: 11, category: "Design & UI", title: "Pull-to-Refresh: The Digital Slot Machine", desc: "How a simple UI gesture was patented and modeled exactly after casino slot machines to trigger dopamine." },
+            { id: 12, category: "Design & UI", title: "Rounded Corners vs. Sharp Edges", desc: "The subconscious reason Apple forces rounded corners on everything (sharp edges signal danger to the primitive brain)." },
+            { id: 13, category: "Design & UI", title: "The Evolution of the Cursor", desc: "Why the mouse arrow is slightly tilted, and how this tiny design choice survived 40 years of computing." },
+            { id: 14, category: "Design & UI", title: "Placebo Buttons", desc: "The secret reality that most crosswalk buttons and office thermostats aren't connected to anything; they just give us a sense of control." },
+            { id: 15, category: "Design & UI", title: "The Infinite Canvas", desc: "How tools like Figma and Miro replaced the 'page' with infinite zooming, changing how humans organize thoughts." },
+            { id: 16, category: "Design & UI", title: "Neumorphism: The Trend that Failed", desc: "An autopsy of the soft, extruded plastic UI trend of 2020 that looked gorgeous on Dribbble but was an accessibility nightmare." },
+            { id: 17, category: "Design & UI", title: "The Captcha Wars", desc: "How proving you are human went from reading squiggly text to training Google's self-driving cars for free." },
+            { id: 18, category: "Design & UI", title: "Digital Brutalism", desc: "The rebellious web design trend that intentionally makes websites look raw, ugly, and chaotic to protest modern minimalism." },
+            { id: 19, category: "Design & UI", title: "The Sound of Silence in UI", desc: "How modern tech relies entirely on haptic feedback (vibrations) to replace the lost physical sounds of mechanical parts." },
+            { id: 20, category: "Design & UI", title: "Designing for Thumbs", desc: "How the physical size of the human thumb completely dictates the layout of every major mobile application on earth." },
+
+            // Psychology & Behavior
+            { id: 21, category: "Psychology & Behavior", title: "The Paradox of Choice", desc: "Why having 10,000 movies on Netflix actually makes your brain freeze up, leading to decision fatigue." },
+            { id: 22, category: "Psychology & Behavior", title: "The Liminal Space Phenomenon", desc: "A visual exploration of why empty malls, school hallways at night, and old airports feel deeply eerie and nostalgic." },
+            { id: 23, category: "Psychology & Behavior", title: "The Mandela Effect", desc: "The psychological glitch where thousands of people share the exact same false memories." },
+            { id: 24, category: "Psychology & Behavior", title: "The Tetris Effect", desc: "How playing a game or doing a repetitive task can literally overwrite your visual cortex, making you see patterns in your sleep." },
+            { id: 25, category: "Psychology & Behavior", title: "Phantom Vibration Syndrome", desc: "The modern neurological glitch where your brain hallucinates your phone buzzing in your pocket." },
+            { id: 26, category: "Psychology & Behavior", title: "The Uncanny Valley", desc: "Why human-like robots and CGI characters become deeply terrifying the closer they get to looking completely real." },
+            { id: 27, category: "Psychology & Behavior", title: "The Zeigarnik Effect", desc: "Why we remember interrupted tasks better than completed ones, and how this fuels binge-watching and cliffhangers." },
+            { id: 28, category: "Psychology & Behavior", title: "Parasocial Relationships", desc: "The one-sided psychological intimacy we develop with YouTubers and streamers, and why the brain thinks they are our real friends." },
+            { id: 29, category: "Psychology & Behavior", title: "The Nostalgia Loop", desc: "How algorithms broke the traditional 20-year trend cycle, causing us to recycle aesthetics faster than ever before." },
+            { id: 30, category: "Psychology & Behavior", title: "Dunning-Kruger in Competitive Gaming", desc: "Why the worst players are the most toxic, and how people physically cannot recognize their own lack of skill." },
+            { id: 31, category: "Psychology & Behavior", title: "Pareidolia in Tech", desc: "Why humans are hardwired to see faces in inanimate objects, from car grills to power outlets." },
+            { id: 32, category: "Psychology & Behavior", title: "The Sunk Cost Fallacy", desc: "Why we refuse to abandon a bad movie, a losing game, or a toxic app simply because we've already invested time into it." },
+            { id: 33, category: "Psychology & Behavior", title: "Digital Groupthink", desc: "How the upvote/downvote mechanics of Reddit and Twitter physically enforce echo chambers and kill nuanced debate." },
+            { id: 34, category: "Psychology & Behavior", title: "The Psychology of Deception in Games", desc: "Why it’s so fun to lie to friends in games like Mafia/Among Us, and the mechanics of manufactured paranoia." },
+            { id: 35, category: "Psychology & Behavior", title: "Gamification of Fitness", desc: "How Apple Rings and Strava leaderboards trick our primitive brains into exercising by treating health as an RPG." },
+            { id: 36, category: "Psychology & Behavior", title: "The Bystander Effect Online", desc: "Why toxic behavior is ignored in massive group chats and comment sections, but handled quickly in small DMs." },
+            { id: 37, category: "Psychology & Behavior", title: "Imposter Syndrome in the Digital Age", desc: "How LinkedIn and Instagram curated realities make 80% of professionals feel like frauds." },
+            { id: 38, category: "Psychology & Behavior", title: "Doomscrolling Mechanics", desc: "The evolutionary reason our brains seek out negative news during a crisis, weaponized by social media feeds." },
+            { id: 39, category: "Psychology & Behavior", title: "The IKEA Effect", desc: "Why we value things we build ourselves significantly more, applied to customized software and character creation in games." },
+            { id: 40, category: "Psychology & Behavior", title: "Digital Hoarding", desc: "The anxiety of managing 50,000 unread emails, 10,000 screenshots, and the fear of deleting data." },
+
+            // Digital Culture
+            { id: 41, category: "Digital Culture", title: "The Dead Internet Theory", desc: "The eerie, increasingly plausible theory that the majority of internet traffic is now just bots interacting with other bots." },
+            { id: 42, category: "Digital Culture", title: "The History of the 404 Page", desc: "How a standard server error code became a canvas for digital humor, easter eggs, and brand personality." },
+            { id: 43, category: "Digital Culture", title: "The Y2K Bug in Retrospect", desc: "Was it a hoax, or did programmers actually save the world? The true story of the millennium bug." },
+            { id: 44, category: "Digital Culture", title: "Vaporwave: The Aesthetic of Lost Futures", desc: "How an internet music genre became a visual critique of 1990s consumerism and early computer utopias." },
+            { id: 45, category: "Digital Culture", title: "The 2038 Problem", desc: "The impending date when 32-bit systems will run out of time, threatening to crash legacy infrastructure worldwide." },
+            { id: 46, category: "Digital Culture", title: "Abandoned Virtual Worlds", desc: "A tour through the digital ruins of Club Penguin, Habbo Hotel, and old MMOs, and what happens when a server dies." },
+            { id: 47, category: "Digital Culture", title: "Speedrunning History", desc: "How players break the physics of classic video games to finish them in minutes, turning glitches into an art form." },
+            { id: 48, category: "Digital Culture", title: "The Evolution of Emojis", desc: "How pixelated Japanese pager icons became a global, standardized visual language managed by the Unicode Consortium." },
+            { id: 49, category: "Digital Culture", title: "The ASMR Phenomenon", desc: "How the internet discovered and commercialized the 'brain tingle', turning quiet sounds into a massive industry." },
+            { id: 50, category: "Digital Culture", title: "Lost Media and the Digital Dark Age", desc: "Why the internet is actually terrible at preserving history, and the communities dedicated to finding deleted childhood shows." },
+            { id: 51, category: "Digital Culture", title: "The 'Rickroll' Anatomy", desc: "How an obscure 1987 pop song became the most resilient, unkillable bait-and-switch meme in internet history." },
+            { id: 52, category: "Digital Culture", title: "Wikipedia's Hidden Architecture", desc: "The edit wars, the power structure of super-editors, and how the last bastion of the old internet actually functions." },
+            { id: 53, category: "Digital Culture", title: "The Flash Games Era", desc: "A nostalgic look back at Newgrounds, Miniclip, and the wild west of internet gaming before mobile apps took over." },
+            { id: 54, category: "Digital Culture", title: "MySpace and the Death of Profile Coding", desc: "How a generation learned HTML just to make their profiles sparkle, and why modern social media killed customization." },
+            { id: 55, category: "Digital Culture", title: "The Right to Repair", desc: "The war between tech giants who glue their devices shut and the hackers/farmers fighting for the right to fix their own stuff." },
+            { id: 56, category: "Digital Culture", title: "The Algorithm Bubble", desc: "How personalized recommendation feeds accidentally shattered shared culture; why there will never be another 'Game of Thrones'." },
+            { id: 57, category: "Digital Culture", title: "Creepypastas and Digital Folklore", desc: "How Slenderman and the Backrooms became the campfire ghost stories of the digital generation." },
+            { id: 58, category: "Digital Culture", title: "The Lore of Minecraft", desc: "How a game with no story generated thousands of hours of community-created lore, myths, and architectural history." },
+            { id: 59, category: "Digital Culture", title: "VTubers and the Avatar Era", desc: "The rise of virtual streamers and what it means for the future of anonymity and performance online." },
+            { id: 60, category: "Digital Culture", title: "The Fragmentation of Streaming", desc: "How cutting the cable cord eventually led us to accidentally recreate cable TV with 15 different subscriptions." },
+
+            // Economics & Marketing
+            { id: 61, category: "Economics & Marketing", title: "The Color Code of Capitalism", desc: "Why almost every major fast-food chain uses red and yellow to trigger urgency and hunger." },
+            { id: 62, category: "Economics & Marketing", title: "The End of Ownership", desc: "The subscription era: How we went from buying CDs, cars, and software to renting our entire lives." },
+            { id: 63, category: "Economics & Marketing", title: "The Architecture of the Supermarket", desc: "How grocery floor plans are meticulously engineered to make you lose track of time, walk further, and spend more." },
+            { id: 64, category: "Economics & Marketing", title: "Planned Obsolescence", desc: "The engineering secret of why your grandparents' fridge still works, but your smartphone battery dies after two years." },
+            { id: 65, category: "Economics & Marketing", title: "Decoy Pricing Mechanics", desc: "Why the medium popcorn at the movies is priced so closely to the large popcorn, tricking you into upgrading." },
+            { id: 66, category: "Economics & Marketing", title: "The Razor and Blades Model", desc: "Why companies sell you printers and game consoles at a loss, just to trap you into buying expensive ink and games." },
+            { id: 67, category: "Economics & Marketing", title: "Shrinkflation", desc: "The stealth economic tactic of making chocolate bars and cereal boxes smaller instead of raising the price tag." },
+            { id: 68, category: "Economics & Marketing", title: "Freemium Gaming Economics", desc: "How 'free' mobile games use casino psychology and friction to make billions off a tiny percentage of 'whale' players." },
+            { id: 69, category: "Economics & Marketing", title: "The Diamond Engagement Ring", desc: "How a single marketing campaign in the 1930s convinced the world that a common shiny rock equals two months' salary." },
+            { id: 70, category: "Economics & Marketing", title: "The History of Credit Scores", desc: "How a completely arbitrary system invented in the 1980s became the ultimate gatekeeper of modern adulthood." },
+            { id: 71, category: "Economics & Marketing", title: "Bottled Water Marketing", desc: "How companies successfully convinced humans to pay a 2000% markup for something that comes out of the tap." },
+            { id: 72, category: "Economics & Marketing", title: "The Pink Tax", desc: "The bizarre economic reality where products marketed to women cost significantly more than identical products for men." },
+            { id: 73, category: "Economics & Marketing", title: "Gym Membership Economics", desc: "Why the business model of commercial gyms relies entirely on 80% of their paying members never actually showing up." },
+            { id: 74, category: "Economics & Marketing", title: "Casino Architecture", desc: "No clocks, no windows, confusing carpets, and free drinks: The sensory deprivation tanks designed to take your money." },
+            { id: 75, category: "Economics & Marketing", title: "Outlet Mall Illusions", desc: "The secret that most 'designer outlet' clothes were never in the main store; they were manufactured specifically to be sold at a 'discount'." },
+            { id: 76, category: "Economics & Marketing", title: "The History of the Shopping Cart", desc: "How a folding chair with wheels revolutionized consumerism by changing how much a person could physically carry." },
+            { id: 77, category: "Economics & Marketing", title: "The Michelin Guide History", desc: "How a tire company started reviewing fine dining restaurants just to get people to drive their cars more and burn rubber." },
+            { id: 78, category: "Economics & Marketing", title: "Fast Fashion's Speed", desc: "How brands like Zara and Shein reduced the design-to-shelf pipeline from 6 months to 15 days, and the cost." },
+            { id: 79, category: "Economics & Marketing", title: "The Gacha Game Phenomenon", desc: "The intersection of anime culture and unregulated gambling mechanics disguised as character collection." },
+            { id: 80, category: "Economics & Marketing", title: "The Attention Economy", desc: "How our literal time and focus became the most valuable tradable commodity on the planet." },
+
+            // Media & Storytelling
+            { id: 81, category: "Media & Storytelling", title: "The Anatomy of a Plot Twist", desc: "How writers manipulate timelines and withhold information to execute the perfect reveal you never saw coming." },
+            { id: 82, category: "Media & Storytelling", title: "The Wilhelm Scream", desc: "The history of the exact same audio clip of a man screaming that has been secretly hidden in hundreds of Hollywood movies." },
+            { id: 83, category: "Media & Storytelling", title: "Orange and Teal Movie Grading", desc: "Why almost every blockbuster action movie colors their scenes with orange skin tones and teal shadows (color theory)." },
+            { id: 84, category: "Media & Storytelling", title: "Why Movie Dialogue is So Quiet Now", desc: "The technical and artistic reasons why modern movies have exploding sound effects but you need subtitles to hear the actors." },
+            { id: 85, category: "Media & Storytelling", title: "The 'Inception' BWAAH", desc: "How one trailer sound effect fundamentally changed the audio design of every action movie for a decade." },
+            { id: 86, category: "Media & Storytelling", title: "Why Anime Intros Spoil the Plot", desc: "The cultural difference in storytelling where the journey is valued over the surprise, leading to spoiler-heavy openings." },
+            { id: 87, category: "Media & Storytelling", title: "The History of the Cliffhanger", desc: "How Charles Dickens and serialized magazines invented the agonizing art of stopping the story right at the best part." },
+            { id: 88, category: "Media & Storytelling", title: "Retconning", desc: "How comic books and long-running shows aggressively rewrite their own pasts to fix plot holes, and why fans hate it." },
+            { id: 89, category: "Media & Storytelling", title: "The Hero's Journey (Monomyth)", desc: "Why Star Wars, Harry Potter, and The Matrix are the exact same story structurally, and why we never get tired of it." },
+            { id: 90, category: "Media & Storytelling", title: "Practical vs. CGI Effects", desc: "Why the dinosaurs in 1993's Jurassic Park still look better than modern superhero movies, and the concept of 'weight'." },
+            { id: 91, category: "Media & Storytelling", title: "The 'Found Footage' Genre", desc: "How The Blair Witch Project weaponized early internet forums and low-quality cameras to create the ultimate cheap horror." },
+            { id: 92, category: "Media & Storytelling", title: "Dynamic Video Game Music", desc: "How composers write music that seamlessly changes intensity based on what the player decides to do in real-time." },
+            { id: 93, category: "Media & Storytelling", title: "The MacGuffin", desc: "Alfred Hitchcock's secret storytelling trick: an object (like a glowing briefcase) that characters care about, but the audience doesn't." },
+            { id: 94, category: "Media & Storytelling", title: "Breaking the Fourth Wall", desc: "From Shakespeare to Deadpool: the comedic and dramatic power of a character realizing they are in a story." },
+            { id: 95, category: "Media & Storytelling", title: "The Montage", desc: "How 1980s sports movies popularized compressing months of grueling training into 3 minutes of rock music." },
+            { id: 96, category: "Media & Storytelling", title: "Why Comedy Sequels Fail", desc: "The mathematical impossibility of repeating a joke twice with a bigger budget, and the curse of the comedy franchise." },
+            { id: 97, category: "Media & Storytelling", title: "The Origin of the Modern Zombie", desc: "How George A. Romero accidentally redefined a Haitian folklore monster into the ultimate metaphor for consumerism." },
+            { id: 98, category: "Media & Storytelling", title: "The Sitcom Laugh Track", desc: "The eerie history of 'canned laughter'—recordings of dead people from the 1950s used to tell us when a joke is funny." },
+            { id: 99, category: "Media & Storytelling", title: "The Map is Not the Territory", desc: "How world maps (the Mercator projection) lie about the true size of countries, altering global perception." },
+            { id: 100, category: "Media & Storytelling", title: "The Art of the Teaser", desc: "How marketing evolved from showing the whole movie in the trailer to showing 10 seconds of cryptic footage." }
+        ];
+
+        // Categories extraction
+        const categories = ["All", ...new Set(topics.map(t => t.category))];
+        let currentCategory = "All";
+        let currentSearch = "";
+
+        // DOM Elements
+        const grid = document.getElementById('topicsGrid');
+        const filterContainer = document.getElementById('categoryFilters');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
+        const toast = document.getElementById('toast');
+        const randomBtn = document.getElementById('randomBtn');
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Render Category Buttons
+        function renderCategories() {
+            filterContainer.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                const isActive = currentCategory === cat;
+                btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                    isActive ? 'bg-brand text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+                }`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    currentCategory = cat;
+                    renderCategories();
+                    renderGrid();
+                };
+                filterContainer.appendChild(btn);
+            });
+        }
+
+        // Copy functionality
+        function copyTopic(title, desc) {
+            const textToCopy = `${title}\n\n${desc}`;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 2000);
+            });
+        }
+
+        // Render Topics Grid
+        function renderGrid() {
+            grid.innerHTML = '';
+            
+            const filtered = topics.filter(t => {
+                const matchesCat = currentCategory === "All" || t.category === currentCategory;
+                const searchStr = currentSearch.toLowerCase();
+                const matchesSearch = t.title.toLowerCase().includes(searchStr) || t.desc.toLowerCase().includes(searchStr);
+                return matchesCat && matchesSearch;
+            });
+
+            resultCount.textContent = `Showing ${filtered.length} topics`;
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-500">
+                        <i data-lucide="inbox" class="h-12 w-12 mx-auto mb-3 opacity-50"></i>
+                        <p>No topics found matching your criteria.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(topic => {
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-xl p-5 hover:border-brand/50 transition-all duration-300 group flex flex-col h-full cursor-pointer";
+                card.onclick = () => copyTopic(topic.title, topic.desc);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-semibold px-2 py-1 bg-gray-800 text-brand-light rounded-md border border-gray-700">
+                            ${topic.category}
+                        </span>
+                        <span class="text-gray-600 font-mono text-sm opacity-50 group-hover:opacity-100 transition-opacity">
+                            #${topic.id.toString().padStart(3, '0')}
+                        </span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2 leading-tight group-hover:text-brand-light transition-colors">
+                        ${topic.title}
+                    </h3>
+                    <p class="text-sm text-gray-400 leading-relaxed flex-grow">
+                        ${topic.desc}
+                    </p>
+                    <div class="mt-4 flex items-center text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity gap-1">
+                        <i data-lucide="copy" class="h-3 w-3"></i> Click to copy
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderGrid();
+        });
+
+        randomBtn.addEventListener('click', () => {
+            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+            currentCategory = "All";
+            searchInput.value = randomTopic.title;
+            currentSearch = randomTopic.title;
+            renderCategories();
+            renderGrid();
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initial render
+        renderCategories();
+        renderGrid();
+    </script>
+</body>
+</html>
