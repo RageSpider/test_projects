@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Snippet Printer</title>
+    <style>
+        :root {
+            /* Adjust these values to change spacing and size */
+            --columns: 2; /* 2 images per row is usually best for readability */
+            --cut-gap: 12mm; /* Thick gap for easy scissor cutting */
+            --safe-padding: 6mm; /* Safe space inside the cut line */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Control Panel --- */
+        .controls {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .slider-group label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #1d4ed8; }
+
+        /* --- Layout Grid --- */
+        .print-container {
+            width: 210mm; /* A4 Width */
+            background: white;
+            padding: 10mm;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            
+            /* CSS Grid creates mathematically perfect rows and columns */
+            display: grid;
+            grid-template-columns: repeat(var(--columns), 1fr);
+            gap: var(--cut-gap);
+        }
+
+        /* --- Individual Snippet Box --- */
+        .snippet-box {
+            border: 2px dashed #94a3b8; /* Scissor Cut Line */
+            padding: var(--safe-padding);
+            background: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Forces the browser to keep this box intact across pages */
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .snippet-box img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            /* Auto-rotate effect: Landscape images will scale to fit the box safely */
+        }
+
+        /* --- Print Specific Settings --- */
+        @media print {
+            body { background: transparent; padding: 0; }
+            .controls { display: none !important; }
+            .print-container { 
+                width: 100%; 
+                padding: 0; 
+                box-shadow: none; 
+            }
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div class="slider-group">
+            <label>Images per Row (Size): <span id="colLabel">2</span></label>
+            <input type="range" id="colSlider" min="1" max="4" value="2">
+        </div>
+
+        <div class="slider-group">
+            <label>Scissor Space (Gap): <span id="gapLabel">12</span>mm</label>
+            <input type="range" id="gapSlider" min="0" max="25" value="12">
+        </div>
+
+        <div class="slider-group">
+            <label>Internal Padding: <span id="padLabel">6</span>mm</label>
+            <input type="range" id="padSlider" min="0" max="15" value="6">
+        </div>
+
+        <button onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+
+    <div class="print-container" id="printContainer">
+        </div>
+
+    <script>
+        // Your exact 23 images
+        const imageList = [
+            '14', '15', '16', '19', '20', '21', '24', '25', '26', '27', 
+            '35', '36', '37', '38', '41', '42', '43', '44', '45', '53', 
+            '54', '55', '56'
+        ];
+
+        const container = document.getElementById('printContainer');
+
+        // Automatically load images from the local images/ folder
+        imageList.forEach(num => {
+            const box = document.createElement('div');
+            box.className = 'snippet-box';
+            
+            const img = document.createElement('img');
+            img.src = `images/${num}.jpg`;
+            img.alt = `Scan ${num}`;
+            
+            // Basic auto-rotation logic (visual only, relies on CSS object-fit to be safe)
+            img.onload = function() {
+                if (this.naturalWidth > this.naturalHeight) {
+                    this.style.width = "100%";
+                }
+            }
+
+            box.appendChild(img);
+            container.appendChild(box);
+        });
+
+        // Live Sliders Logic
+        const colSlider = document.getElementById('colSlider');
+        const gapSlider = document.getElementById('gapSlider');
+        const padSlider = document.getElementById('padSlider');
+
+        colSlider.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--columns', e.target.value);
+            document.getElementById('colLabel').innerText = e.target.value;
+        });
+
+        gapSlider.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--cut-gap', e.target.value + 'mm');
+            document.getElementById('gapLabel').innerText = e.target.value;
+        });
+
+        padSlider.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--safe-padding', e.target.value + 'mm');
+            document.getElementById('padLabel').innerText = e.target.value;
+        });
+    </script>
+</body>
+</html>
