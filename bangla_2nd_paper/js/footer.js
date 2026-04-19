@@ -23,12 +23,16 @@ document.addEventListener('footerLoaded', () => {
         { file: 'translation.html', title: 'অনুবাদ', category: 'composition' },
         { file: 'diary.html', title: 'দিনলিপি', category: 'composition' },
         { file: 'experience.html', title: 'অভিজ্ঞতা বর্ণন', category: 'composition' },
-        { file: 'speech.html', title: 'ভাষণ ও প্রতিবেদন', category: 'composition' },
-        { file: 'email.html', title: 'ই-মেইল ও পত্রলিখন', category: 'composition' },
+        { file: 'report.html', title: 'প্রতিবেদন রচনা', category: 'composition' },
+        { file: 'speech.html', title: 'ভাষণ লিখন', category: 'composition' },
+        { file: 'email.html', title: 'ই-মেইল', category: 'composition' },
+        { file: 'sms.html', title: 'ক্ষুদেবার্তা', category: 'composition' },
+        { file: 'letter.html', title: 'পত্রলিখন ও আবেদনপত্র', category: 'composition' },
         { file: 'summary.html', title: 'সারাংশ ও সারমর্ম', category: 'composition' },
         { file: 'amplification.html', title: 'ভাব-সম্প্রসারণ', category: 'composition' },
-        { file: 'dialogue.html', title: 'সংলাপ ও খুদে গল্প', category: 'composition' },
-        { file: 'essay.html', title: 'প্রবন্ধ-নিবন্ধ', category: 'composition' }
+        { file: 'dialogue.html', title: 'সংলাপ রচনা', category: 'composition' },
+        { file: 'story.html', title: 'খুদে গল্প লিখন', category: 'composition' },
+        { file: 'essay.html', title: 'প্রবন্ধ-নিবন্ধ রচনা', category: 'composition' }
     ];
 
     // Read visit history
