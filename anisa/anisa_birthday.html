@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>শুভ জন্মদিন আনিসা!</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;500;600;700;800&family=Baloo+Da+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- High Quality SVG Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- GSAP for Smooth Initial & Scroll Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Anek Bangla', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #12030d;
+            background-image: radial-gradient(circle at 50% 0%, #3e0c2b 0%, #12030d 80%);
+            background-attachment: fixed;
+            color: white;
+        }
+        
+        .title-font {
+            font-family: 'Baloo Da 2', sans-serif;
+        }
+
+        /* 👑 Royal Golden Text Gradient */
+        .gold-text {
+            background: linear-gradient(to right, #fde047, #f59e0b, #fde047);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        /* 💎 Highly Optimized Glassmorphism */
+        .glass-premium {
+            background: rgba(20, 3, 14, 0.6);
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(236, 72, 153, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Solid cards for grand content */
+        .solid-card {
+            background: linear-gradient(145deg, #2a081d, #1a0411);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            transition: all 0.4s ease;
+        }
+
+        .solid-card:hover {
+            border-color: #f472b6;
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.2), inset 0 0 15px rgba(236, 72, 153, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .neon-text-pink {
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.9), 0 0 40px rgba(219, 39, 119, 0.6);
+        }
+
+        /* 📸 CSS-Only Smooth 3D Photo Gallery */
+        .gallery-container { perspective: 1200px; }
+        
+        .photo-card {
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.6s ease;
+            background: linear-gradient(to bottom, #ffffff, #fdf2f8);
+            padding: 14px 14px 24px 14px;
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .photo-card img {
+            border-radius: 6px;
+            pointer-events: none;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        /* Grand CSS Hover States */
+        .photo-left:hover { transform: scale(1.08) rotateY(12deg) translateZ(30px); box-shadow: -20px 20px 30px rgba(0,0,0,0.6); }
+        .photo-center:hover { transform: scale(1.15) translateZ(40px); box-shadow: 0 30px 40px rgba(236, 72, 153, 0.4); border-color: #fce7f3; }
+        .photo-right:hover { transform: scale(1.08) rotateY(-12deg) translateZ(30px); box-shadow: 20px 20px 30px rgba(0,0,0,0.6); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0a0106; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #ec4899, #be185d); border-radius: 10px; }
+
+        .invisible-layer { display: none; opacity: 0; }
+        
+        /* Slow floating for grand SVGs */
+        .float-decor {
+            animation: floatUpDown 4s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .icon-glow {
+            filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.7));
+        }
+        .icon-gold-glow {
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.7));
+        }
+
+        /* Subtle starry background effect using box-shadows */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: transparent;
+        }
+        
+        /* Initial opacity for scroll animations */
+        .scroll-reveal { opacity: 0; transform: translateY(40px); }
+    </style>
+</head>
+<body class="min-h-screen relative" id="body-container">
+
+    <!-- Grand Starry Background -->
+    <div class="stars" id="star-container"></div>
+
+    <!-- 🎵 Audio Player (LOCAL FILE: song.mp3) -->
+    <audio id="bday-audio" preload="auto" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ================= GRAND LAYERS (Unboxing) ================= -->
+
+    <!-- 🎁 Layer 1: The Royal Box -->
+    <div id="layer-1" class="fixed inset-0 z-[60] flex flex-col items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-500">
+        <div class="glass-premium p-12 md:p-20 rounded-[2.5rem] text-center max-w-lg w-full cursor-pointer transition-transform hover:scale-105 border-t-4 border-pink-500">
+            <div class="flex justify-center mb-8 float-decor icon-glow">
+                <i data-lucide="gift" class="w-32 h-32 md:w-40 md:h-40 text-pink-500"></i>
+            </div>
+            <h2 class="title-font text-4xl md:text-5xl text-white font-extrabold mb-8 neon-text-pink">আনিসার জন্য সারপ্রাইজ!</h2>
+            <p class="text-pink-300 text-lg font-bold mb-6 tracking-wide uppercase">তোর ৯ম জন্মদিনের উপহার</p>
+            <button class="bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 text-white px-10 py-4 rounded-full text-xl font-bold shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all w-full uppercase tracking-wider">
+                বাক্সটি খোলো!
+            </button>
+        </div>
+    </div>
+
+    <!-- 💌 Layer 2: The Royal Letter -->
+    <div id="layer-2" class="invisible-layer fixed inset-0 z-[50] flex flex-col items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="glass-premium p-8 md:p-14 rounded-[2.5rem] text-center max-w-3xl w-full cursor-pointer relative border-t-4 border-pink-400">
+            <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 float-decor bg-[#1a0411] p-4 rounded-full border-2 border-pink-500 icon-glow">
+                <i data-lucide="mail-open" class="w-16 h-16 text-pink-400"></i>
+            </div>
+            <h3 class="title-font text-3xl md:text-5xl font-bold text-pink-400 mt-10 mb-8 drop-shadow-md">আমার আদরের ছোট বোন আনিসা,</h3>
+            
+            <div class="text-lg md:text-2xl text-gray-200 space-y-6 font-medium leading-relaxed px-2 md:px-8 text-left">
+                <p>দেখতে দেখতে তুই ৯ বছরে পা দিলি! মনে হয় এই তো সেদিন তুই প্রথম হাঁটতে শিখলি, আর আজ তুই কত বড় হয়ে গেছিস।</p>
+                <p>তোর হাসি, তোর মিষ্টি মিষ্টি কথা, তোর দুষ্টুমি, আর গোলাপি রঙের প্রতি তোর ওই পাগলামি—সবকিছুই আমার খুব প্রিয়। তুই শুধু আমার ছোট বোন না, তুই আমার জীবনের সবচেয়ে সুন্দর একটি উপহার।</p>
+                <p class="text-center font-bold text-pink-300 text-2xl pt-4">আজ তোর এই বিশেষ দিনে, আমি তোকে বলতে চাই—আমি তোকে অনেক অনেক ভালোবাসি।</p>
+            </div>
+            
+            <div class="mt-12">
+                <span class="bg-white text-pink-700 px-10 py-3 rounded-full text-xl font-bold animate-pulse inline-block shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                    চিঠি পড়া শেষ? এখানে চাপ দাও
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✨ Layer 3: The Grand Magic Spell -->
+    <div id="layer-3" class="invisible-layer fixed inset-0 z-[40] flex flex-col items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div class="glass-premium p-12 md:p-24 rounded-full flex flex-col items-center justify-center text-center w-80 h-80 md:w-[28rem] md:h-[28rem] relative border-4 border-pink-500 border-dashed cursor-pointer transition-colors group hover:border-solid hover:bg-pink-900/40">
+            <div class="flex justify-center mb-6 float-decor icon-gold-glow group-hover:scale-125 transition-transform">
+                <i data-lucide="sparkles" class="w-24 h-24 md:w-32 md:h-32 text-yellow-400"></i>
+            </div>
+            <h2 class="title-font text-4xl md:text-5xl text-white font-bold leading-tight neon-text-pink">আসল ম্যাজিক<br>এখন শুরু!</h2>
+            <p class="text-pink-200 font-bold mt-6 text-xl bg-black/60 px-6 py-2 rounded-full uppercase tracking-widest border border-pink-500/50">ক্লিক করো!</p>
+        </div>
+    </div>
+
+    <!-- ================= GRAND MAIN CONTENT ================= -->
+    <div id="main-content" class="invisible-layer min-h-screen pb-20 w-full relative z-10 pt-10">
+
+        <!-- 🔊 Audio Controls -->
+        <div class="fixed top-4 right-4 md:top-8 md:right-8 z-50">
+            <button id="music-toggle" class="bg-pink-900/60 backdrop-blur-md border border-pink-500/50 p-4 rounded-full text-xl flex items-center gap-3 px-6 hover:bg-pink-700 transition-all shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                <i data-lucide="volume-2" id="music-icon-svg" class="w-6 h-6 text-white"></i>
+                <span class="text-sm md:text-base font-bold text-white title-font uppercase tracking-wider">গান</span>
+            </button>
+        </div>
+
+        <div class="container mx-auto px-4">
+            
+            <!-- 🎉 Hero Section -->
+            <header class="text-center mb-24 opacity-0" id="hero-section">
+                <div class="inline-block bg-pink-900/40 border border-pink-500/60 rounded-full px-8 py-3 mb-8 backdrop-blur-sm shadow-[0_0_20px_rgba(236,72,153,0.2)]">
+                    <span class="text-pink-200 font-bold text-xl tracking-widest uppercase flex items-center gap-2">
+                        <i data-lucide="party-popper" class="w-6 h-6 text-yellow-400"></i>
+                        আজ তোর ৯ম জন্মদিন!
+                    </span>
+                </div>
+                
+                <h1 class="title-font text-6xl md:text-[8rem] font-black mb-4 text-transparent bg-clip-text bg-gradient-to-b from-white via-pink-300 to-pink-600 neon-text-pink leading-tight">
+                    শুভ জন্মদিন!
+                </h1>
+                
+                <h2 class="title-font text-5xl md:text-7xl font-bold mt-4 gold-text">
+                    সুমাইয়া তাবাসসুম আনিসা
+                </h2>
+                
+                <div class="mt-10 max-w-3xl mx-auto bg-black/40 p-6 rounded-3xl border border-pink-500/20 backdrop-blur-sm">
+                    <p class="text-2xl text-pink-300 font-medium leading-relaxed">
+                        তোর জীবনের প্রতিটি দিন হোক এই জন্মদিনের মতোই রঙিন, আনন্দের আর গোলাপি! 
+                        <i data-lucide="flower-2" class="w-8 h-8 inline-block text-pink-500 ml-2 mb-1"></i>
+                    </p>
+                </div>
+            </header>
+
+            <!-- 💖 Content Section: 9 Qualities for 9th Birthday -->
+            <section class="max-w-6xl mx-auto mb-32 scroll-reveal" id="qualities-section">
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center justify-center gap-4 border-b-4 border-pink-600 pb-4">
+                        <i data-lucide="award" class="w-10 h-10 md:w-12 md:h-12 text-yellow-400 icon-gold-glow"></i>
+                        <h3 class="title-font text-4xl md:text-5xl font-bold text-white">তোর ৯টি মিষ্টি দিক</h3>
+                        <i data-lucide="award" class="w-10 h-10 md:w-12 md:h-12 text-yellow-400 icon-gold-glow"></i>
+                    </div>
+                    <p class="text-pink-300 mt-6 text-xl tracking-wide">৯ বছরে পা দেওয়া উপলক্ষে তোর ৯টি বিশেষ গুণ—</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Premium Cards with SVG Icons -->
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="smile" class="w-14 h-14 text-pink-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">মিষ্টি হাসি</h4>
+                        <p class="text-gray-300 text-lg">তোর হাসি দেখলে মন ভালো হয়ে যায়।</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="heart-handshake" class="w-14 h-14 text-rose-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">সবার খেয়াল রাখা</h4>
+                        <p class="text-gray-300 text-lg">ছোট হলেও তুই সবার কত যত্ন নিস!</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="palette" class="w-14 h-14 text-purple-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">দারুণ ড্রয়িং</h4>
+                        <p class="text-gray-300 text-lg">তোর আঁকা ছবিগুলো সত্যি খুব সুন্দর।</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="flower" class="w-14 h-14 text-pink-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">গোলাপি রঙের ভক্ত</h4>
+                        <p class="text-gray-300 text-lg">তোর সবকিছুতেই পিংক কালার চাই!</p>
+                    </div>
+                    
+                    <!-- Centerpiece Card (Bigger, Glowing) -->
+                    <div class="solid-card p-8 rounded-[2rem] text-center border-2 border-pink-500 shadow-[0_0_25px_rgba(236,72,153,0.4)] transform md:scale-110 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-gold-glow">
+                            <i data-lucide="brain-circuit" class="w-16 h-16 text-yellow-400"></i>
+                        </div>
+                        <h4 class="text-3xl font-bold text-white mb-3 title-font drop-shadow-md">অনেক বুদ্ধিমতী</h4>
+                        <p class="text-pink-200 text-lg font-medium">তোর বুদ্ধির প্রশংসা সবাই করে।</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="mic-vocal" class="w-14 h-14 text-blue-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">সুন্দর করে কথা বলা</h4>
+                        <p class="text-gray-300 text-lg">তোর কথা শুনতে খুব ভালো লাগে।</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="cloud-rain" class="w-14 h-14 text-cyan-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">একটুখানি অভিমান</h4>
+                        <p class="text-gray-300 text-lg">তোর রাগ ভাঙাতেও বেশ মজা!</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-glow">
+                            <i data-lucide="heart" class="w-14 h-14 text-red-500 fill-red-500/20"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">অনেক আদর</h4>
+                        <p class="text-gray-300 text-lg">তুই সবাইকে অনেক ভালোবাসিস।</p>
+                    </div>
+                    
+                    <div class="solid-card p-8 rounded-[2rem] text-center group">
+                        <div class="flex justify-center mb-6 transform group-hover:scale-110 transition-transform icon-gold-glow">
+                            <i data-lucide="crown" class="w-14 h-14 text-yellow-500 fill-yellow-500/20"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-pink-300 mb-3 title-font">আমার প্রিয় বোন</h4>
+                        <p class="text-gray-300 text-lg">তুই আমার দেখা সেরা বোন!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 📸 3D Photo Gallery -->
+            <section class="max-w-7xl mx-auto gallery-container mb-32 scroll-reveal" id="gallery-section">
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center justify-center gap-4 border-b-4 border-pink-600 pb-4">
+                        <i data-lucide="camera" class="w-10 h-10 md:w-12 md:h-12 text-pink-400 icon-glow"></i>
+                        <h3 class="title-font text-4xl md:text-5xl font-bold text-white">তোর মিষ্টি ৩টি ছবি</h3>
+                        <i data-lucide="camera" class="w-10 h-10 md:w-12 md:h-12 text-pink-400 icon-glow"></i>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-8 lg:gap-16 mt-10">
+                    
+                    <!-- Left Photo (1.png) -->
+                    <div class="w-72 md:w-80 flex-shrink-0">
+                        <div class="photo-card photo-left transform md:-rotate-6 md:-translate-y-4 shadow-[0_15px_30px_rgba(0,0,0,0.5)]">
+                            <div class="absolute -top-4 left-1/2 -translate-x-1/2 text-gray-300 z-10 opacity-70">
+                                <i data-lucide="pin" class="w-8 h-8"></i>
+                            </div>
+                            <div class="aspect-[4/5] bg-zinc-800 relative rounded-lg border border-gray-200 overflow-hidden">
+                                <img src="1.png" alt="Anisa Facing Right" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80 text-white -z-10">
+                                    <i data-lucide="image" class="w-16 h-16 text-gray-500 mb-4"></i>
+                                    <span class="font-bold text-xl tracking-widest text-gray-400">1.png</span>
+                                </div>
+                            </div>
+                            <p class="title-font text-3xl font-black text-pink-600 text-center mt-6">কিউটি! 💖</p>
+                        </div>
+                    </div>
+
+                    <!-- Middle Photo (2.png) -->
+                    <div class="w-80 md:w-96 flex-shrink-0 z-10 md:-translate-y-16">
+                        <div class="photo-card photo-center transform scale-110 border-4 border-pink-400 shadow-[0_25px_50px_rgba(236,72,153,0.3)] relative">
+                            <div class="absolute -top-10 left-1/2 -translate-x-1/2 z-20 float-decor icon-gold-glow">
+                                <i data-lucide="crown" class="w-20 h-20 text-yellow-400 fill-yellow-400/40"></i>
+                            </div>
+                            <div class="aspect-[4/5] bg-zinc-800 relative rounded-lg border border-gray-200 overflow-hidden">
+                                <img src="2.png" alt="Anisa Facing Forward" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80 text-white -z-10">
+                                    <i data-lucide="image" class="w-20 h-20 text-gray-500 mb-4"></i>
+                                    <span class="font-bold text-2xl tracking-widest text-gray-400">2.png</span>
+                                </div>
+                            </div>
+                            <p class="title-font text-4xl font-black text-pink-600 text-center mt-8 drop-shadow-sm">রাজকন্যা! 👑</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Photo (3.png) -->
+                    <div class="w-72 md:w-80 flex-shrink-0">
+                        <div class="photo-card photo-right transform md:rotate-6 md:-translate-y-4 shadow-[0_15px_30px_rgba(0,0,0,0.5)] relative">
+                            <div class="absolute -top-4 left-1/2 -translate-x-1/2 text-gray-300 z-10 opacity-70">
+                                <i data-lucide="pin" class="w-8 h-8"></i>
+                            </div>
+                            <div class="aspect-[4/5] bg-zinc-800 relative rounded-lg border border-gray-200 overflow-hidden">
+                                <img src="3.png" alt="Anisa Facing Left" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80 text-white -z-10">
+                                    <i data-lucide="image" class="w-16 h-16 text-gray-500 mb-4"></i>
+                                    <span class="font-bold text-xl tracking-widest text-gray-400">3.png</span>
+                                </div>
+                            </div>
+                            <p class="title-font text-3xl font-black text-pink-600 text-center mt-6">মিষ্টি মেয়ে! 🎀</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 💌 Content Section: Final Wishes -->
+            <section class="max-w-4xl mx-auto mb-24 scroll-reveal" id="wishes-section">
+                <div class="solid-card p-10 md:p-16 rounded-[2.5rem] text-center border-t-4 border-pink-500 relative">
+                    <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-pink-500 to-pink-700 p-5 rounded-full shadow-[0_0_20px_rgba(236,72,153,0.6)]">
+                        <i data-lucide="hands-praying" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <h3 class="title-font text-4xl md:text-5xl font-bold text-white mb-8 mt-6">আমার প্রার্থনা</h3>
+                    <div class="text-xl md:text-2xl text-gray-200 space-y-6 font-medium leading-relaxed">
+                        <p>মহান আল্লাহ তোকে সবসময় সুস্থ রাখুন এবং ভালো রাখুন। তুই জীবনে অনেক বড় হ, পড়াশোনায় অনেক ভালো কর আর একজন আদর্শ মানুষ হয়ে ওঠ।</p>
+                        <p>তোর চোখের কোনো স্বপ্ন যেন অপূর্ণ না থাকে। আমি তোর বড় ভাই/বোন হিসেবে সবসময় তোর পাশে ছায়ার মতো আছি।</p>
+                        <div class="mt-10 pt-8 border-t border-pink-900/50">
+                            <p class="gold-text font-bold text-3xl md:text-4xl title-font flex items-center justify-center gap-3">
+                                <i data-lucide="stars" class="w-8 h-8 text-yellow-400"></i>
+                                শুভ জন্মদিন, আনিসা!
+                                <i data-lucide="stars" class="w-8 h-8 text-yellow-400"></i>
+                            </p>
+                            <p class="text-pink-400 font-bold text-2xl mt-4">অনেক অনেক ভালোবাসা। ❤️</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 🎇 Grand Finale Magic Button -->
+            <div class="text-center pb-24 scroll-reveal" id="finale-btn">
+                <button onclick="grandConfetti()" class="bg-gradient-to-r from-pink-600 via-rose-600 to-pink-600 text-white font-black py-5 px-12 rounded-full shadow-[0_0_30px_rgba(236,72,153,0.6)] transform transition hover:scale-110 active:scale-95 text-2xl md:text-3xl title-font border-2 border-pink-400 flex items-center justify-center gap-4 mx-auto">
+                    <i data-lucide="sparkles" class="w-8 h-8"></i>
+                    আবার ম্যাজিক দেখো! 
+                    <i data-lucide="sparkles" class="w-8 h-8"></i>
+                </button>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- 🚀 Streamlined & Grand JavaScript Implementation -->
+    <script>
+        // Initialize Lucide SVG Icons
+        lucide.createIcons();
+
+        // Create simple CSS starry background to avoid JS rendering lag
+        function createStars() {
+            const container = document.getElementById('star-container');
+            let boxshadow = '';
+            for(let i=0; i<100; i++) {
+                const x = Math.floor(Math.random() * window.innerWidth);
+                const y = Math.floor(Math.random() * window.innerHeight);
+                const size = Math.random() < 0.5 ? '1px' : '2px';
+                const opacity = Math.random() * 0.5 + 0.1;
+                boxshadow += `${x}px ${y}px 0 ${size} rgba(255, 255, 255, ${opacity}), `;
+            }
+            container.style.boxShadow = boxshadow.slice(0, -2); // remove last comma
+        }
+        createStars();
+        window.addEventListener('resize', createStars);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const layer1 = document.getElementById('layer-1');
+            const layer2 = document.getElementById('layer-2');
+            const layer3 = document.getElementById('layer-3');
+            const mainContent = document.getElementById('main-content');
+            const audio = document.getElementById('bday-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIconSvg = document.getElementById('music-icon-svg');
+
+            let currentStep = 1;
+
+            // 🎁 Layer 1 Action
+            layer1.addEventListener('click', () => {
+                if (currentStep !== 1) return;
+                gsap.to(layer1, { 
+                    opacity: 0, scale: 1.2, duration: 0.6, ease: "power2.in",
+                    onComplete: () => { 
+                        layer1.style.display = 'none'; 
+                        layer2.style.display = 'flex';
+                        layer2.classList.remove('invisible-layer');
+                        gsap.fromTo(layer2, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.2)" });
+                        currentStep = 2; 
+                    }
+                });
+            });
+
+            // 💌 Layer 2 Action
+            layer2.addEventListener('click', () => {
+                if (currentStep !== 2) return;
+                gsap.to(layer2, { 
+                    opacity: 0, y: -40, duration: 0.5, ease: "power2.in",
+                    onComplete: () => { 
+                        layer2.style.display = 'none'; 
+                        layer3.style.display = 'flex';
+                        layer3.classList.remove('invisible-layer');
+                        gsap.fromTo(layer3, { opacity: 0, scale: 0.5, rotation: -10 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.8, ease: "elastic.out(1, 0.7)" });
+                        currentStep = 3; 
+                    }
+                });
+            });
+
+            // ✨ Layer 3 Action -> THE GRAND REVEAL
+            layer3.addEventListener('click', () => {
+                if (currentStep !== 3) return;
+
+                // 🎵 Play Music immediately
+                audio.volume = 0.8;
+                audio.play().then(() => {
+                    updateMusicIcon(true);
+                }).catch(err => {
+                    console.log("Audio requires manual play:", err);
+                    updateMusicIcon(false);
+                });
+
+                // Grand Confetti Burst
+                grandConfetti();
+
+                // Hide Layer 3 and Reveal Main Content
+                gsap.to(layer3, { 
+                    opacity: 0, scale: 3, duration: 0.6, ease: "power3.in",
+                    onComplete: () => { 
+                        layer3.style.display = 'none'; 
+                        
+                        mainContent.style.display = 'block';
+                        mainContent.classList.remove('invisible-layer');
+                        
+                        // Hero section drop in
+                        gsap.fromTo("#hero-section", 
+                            { opacity: 0, y: 50, scale: 0.9 }, 
+                            { opacity: 1, y: 0, scale: 1, duration: 1, ease: "back.out(1.2)" }
+                        );
+
+                        // Initialize Scroll Animations
+                        initScrollAnimations();
+                    }
+                });
+            });
+
+            // 🎵 Audio Controller Logic
+            function updateMusicIcon(isPlaying) {
+                if(isPlaying) {
+                    musicIconSvg.setAttribute('data-lucide', 'volume-2');
+                } else {
+                    musicIconSvg.setAttribute('data-lucide', 'volume-x');
+                }
+                lucide.createIcons();
+            }
+
+            musicToggle.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    updateMusicIcon(true);
+                } else {
+                    audio.pause();
+                    updateMusicIcon(false);
+                }
+            });
+        });
+
+        // Use Intersection Observer for highly performant scroll animations
+        function initScrollAnimations() {
+            const elements = document.querySelectorAll('.scroll-reveal');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        gsap.to(entry.target, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.8,
+                            ease: "power2.out"
+                        });
+                        observer.unobserve(entry.target); // Animate only once
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            elements.forEach(el => observer.observe(el));
+        }
+
+        // 🎇 Grand Performance-Friendly Confetti
+        function grandConfetti() {
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.6 },
+                colors: ['#ec4899', '#db2777', '#fbcfe8', '#ffd700', '#ffffff', '#8b5cf6']
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+            
+            // Side cannons
+            setTimeout(() => {
+                confetti({ particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: defaults.colors });
+                confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: defaults.colors });
+            }, 400);
+        }
+    </script>
+</body>
+</html>
