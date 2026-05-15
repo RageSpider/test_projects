@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play With Code Animation</title>
+  
+  <style>
+    body {
+      background: #1d1d1d;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    text {
+      text-anchor: middle;
+      font-family: "brandon-grotesque";
+      font-weight: 700;
+      font-size: 42px;
+      letter-spacing: -0px;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      visibility: hidden;
+      overflow: hidden;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <svg class="mainSVG" viewBox="0 -50 800 600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <g id="popGroup" stroke="#EDEDED" stroke-width="2" stroke-miterlimit="10">
+        <line fill="none" x1="135" y1="135" x2="135" y2="0" />
+        <line fill="none" x1="135" y1="135" x2="230.5" y2="39.5" />
+        <line fill="none" x1="135" y1="135" x2="270" y2="135" />
+        <line fill="none" x1="135" y1="135" x2="230.5" y2="230.5" />
+        <line fill="none" x1="135" y1="135" x2="135" y2="270" />
+        <line fill="none" x1="135" y1="135" x2="39.5" y2="230.5" />
+        <line fill="none" x1="135" y1="135" x2="0" y2="135" />
+        <line fill="none" x1="135" y1="135" x2="39.5" y2="39.5" />
+      </g>
+
+      <ellipse id="marqueeCircle" stroke-dasharray="2 10" stroke-miterlimit="10" cx="400" cy="300" rx="120" ry="120" />
+      <ellipse id="marqueeCircle2" stroke-dasharray="2 10" stroke-miterlimit="10" cx="400" cy="300" rx="120" ry="120" />
+      <ellipse id="marqueeCircle3" stroke-dasharray="2 10" stroke-miterlimit="10" cx="400" cy="300" rx="120" ry="120" />
+      <rect id="marqueeRect" width="240" height="240" />
+
+      <mask id="playMask">
+        <use xlink:href="#marqueeCircle" fill="#FFF" stroke="none" stroke-dasharray="0" stroke-width="0" />
+      </mask>
+      <mask id="withMask">
+        <use xlink:href="#marqueeCircle2" fill="#FFF" stroke="none" stroke-dasharray="0" stroke-width="0" />
+      </mask>
+      <mask id="codeMask">
+        <use xlink:href="#marqueeCircle3" fill="#FFF" stroke="none" stroke-dasharray="0" stroke-width="0" />
+      </mask>
+      <rect id="rectAnchor" fill="#ededed" stroke="#ededed" stroke-width="0" stroke-miterlimit="10" width="10" height="10" />
+    </defs>
+    
+    <g id="playBubbleGroup">
+      <use id="mainMarqueeCircle" xlink:href="#marqueeCircle" fill="none" stroke="#5783FC" stroke-dasharray="0" stroke-width="3" />
+      <g id="playBubbleText" mask="url(#playMask)">
+        <g id="IPlayText" fill="#ededed">
+          <path d="M343.7,284H342c-0.3,0-0.9,0.3-1.4,0.8s-0.7,1.2-0.7,1.5v27.8c0,0.3,0.2,0.4,0.7,0.8s1,0.1,1.4,0.1h1.7 c0.3,0,0.6,0.3,1-0.1s0.3-0.5,0.3-0.8v-27.8c0-0.3,0.1-1-0.3-1.5S344,284,343.7,284z" />
+          <path d="M372.5,284h-9.3c-0.5,0-1.1,0.4-1.5,0.8s-0.7,1-0.7,1.5v27.8c0,0.5,0.4,0.5,0.7,0.8c0.3,0.3,1,0.1,1.5,0.1h1.6 c0.3,0,0.5,0.3,1-0.1s0.3-0.5,0.3-0.8V305h6.5c2.8,0,5.3-0.9,7.3-3c2-2,3-4.5,3-7.3c0-2.8-1-5.5-3.1-7.5 C377.8,285.2,375.3,284,372.5,284z M366,289h6.2c1.5,0,2.7,0.8,3.8,1.8c1.1,1,1.6,2.3,1.6,3.7c0,1.5-0.5,2.8-1.6,3.9 c-1.1,1.1-2.3,1.6-3.8,1.6H366V289z" />
+          <path d="M402.7,311H392v-24.7c0-0.4-0.3-1.1-0.7-1.5c-0.3-0.4-1-0.8-1.5-0.8h-1.6c-0.5,0-1.1,0.4-1.5,0.8s-0.7,1-0.7,1.5v27.8 c0,0.5,0.4,0.5,0.7,0.8c0.3,0.3,1,0.1,1.5,0.1h14.5c0.5,0,0.7,0.3,1-0.1c0.3-0.3,0.3-0.3,0.3-0.8v-1.2c0-0.5,0.1-1-0.3-1.3 C403.4,311.2,403.2,311,402.7,311z" />
+          <path d="M422.9,285c-0.3-0.6-0.9-1-1.6-1h-0.4c-0.7,0-1.2,0.4-1.6,1.1l-12.8,28.2c-0.3,0.6-0.3,0.8,0.1,1.3 c0.3,0.5,0.9,0.3,1.5,0.3h1.7c0.8,0,1.4-0.2,1.6-0.9l2.8-6.1h13.6l2.8,6.1c0.3,0.7,0.9,0.9,1.7,0.9h1.7c0.6,0,1.2,0.2,1.5-0.3 c0.4-0.5,0.4-1,0.1-1.5L422.9,285z M425.8,303h-9.5l4.8-10.7L425.8,303z" />
+          <path d="M459.7,285.2c-0.3-0.6-0.9-1.2-1.6-1.2h-2c-0.6,0-1.1,0.5-1.5,1l-7.7,10.7l-7.7-10.8c-0.5-0.6-1.1-0.9-1.5-0.9h-2 c-0.7,0-1.3,0.6-1.6,1.2c-0.3,0.6-0.4,1.3,0,2l9.8,13.9v13c0,0.5,0.3,0.5,0.7,0.8s0.9,0.1,1.4,0.1h1.6c0.3,0,0.5,0.3,1-0.1 c0.5-0.5,0.3-0.5,0.3-0.8V301l10.4-13.9C459.7,286.5,460,285.8,459.7,285.2z" />
+        </g>
+      </g>
+    </g>
+
+    <g id="withBubbleGroup">
+      <use id="mainMarqueeCircle2" xlink:href="#marqueeCircle2" fill="none" stroke="#5783FC" stroke-dasharray="0" stroke-width="3" />
+      <g id="withBubbleText" mask="url(#withMask)">
+        <g id="withText" fill="#5783FC">
+          <path d="M386.1,284h-1.8c-0.8,0-1.5,0.6-1.7,1.5l-4.9,18.8l-6.2-19.3c-0.3-0.7-0.9-1-1.7-1h-0.8c-0.8,0-1.4,0.4-1.7,1.1l-6.1,19.3 l-5-18.9c-0.2-0.8-0.9-1.5-1.7-1.5h-1.8c-0.6,0-1.2,0.4-1.5,0.9c-0.3,0.4-0.4,1.1-0.3,1.6l7.9,28.3v0c0,0.8,0.9,1.2,1.8,1.2h0.7 c0.7,0,1.3-0.3,1.6-1l6.3-20.1l6.4,20.1l0,0.1c0.3,0.7,0.9,1,1.6,1h0.7c0.8,0,1.5-0.4,1.7-1.3l7.9-28.2c0.2-0.6,0.1-1.3-0.2-1.7 C387.2,284.4,386.7,284,386.1,284z" />
+          <path d="M395,284h-1.7c-0.3,0-0.6,0.2-1,0.7s-0.3,1.1-0.3,1.4v27.8c0,0.3-0.1,1,0.3,1.4s0.7,0.7,1,0.7h1.7c0.3,0,0.9-0.2,1.3-0.7 s0.6-1.1,0.6-1.4v-27.8c0-0.3-0.2-1-0.6-1.4S395.3,284,395,284z" />
+          <path d="M419,284h-17.8c-0.5,0-1.2,0.3-1.5,0.7c-0.3,0.3-0.7,0.9-0.7,1.4v1.2c0,0.5,0.4,0.9,0.7,1.2c0.3,0.3,1,0.5,1.5,0.5h6.8 v24.9c0,0.4-0.1,1,0.3,1.4c0.3,0.4,0.6,0.7,1.1,0.7h1.6c0.5,0,1.1-0.4,1.4-0.7c0.3-0.4,0.6-0.9,0.6-1.4V289h6c0.5,0,1-0.1,1.4-0.5 c0.3-0.3,0.6-0.7,0.6-1.2v-1.2c0-0.5-0.3-1.1-0.6-1.4C420.1,284.3,419.5,284,419,284z" />
+          <path d="M448.4,284.7c-0.5-0.5-0.9-0.7-1.3-0.7h-1.6c-0.5,0-0.8,0.3-1.2,0.7c-0.3,0.3-0.4,0.9-0.4,1.4V297h-15v-10.9 c0-0.5-0.3-1.1-0.7-1.4c-0.3-0.3-0.9-0.7-1.4-0.7h-1.6c-0.3,0-1,0.2-1.5,0.7s-0.8,1.1-0.8,1.4v27.8c0,0.3,0.3,1,0.8,1.4 s1.2,0.7,1.5,0.7h1.6c0.5,0,1.1-0.3,1.4-0.7s0.7-0.9,0.7-1.4V302h15v11.9c0,0.5,0.1,1.1,0.4,1.4s0.7,0.7,1.2,0.7h1.6 c0.3,0,0.8-0.2,1.3-0.7c0.5-0.5,0.6-1.1,0.6-1.4v-27.8C449,285.8,448.9,285.1,448.4,284.7z" />
+        </g>
+      </g>
+    </g>
+
+    <g id="codeBubbleGroup">
+      <use id="mainMarqueeCircle3" xlink:href="#marqueeCircle3" fill="none" stroke="#5783FC" stroke-dasharray="0" stroke-width="3" />
+      <g id="codeBubbleText" mask="url(#codeMask)">
+        <g id="codeText" fill="#ededed">
+          <path d="M370.1,308l-0.1-0.1c-0.7-0.4-1.5-0.4-2.1,0.2c-0.9,0.7-1.6,1.2-2.2,1.6c-0.5,0.3-1.3,0.7-2.2,0.9c-0.9,0.3-1.9,0.4-3,0.4 c-3,0-5.5-1.1-7.6-3.3c-2.1-2.2-3.1-4.8-3.1-7.8c0-3.1,1-5.6,3.1-7.8c2.1-2.2,4.6-3.3,7.6-3.3c2.7,0,5.1,1,7.3,2.9 c0.4,0.4,0.9,0.7,1.4,0.6c0.3,0,0.7-0.1,1.1-0.6l1.1-1.1c0.7-0.7,0.7-1.8,0-2.6l-0.1-0.1c-3.2-2.8-6.9-4.1-10.8-4.1 c-4.5,0-8.3,1.6-11.4,4.7c-3.1,3.1-4.7,7-4.7,11.4c0,4.5,1.6,8.3,4.7,11.4v0c3.1,3.1,7,4.7,11.4,4.7c4.3,0,7.9-1.5,10.9-4.4 c0.3-0.3,0.5-0.8,0.6-1.2c0-0.5-0.2-1-0.6-1.3L370.1,308z" />
+          <path d="M387.9,283.9c-4.5,0-8.3,1.6-11.4,4.7c-3.1,3.1-4.7,7-4.7,11.4c0,4.5,1.6,8.3,4.7,11.4s6.9,4.7,11.4,4.7 c4.5,0,8.3-1.6,11.4-4.7c3.1-3.1,4.7-6.9,4.7-11.4c0-4.5-1.6-8.3-4.7-11.4C396.2,285.5,392.3,283.9,387.9,283.9z M387.9,311.2 c-3.1,0-5.7-1.1-7.9-3.3c-2.2-2.2-3.3-4.8-3.3-7.9c0-3.1,1.1-5.7,3.3-7.9c2.2-2.2,4.8-3.3,7.9-3.3c3.1,0,5.7,1.1,7.9,3.3 c2.2,2.2,3.3,4.8,3.3,7.9c0,3.1-1.1,5.7-3.3,7.9C393.5,310.1,391,311.2,387.9,311.2z" />
+          <path d="M417.5,285h-9.4c-0.5,0-0.5-0.2-0.9,0.2c-0.3,0.3-0.2,0.4-0.2,0.9v27.8c0,0.5-0.2,1.1,0.2,1.4c0.3,0.3,0.4,0.7,0.9,0.7h9.4 c4.3,0,8.1-1.7,11.1-4.8c3.1-3.1,4.6-6.9,4.6-11.2c0-4.3-1.6-7.7-4.6-10.7C425.5,286.2,421.8,285,417.5,285z M412,289h4.8 c3.2,0,5.8,1.1,7.8,3.1c2.1,2,3.1,4.6,3.1,7.8c0,3.2-1,5.9-3.1,7.9c-2.1,2.1-4.6,3.2-7.8,3.2H412V289z" />
+          <path d="M453.9,289c0.5,0,1.1-0.1,1.4-0.5s0.7-0.7,0.7-1.2v-1.2c0-0.5-0.3-0.6-0.7-0.9c-0.3-0.3-0.9-0.2-1.4-0.2h-16.5 c-0.5,0-0.7-0.2-1.1,0.2c-0.3,0.3-0.3,0.4-0.3,0.9v27.8c0,0.5,0,1.1,0.3,1.4c0.3,0.3,0.6,0.7,1.1,0.7h16.5c0.5,0,1.1-0.3,1.4-0.7 s0.7-0.9,0.7-1.4v-1.2c0-0.5-0.3-0.9-0.7-1.2c-0.3-0.3-0.9-0.5-1.4-0.5H441v-9h10.9c0.5,0,1.1-0.1,1.4-0.4c0.3-0.3,0.7-0.7,0.7-1.2 v-1.2c0-0.5-0.3-0.6-0.7-1c-0.3-0.3-0.9-0.2-1.4-0.2H441v-9H453.9z" />
+        </g>
+      </g>
+    </g>
+
+    <g id="rectMarqueeGroup" opacity="0">
+      <use id="mainMarqueeRect" xlink:href="#marqueeRect" stroke="#5783FC" fill="none" stroke-width="1" x="280" y="180" />
+      <use xlink:href="#rectAnchor" id="rectAnchorTL" class="rectAnchor" x="275" y="175" width="10" height="10" />
+      <use xlink:href="#rectAnchor" id="rectAnchorTC" class="rectAnchor" x="400" y="175" width="10" height="10" />
+      <use xlink:href="#rectAnchor" id="rectAnchorTR" class="rectAnchor" x="515" y="175" width="10" height="10" />
+      <use xlink:href="#rectAnchor" id="rectAnchorBR" class="rectAnchor" x="515" y="415" width="10" height="10" />
+      <use xlink:href="#rectAnchor" id="rectAnchorBC" class="rectAnchor" x="400" y="415" width="10" height="10" />
+      <use xlink:href="#rectAnchor" id="rectAnchorBL" class="rectAnchor" x="275" y="415" width="10" height="10" />
+    </g>
+
+    <polygon id="cursor" opacity="0" fill="#1d1d1d" stroke="#EDEDED" stroke-width="2" stroke-miterlimit="10" points="14.6,15.3 21.7,34.4 26,27.2 33.2,22.9" />
+    <g id="crossHair">
+      <rect y="13" width="10" height="2" fill="#ededed" />
+      <rect x="-5" y="8" width="10" height="2" transform="translate(23 23) rotate(90)" fill="#ededed" />
+      <rect x="-5" y="-10" width="10" height="2" transform="translate(5 5) rotate(90)" fill="#ededed" />
+      <rect x="18" y="13" width="10" height="2" fill="#ededed" />
+      <circle cx="14" cy="14" r="2" fill="#ededed" />
+    </g>
+  </svg>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/DrawSVGPlugin.min.js"></script>
+  
+  <script>
+    // Register the DrawSVGPlugin now that it's standard and freely available
+    gsap.registerPlugin(DrawSVGPlugin);
+
+    var xmlns = "http://www.w3.org/2000/svg",
+      xlinkns = "http://www.w3.org/1999/xlink",
+      select = function (s) {
+        return document.querySelector(s);
+      },
+      selectAll = function (s) {
+        return document.querySelectorAll(s);
+      },
+      ga = function (s, a) {
+        return s.getAttribute(a);
+      },
+      // Updated to modern gsap.timeline
+      mainTl = gsap.timeline({ repeat: -1 }).timeScale(2),
+      mainSVG = select('.mainSVG'),
+      playBubbleGroup = select('#playBubbleGroup'),
+      withBubbleGroup = select('#withBubbleGroup'),
+      codeBubbleGroup = select('#codeBubbleGroup'),
+      marqueeRect = select('#marqueeRect'),
+      rectMarqueeGroup = select('#rectMarqueeGroup'),
+      crossHair = select('#crossHair'),
+      cursor = select('#cursor'),
+      marqueeCircle = select('#marqueeCircle'),
+      marqueeCircle2 = select('#marqueeCircle2'),
+      marqueeCircle3 = select('#marqueeCircle3'),
+      mainMarqueeCircle = select('#mainMarqueeCircle'),
+      mainMarqueeCircle2 = select('#mainMarqueeCircle2'),
+      mainMarqueeCircle3 = select('#mainMarqueeCircle3'),
+      popGroup = select('#popGroup'),
+      playPop = popGroup.cloneNode(true),
+      withPop = popGroup.cloneNode(true),
+      codePop = popGroup.cloneNode(true);
+
+    playBubbleGroup.appendChild(playPop);
+    withBubbleGroup.appendChild(withPop);
+    codeBubbleGroup.appendChild(codePop);
+
+    // Updated to gsap.set
+    gsap.set('svg', {
+      visibility: 'visible'
+    });
+    gsap.set(crossHair, {
+      x: 100,
+      y: 100
+    });
+
+    gsap.set([playPop.querySelectorAll('line'), withPop.querySelectorAll('line'), codePop.querySelectorAll('line')], {
+      drawSVG: '50% 50%'
+    });
+
+    gsap.set([playPop, withPop, codePop], {
+      x: 265,
+      y: 165
+    });
+
+    // Using modern gsap strings for eases
+    var bubble1Tl = gsap.timeline({ paused: false });
+    bubble1Tl.to([cursor, crossHair], {
+      duration: 1,
+      x: 400 - (crossHair.getBBox().width / 2)
+    })
+      .to([cursor, crossHair], {
+        duration: 1.5,
+        y: 300 - (crossHair.getBBox().height / 2)
+      }, '-=1')
+      .from(marqueeCircle, {
+        duration: 1,
+        attr: {
+          rx: 0,
+          ry: 0
+        }
+      })
+      .to([cursor, crossHair], {
+        duration: 1,
+        x: (Math.cos(45 * Math.PI / 180) * 123) + 400,
+        y: (Math.cos(45 * Math.PI / 180) * 123) + 300
+      }, '-=1')
+      .set(mainMarqueeCircle, {
+        stroke: '#ededed'
+      })
+      .from(playBubbleGroup, {
+        duration: 2,
+        scaleY: 0.9,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.24)"
+      })
+      .from(playBubbleGroup, {
+        duration: 2,
+        scaleX: 1.1,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.16)"
+      }, '-=2')
+      .to(playBubbleGroup, {
+        duration: 8,
+        x: '-=200',
+        ease: "sine.in"
+      }, '-=2')
+      .to(playBubbleGroup, {
+        duration: 8,
+        y: '-=150',
+        ease: "none"
+      }, '-=8')
+      .to(playPop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '75% 100%',
+        ease: "none"
+      }, '-=0.8')
+      .to(playPop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '100% 100%',
+        ease: "power3.out"
+      }, '-=0.6')
+      .to(playBubbleGroup.querySelector('use'), {
+        duration: 0.01,
+        scale: 0.8,
+        transformOrigin: '50% 50%',
+        alpha: 0
+      }, '-=0.8')
+      .to('#playBubbleText', {
+        duration: 2,
+        y: 800,
+        ease: "sine.in"
+      }, '-=0.8')
+      .to('#playBubbleText', {
+        duration: 6,
+        rotation: -23,
+        transformOrigin: '50% 0%',
+        ease: "elastic.out(1, 0.6)"
+      }, '-=2');
+
+    var bubble2Tl = gsap.timeline({ paused: false });
+    bubble2Tl.to([cursor, crossHair], {
+      duration: 1,
+      x: 400 - (crossHair.getBBox().width / 2)
+    })
+      .to([cursor, crossHair], {
+        duration: 1.5,
+        y: 300 - (crossHair.getBBox().height / 2)
+      }, '-=1')
+      .from(marqueeCircle2, {
+        duration: 1,
+        attr: {
+          rx: 0,
+          ry: 0
+        }
+      })
+      .to([cursor, crossHair], {
+        duration: 1,
+        x: (Math.cos(45 * Math.PI / 180) * 123) + 400,
+        y: (Math.cos(45 * Math.PI / 180) * 123) + 300
+      }, '-=1')
+      .set(mainMarqueeCircle2, {
+        stroke: '#ededed'
+      })
+      .from(withBubbleGroup, {
+        duration: 2,
+        scaleY: 0.9,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.24)"
+      })
+      .from(withBubbleGroup, {
+        duration: 2,
+        scaleX: 1.1,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.16)"
+      }, '-=2')
+      .to(withBubbleGroup, {
+        duration: 8,
+        x: '-=0',
+        ease: "sine.in"
+      }, '-=2')
+      .to(withBubbleGroup, {
+        duration: 8,
+        y: '-=150',
+        ease: "none"
+      }, '-=8')
+      .to(withPop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '75% 100%',
+        ease: "none"
+      }, '-=0.8')
+      .to(withPop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '100% 100%',
+        ease: "power3.out"
+      }, '-=0.6')
+      .to(withBubbleGroup.querySelector('use'), {
+        duration: 0.01,
+        scale: 0.8,
+        transformOrigin: '50% 50%',
+        alpha: 0
+      }, '-=0.8')
+      .to('#withBubbleText', {
+        duration: 2,
+        y: 800,
+        ease: "sine.in"
+      }, '-=0.8')
+      .to('#withBubbleText', {
+        duration: 6,
+        rotation: 45,
+        transformOrigin: '0% 0%',
+        ease: "elastic.out(1, 0.6)"
+      }, '-=2');
+
+    var bubble3Tl = gsap.timeline({ paused: false });
+    bubble3Tl.to([cursor, crossHair], {
+      duration: 1,
+      x: 400 - (crossHair.getBBox().width / 2)
+    })
+      .to([cursor, crossHair], {
+        duration: 1.5,
+        y: 300 - (crossHair.getBBox().height / 2)
+      }, '-=1')
+      .from(marqueeCircle3, {
+        duration: 1,
+        attr: {
+          rx: 0,
+          ry: 0
+        }
+      })
+      .to([cursor, crossHair], {
+        duration: 1,
+        x: (Math.cos(45 * Math.PI / 180) * 123) + 400,
+        y: (Math.cos(45 * Math.PI / 180) * 123) + 300
+      }, '-=1')
+      .set(mainMarqueeCircle3, {
+        stroke: '#ededed'
+      })
+      .from(codeBubbleGroup, {
+        duration: 2,
+        scaleY: 0.9,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.24)"
+      })
+      .from(codeBubbleGroup, {
+        duration: 2,
+        scaleX: 1.1,
+        immediateRender: false,
+        transformOrigin: '50% 50%',
+        ease: "elastic.out(1, 0.16)"
+      }, '-=2')
+      .to(codeBubbleGroup, {
+        duration: 8,
+        x: '+=200',
+        ease: "sine.in"
+      }, '-=2')
+      .to(codeBubbleGroup, {
+        duration: 8,
+        y: '-=150',
+        ease: "none"
+      }, '-=8')
+      .to(codePop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '75% 100%',
+        ease: "none"
+      }, '-=0.8')
+      .to(codePop.querySelectorAll('line'), {
+        duration: 0.2,
+        drawSVG: '100% 100%',
+        ease: "power3.out"
+      }, '-=0.6')
+      .to(codeBubbleGroup.querySelector('use'), {
+        duration: 0.01,
+        scale: 0.8,
+        transformOrigin: '50% 50%',
+        alpha: 0
+      }, '-=0.8')
+      .to('#codeBubbleText', {
+        duration: 2,
+        y: 800,
+        ease: "sine.in"
+      }, '-=0.8')
+      .to('#codeBubbleText', {
+        duration: 4,
+        rotation: -105,
+        transformOrigin: '100% 0%',
+        ease: "elastic.out(0.3, 0.6)"
+      }, '-=2')
+      .to(crossHair, {
+        duration: 4,
+        x: 100,
+        y: 100
+      }, '-=10');
+
+    mainTl.add(bubble1Tl, 0);
+    mainTl.add(bubble2Tl, 3);
+    mainTl.add(bubble3Tl, 6);
+  </script>
+</body>
+</html>

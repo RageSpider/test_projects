@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play With Code Animation</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      background: #1d1d1d;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      /* Prevents mobile scrolling/pull-to-refresh while drawing */
+      touch-action: none; 
+      /* Hide default cursor since we have a custom crosshair */
+      cursor: none; 
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* SVG fills the entire screen to act as our drawing canvas */
+    svg {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Base styling for our dynamically generated text */
+    text {
+      font-family: "brandon-grotesque", "Poppins", sans-serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  
+  <svg class="mainSVG" xmlns="http://www.w3.org/2000/svg">
+    <!-- Crosshair cursor that will follow the user's pointer -->
+    <g id="crossHair" pointer-events="none">
+      <line x1="-15" y1="0" x2="-5" y2="0" stroke="#ededed" stroke-width="2"/>
+      <line x1="5" y1="0" x2="15" y2="0" stroke="#ededed" stroke-width="2"/>
+      <line x1="0" y1="-15" x2="0" y2="-5" stroke="#ededed" stroke-width="2"/>
+      <line x1="0" y1="5" x2="0" y2="15" stroke="#ededed" stroke-width="2"/>
+      <circle cx="0" cy="0" r="2" fill="#ededed"/>
+    </g>
+  </svg>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/DrawSVGPlugin.min.js"></script>
+  
+  <script>
+    gsap.registerPlugin(DrawSVGPlugin);
+
+    const svg = document.querySelector('.mainSVG');
+    const crossHair = document.querySelector('#crossHair');
+    
+    // The sequence of words requested
+    const wordList = ["UNIVERSITY", "LABORATORY", "ICT", "CLUB"];
+    let currentIndex = 0;
+    
+    // Drag interaction states
+    let isDrawing = false;
+    let startX = 0;
+    let startY = 0;
+    let dragCircle = null;
+
+    function updateViewBox() {
+      // Maps SVG coordinate system 1:1 with screen pixels
+      svg.setAttribute("viewBox", `0 0 ${window.innerWidth} ${window.innerHeight}`);
+    }
+    window.addEventListener("resize", updateViewBox);
+    updateViewBox(); // Initialize on load
+
+    window.addEventListener("pointermove", (e) => {
+      // Move the crosshair smoothly to the cursor position
+      gsap.to(crossHair, {
+        x: e.clientX, 
+        y: e.clientY, 
+        duration: 0.1, 
+        ease: "power2.out"
+      });
+
+      // If the user is currently holding down and dragging, update the dashed circle
+      if (isDrawing && dragCircle) {
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let r = Math.sqrt(dx * dx + dy * dy);
+        dragCircle.setAttribute("r", r);
+      }
+    });
+
+    window.addEventListener("pointerdown", (e) => {
+      isDrawing = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      
+      // Create a visual dashed guide circle to show the size of the bubble being drawn
+      dragCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dragCircle.setAttribute("cx", startX);
+      dragCircle.setAttribute("cy", startY);
+      dragCircle.setAttribute("r", 0);
+      dragCircle.setAttribute("fill", "rgba(87, 131, 252, 0.1)"); // Light blue tint inside
+      dragCircle.setAttribute("stroke", "#5783FC");
+      dragCircle.setAttribute("stroke-dasharray", "8 8");
+      dragCircle.setAttribute("stroke-width", "2");
+      svg.appendChild(dragCircle);
+    });
+
+    window.addEventListener("pointerup", (e) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      
+      // Calculate final radius based on drag distance
+      let dx = e.clientX - startX;
+      let dy = e.clientY - startY;
+      let r = Math.sqrt(dx * dx + dy * dy);
+      
+      // Remove the dashed preview guide
+      if (dragCircle) {
+        dragCircle.remove();
+        dragCircle = null;
+      }
+      
+      // If user just clicks without dragging (radius < 20px), give it a default 80px radius
+      if (r < 20) r = 80;
+      
+      // Generate and animate the new bubble exactly at the size drawn
+      createWordBubble(startX, startY, r);
+    });
+
+    function createWordBubble(x, y, radius) {
+      // 1. Setup Bubble Group Container
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.style.pointerEvents = "none"; // Prevent it from blocking subsequent clicks
+      svg.appendChild(g);
+      
+      // Move the group to where the user clicked
+      gsap.set(g, { x: x, y: y });
+
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", 0);
+      circle.setAttribute("cy", 0);
+      circle.setAttribute("r", radius);
+      circle.setAttribute("fill", "none");
+      circle.setAttribute("stroke", "#5783FC");
+      circle.setAttribute("stroke-width", "3");
+      g.appendChild(circle);
+
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      const currentWord = wordList[currentIndex];
+      text.textContent = currentWord;
+      text.setAttribute("fill", "#ededed");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "central");
+      
+      // MATH FIX: Calculate font size dynamically so it ALWAYS fits the drawn radius.
+      // Longer words get a smaller multiplier so they don't break outside the circle.
+      let fSize = (radius * 2.5) / currentWord.length;
+      
+      // Ensure short words (like "ICT") don't get vertically too massive for the circle
+      if (fSize > radius * 0.8) {
+          fSize = radius * 0.8;
+      }
+      
+      text.setAttribute("font-size", fSize);
+      text.setAttribute("y", fSize * 0.08); // Slight vertical offset to perfectly center the font
+      g.appendChild(text);
+
+      // Instead of scaling pre-made lines (which scales the stroke thickness and ruins the UI), 
+      // we generate lines dynamically at the exact correct radius coordinates.
+      const popGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      popGroup.setAttribute("stroke", "#EDEDED");
+      popGroup.setAttribute("stroke-width", "3");
+      popGroup.setAttribute("stroke-linecap", "round");
+      
+      const numLines = 8;
+      const linesToAnimate = [];
+      
+      for(let i = 0; i < numLines; i++) {
+        const angle = (i * Math.PI * 2) / numLines;
+        // Lines start slightly outside the circle and extend outward
+        const rStart = radius * 1.1;
+        const rEnd = radius * 1.4;
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", Math.cos(angle) * rStart);
+        line.setAttribute("y1", Math.sin(angle) * rStart);
+        line.setAttribute("x2", Math.cos(angle) * rEnd);
+        line.setAttribute("y2", Math.sin(angle) * rEnd);
+        
+        popGroup.appendChild(line);
+        linesToAnimate.push(line);
+      }
+      g.appendChild(popGroup);
+
+      let tl = gsap.timeline();
+      
+      // Phase 1: Bounce in the circle and text from the center
+      // CRITICAL FIX: transformOrigin: "50% 50%" stops it from flying in from the top left
+      tl.from([circle, text], {
+        scale: 0,
+        transformOrigin: "50% 50%",
+        duration: 0.8,
+        ease: "back.out(1.5)"
+      });
+
+      // Phase 2: Animate the dynamically generated pop lines using DrawSVG
+      tl.fromTo(linesToAnimate, 
+        { drawSVG: "0% 0%" }, 
+        { drawSVG: "0% 100%", duration: 0.2, ease: "none" }, 
+        "-=0.5" // Overlap with the bounce-in
+      )
+      .to(linesToAnimate, { drawSVG: "100% 100%", duration: 0.2, ease: "power2.out" });
+
+      // Phase 3: Briefly pause, then fade out the blue circle
+      tl.to(circle, { alpha: 0, duration: 0.3 }, "+=0.4");
+
+      // Phase 4: Text succumbs to gravity, falls down, and rotates
+      tl.to(text, {
+        y: window.innerHeight + 200, // Fall off screen
+        rotation: (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random() * 30), // Random tilt
+        duration: 1.2,
+        ease: "power2.in",
+        onComplete: () => g.remove() // Clean up the DOM element completely to save memory
+      }, "-=0.1");
+
+      // Phase 5: Advance the word sequence index
+      // Using modulo (%) ensures it loops back to 0 when it hits 4 (the end of the array)
+      currentIndex = (currentIndex + 1) % wordList.length;
+    }
+  </script>
+</body>
+</html>
