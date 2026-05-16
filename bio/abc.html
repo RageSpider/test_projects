@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSC Biology Question Bank</title>
+    
+    <link href="https://fonts.maateen.me/bangla/font.css" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        bangla: ['Bangla', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Bangla', sans-serif; background-color: #f8fafc; scroll-behavior: smooth; }
+        .math-tex { font-family: 'Courier New', monospace; font-size: 1.1em; }
+        .stem-image img { max-width: 100%; height: auto; border-radius: 0.5rem; margin-top: 0.5rem; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .stat-fill {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: inherit;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-content {
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .accordion-content.open {
+            max-height: 15000px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
+
+    <nav class="bg-white border-b border-slate-200 px-6 py-4 relative z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-100 text-brand-600 p-2.5 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800">জীববিজ্ঞান প্রশ্নব্যাংক</h1>
+            </div>
+            
+            <div class="hidden md:flex gap-4">
+                <div class="px-4 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-center">
+                    <p class="text-xs text-slate-500 font-semibold">মোট প্রশ্ন</p>
+                    <p id="dashTotal" class="text-lg font-bold text-slate-800 leading-tight">০</p>
+                </div>
+                <div class="px-4 py-1.5 bg-emerald-50 rounded-lg border border-emerald-200 text-center">
+                    <p class="text-xs text-emerald-600 font-semibold">সঠিক</p>
+                    <p id="dashCorrect" class="text-lg font-bold text-emerald-700 leading-tight">০</p>
+                </div>
+                <div class="px-4 py-1.5 bg-rose-50 rounded-lg border border-rose-200 text-center">
+                    <p class="text-xs text-rose-600 font-semibold">ভুল</p>
+                    <p id="dashIncorrect" class="text-lg font-bold text-rose-700 leading-tight">০</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm py-3 px-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
+            
+            <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-full md:w-auto">
+                <button onclick="setViewMode('sequential')" id="btnSeq" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold bg-white text-brand-600 shadow-sm transition-all">ধারাবাহিক</button>
+                <button onclick="setViewMode('grouped')" id="btnGrp" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">অধ্যায়ভিত্তিক</button>
+            </div>
+
+            <div class="flex flex-wrap md:flex-nowrap gap-3 w-full md:w-auto">
+                <div class="relative flex-grow md:w-48">
+                    <input type="text" id="searchFilter" placeholder="প্রশ্ন খুঁজুন..." class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+
+                <select id="statusFilter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500 cursor-pointer text-slate-700 flex-grow md:flex-grow-0">
+                    <option value="all">সব উত্তর</option>
+                    <option value="Correct">✅ সঠিক উত্তরগুলো</option>
+                    <option value="Incorrect">❌ ভুল উত্তরগুলো</option>
+                </select>
+
+                <select id="chapterFilter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500 cursor-pointer text-slate-700 max-w-[200px] truncate flex-grow md:flex-grow-0">
+                    <option value="all">সব অধ্যায়</option>
+                    </select>
+            </div>
+
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <div id="loading" class="flex flex-col items-center justify-center py-20 text-slate-500">
+            <svg class="animate-spin h-10 w-10 text-brand-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-lg font-medium animate-pulse">ডাটা লোড হচ্ছে...</p>
+        </div>
+
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-slate-400">
+            <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p class="text-lg font-medium">কোনো প্রশ্ন পাওয়া যায়নি!</p>
+            <button onclick="resetFilters()" class="mt-4 text-sm text-brand-600 hover:underline">ফিল্টার রিসেট করুন</button>
+        </div>
+
+        <div id="renderContainer" class="hidden"></div>
+
+    </main>
+
+    <script>
+        // --- Data & State Management ---
+        let allQuestions = [];
+        let viewMode = 'sequential'; // 'sequential' | 'grouped'
+        let currentFilters = { chapter: 'all', status: 'all', search: '' };
+
+        // --- Hardcoded Chapter Mapping ---
+        const chaptersInfo = {
+            "bot1": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ১: কোষ ও এর গঠন", index: 1 },
+            "bot2": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ২: কোষ বিভাজন", index: 2 },
+            "bot3": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৩: কোষ রসায়ন", index: 3 },
+            "bot4": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৪: অণুজীব", index: 4 },
+            "bot5": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৫: শৈবাল ও ছত্রাক", index: 5 },
+            "bot6": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৬: ব্রায়োফাইটা ও টেরিডোফাইটা", index: 6 },
+            "bot7": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ", index: 7 },
+            "bot8": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৮: টিস্যু ও টিস্যু তন্ত্র", index: 8 },
+            "bot9": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ৯: উদ্ভিদ শারীরতত্ত্ব", index: 9 },
+            "bot10": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ১০: উদ্ভিদ প্রজনন", index: 10 },
+            "bot11": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ১১: জীবপ্রযুক্তি", index: 11 },
+            "bot12": { title: "উদ্ভিদবিজ্ঞান - অধ্যায় ১২: জীবের পরিবেশ", index: 12 },
+            "zoo1": { title: "প্রাণিবিজ্ঞান - অধ্যায় ১: প্রাণীর বিভিন্নতা", index: 101 },
+            "zoo2": { title: "প্রাণিবিজ্ঞান - অধ্যায় ২: প্রাণীর পরিচিতি", index: 102 },
+            "zoo3": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৩: পরিপাক ও শোষণ", index: 103 },
+            "zoo4": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৪: রক্ত ও সঞ্চালন", index: 104 },
+            "zoo5": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৫: শ্বাসক্রিয়া ও শ্বসন", index: 105 },
+            "zoo6": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৬: বর্জ্য ও নিষ্কাশন", index: 106 },
+            "zoo7": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৭: চলন ও অঙ্গচালনা", index: 107 },
+            "zoo8": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৮: সমন্বয় ও নিয়ন্ত্রণ", index: 108 },
+            "zoo9": { title: "প্রাণিবিজ্ঞান - অধ্যায় ৯: মানব জীবনের ধারাবাহিকতা", index: 109 },
+            "zoo10": { title: "প্রাণিবিজ্ঞান - অধ্যায় ১০: মানবদেহের প্রতিরক্ষা", index: 110 },
+            "zoo11": { title: "প্রাণিবিজ্ঞান - অধ্যায় ১১: জিনতত্ত্ব ও বিবর্তন", index: 111 },
+            "zoo12": { title: "প্রাণিবিজ্ঞান - অধ্যায় ১২: প্রাণীর আচরণ", index: 112 },
+            "unknown": { title: "অন্যান্য প্রশ্ন", index: 999 }
+        };
+
+        const questionToChapterMap = {
+            "Question 1": "bot6", "Question 2": "bot3", "Question 3": "bot3", "Question 4": "bot2", "Question 5": "bot3",
+            "Question 6": "zoo9", "Question 7": "bot9", "Question 8": "zoo12", "Question 9": "bot3", "Question 10": "zoo2",
+            "Question 11": "bot9", "Question 12": "zoo2", "Question 13": "bot8", "Question 14": "bot1", "Question 15": "bot10",
+            "Question 16": "zoo8", "Question 17": "bot8", "Question 18": "zoo7", "Question 19": "zoo9", "Question 20": "zoo6",
+            "Question 21": "bot2", "Question 22": "bot2", "Question 23": "zoo4", "Question 24": "zoo6", "Question 25": "bot10",
+            "Question 26": "bot1", "Question 27": "bot1", "Question 28": "zoo2", "Question 29": "zoo7", "Question 30": "bot10",
+            "Question 31": "zoo3", "Question 32": "zoo10", "Question 33": "zoo4", "Question 34": "zoo11", "Question 35": "zoo2",
+            "Question 36": "bot11", "Question 37": "bot9", "Question 38": "zoo6", "Question 39": "bot11", "Question 40": "bot11",
+            "Question 41": "bot8", "Question 42": "bot3", "Question 43": "zoo9", "Question 44": "bot9", "Question 45": "zoo3",
+            "Question 46": "bot7", "Question 47": "zoo10", "Question 48": "bot10", "Question 49": "bot10", "Question 50": "zoo11",
+            "Question 51": "zoo2", "Question 52": "zoo4", "Question 53": "zoo4", "Question 54": "zoo8", "Question 55": "bot11",
+            "Question 56": "bot9", "Question 57": "bot9", "Question 58": "zoo8", "Question 59": "zoo12", "Question 60": "bot6",
+            "Question 61": "bot1", "Question 62": "zoo4", "Question 63": "zoo5", "Question 64": "bot4", "Question 65": "zoo6",
+            "Question 66": "bot5", "Question 67": "zoo8", "Question 68": "zoo8", "Question 69": "zoo4", "Question 70": "zoo2",
+            "Question 71": "bot11", "Question 72": "zoo10", "Question 73": "bot12", "Question 74": "bot5", "Question 75": "zoo8",
+            "Question 76": "zoo10", "Question 77": "zoo8", "Question 78": "bot9", "Question 79": "bot9", "Question 80": "zoo1",
+            "Question 81": "zoo1", "Question 82": "bot10", "Question 83": "zoo1", "Question 84": "bot5", "Question 85": "zoo11",
+            "Question 86": "zoo11", "Question 87": "bot5", "Question 88": "zoo8", "Question 89": "bot1", "Question 90": "zoo1",
+            "Question 91": "bot7", "Question 92": "bot11", "Question 93": "zoo7", "Question 94": "bot4", "Question 95": "zoo5",
+            "Question 96": "bot5", "Question 97": "zoo1", "Question 98": "zoo1", "Question 99": "zoo4", "Question 100": "bot8"
+        };
+
+        // --- Utilities ---
+        function toBanglaNum(str) {
+            const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+            return str.toString().replace(/\d/g, d => banglaDigits[d]);
+        }
+        function cleanText(text) {
+            return text ? text.replace(/<p>/g, '').replace(/<\/p>/g, '').trim() : '';
+        }
+
+        // --- Init & Fetch ---
+        async function fetchQuestions() {
+            try {
+                const urls = ['1-25.json', '26-50.json', '51-75.json', '76-100.json'];
+                const results = await Promise.all(urls.map(u => fetch(u).then(r => r.json()).catch(()=>[])));
+                
+                results.forEach(d => { if(Array.isArray(d)) allQuestions = allQuestions.concat(d); });
+                
+                if (allQuestions.length === 0) throw new Error("No data");
+
+                populateChapterFilter();
+                setupEventListeners();
+                updateApp();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('renderContainer').classList.remove('hidden');
+
+            } catch (err) {
+                document.getElementById('loading').innerHTML = `<p class="text-rose-500 font-bold">ডাটা লোড হয়নি! লোকাল সার্ভার ব্যবহার করুন।</p>`;
+            }
+        }
+
+        function populateChapterFilter() {
+            const select = document.getElementById('chapterFilter');
+            const uniqueIds = [...new Set(allQuestions.map(q => questionToChapterMap[q.question_number]))];
+            
+            uniqueIds.sort((a,b) => (chaptersInfo[a]?.index||999) - (chaptersInfo[b]?.index||999))
+                     .forEach(id => {
+                        if(!id) return;
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = chaptersInfo[id].title;
+                        select.appendChild(opt);
+                     });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('chapterFilter').addEventListener('change', e => { currentFilters.chapter = e.target.value; updateApp(); });
+            document.getElementById('statusFilter').addEventListener('change', e => { currentFilters.status = e.target.value; updateApp(); });
+            document.getElementById('searchFilter').addEventListener('input', e => { currentFilters.search = e.target.value.toLowerCase(); updateApp(); });
+        }
+
+        function resetFilters() {
+            document.getElementById('chapterFilter').value = 'all';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('searchFilter').value = '';
+            currentFilters = { chapter: 'all', status: 'all', search: '' };
+            updateApp();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const btnSeq = document.getElementById('btnSeq');
+            const btnGrp = document.getElementById('btnGrp');
+            
+            if(mode === 'sequential') {
+                btnSeq.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold bg-white text-brand-600 shadow-sm transition-all";
+                btnGrp.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold text-slate-500 hover:text-slate-700 transition-all";
+            } else {
+                btnGrp.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold bg-white text-brand-600 shadow-sm transition-all";
+                btnSeq.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-sm font-bold text-slate-500 hover:text-slate-700 transition-all";
+            }
+            updateApp();
+        }
+
+        // --- Core Render Logic ---
+        function updateApp() {
+            // 1. Apply Filters
+            let filtered = allQuestions.filter(q => {
+                const chapterId = questionToChapterMap[q.question_number] || "unknown";
+                const matchChapter = currentFilters.chapter === 'all' || chapterId === currentFilters.chapter;
+                const matchStatus = currentFilters.status === 'all' || q.category === currentFilters.status;
+                const searchStr = (q.question_text + q.stem).toLowerCase();
+                const matchSearch = searchStr.includes(currentFilters.search);
+                return matchChapter && matchStatus && matchSearch;
+            });
+
+            // 2. Update Dashboard
+            const correctCount = filtered.filter(q => q.category === 'Correct').length;
+            const incorrectCount = filtered.filter(q => q.category === 'Incorrect').length;
+            document.getElementById('dashTotal').textContent = toBanglaNum(filtered.length);
+            document.getElementById('dashCorrect').textContent = toBanglaNum(correctCount);
+            document.getElementById('dashIncorrect').textContent = toBanglaNum(incorrectCount);
+
+            const container = document.getElementById('renderContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if(filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+            }
+
+            // 3. Render View
+            if (viewMode === 'sequential') {
+                // Ensure natural numerical sorting if Sequential
+                filtered.sort((a,b) => parseInt(a.question_number.replace(/\D/g,'')) - parseInt(b.question_number.replace(/\D/g,'')));
+                container.innerHTML = `<div class="space-y-6">${filtered.map((q, i) => generateCardHTML(q, i)).join('')}</div>`;
+            } else {
+                container.innerHTML = `<div class="space-y-6">${generateGroupedHTML(filtered)}</div>`;
+            }
+
+            if(window.MathJax) MathJax.typesetPromise();
+        }
+
+        // --- HTML Generators ---
+        function generateCardHTML(item, delayIndex = 0, hideChapterTag = false) {
+            const qNumBangla = item.question_number.replace('Question ', '');
+            const chapterId = questionToChapterMap[item.question_number] || "unknown";
+            const chapterName = chaptersInfo[chapterId].title;
+            const isCorrectQ = item.category === 'Correct';
+
+            const stemHtml = item.stem && item.stem.trim() !== '' 
+                ? `<div class="stem-image bg-slate-50/50 border border-slate-200 p-4 rounded-xl mb-4 text-[15px] text-slate-700">${item.stem}</div>` : '';
+
+            const optionsHtml = item.options.map(opt => {
+                const isCorrect = opt.letter === item.correct_answer;
+                const isStudent = opt.letter === item.student_answer;
+                const statStr = item.statistics && item.statistics[opt.letter] ? item.statistics[opt.letter] : "0%";
+                
+                let boxClass = "border-slate-200 hover:bg-slate-50";
+                let textClass = "text-slate-700";
+                let fillClass = "bg-slate-200";
+                let icon = `<div class="w-7 h-7 rounded bg-white border border-slate-300 flex items-center justify-center mr-3 text-sm font-bold text-slate-500 z-10">${opt.letter}</div>`;
+
+                if (isCorrect) {
+                    boxClass = "border-emerald-300 bg-emerald-50/30";
+                    textClass = "text-emerald-900 font-bold";
+                    fillClass = "bg-emerald-400 opacity-20";
+                    icon = `<div class="w-7 h-7 rounded bg-emerald-500 flex items-center justify-center mr-3 z-10 text-white shadow-sm"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`;
+                } else if (isStudent) {
+                    boxClass = "border-rose-300 bg-rose-50/30";
+                    textClass = "text-rose-900";
+                    fillClass = "bg-rose-400 opacity-20";
+                    icon = `<div class="w-7 h-7 rounded bg-rose-500 flex items-center justify-center mr-3 z-10 text-white shadow-sm"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg></div>`;
+                }
+
+                return `
+                    <div class="relative p-3 rounded-xl border ${boxClass} transition-all duration-200 mb-2 overflow-hidden flex items-center">
+                        <div class="stat-fill ${fillClass}" style="width: ${parseFloat(statStr)||0}%"></div>
+                        ${icon}
+                        <div class="flex-1 text-[15.5px] ${textClass} leading-snug z-10">${cleanText(opt.text)}</div>
+                        <div class="ml-4 text-sm font-bold ${isCorrect ? 'text-emerald-600' : 'text-slate-400'} z-10">${toBanglaNum(statStr)}</div>
+                    </div>`;
+            }).join('');
+
+            const solutionHtml = item.solution && item.solution.trim() !== '' ? `
+                <div class="mt-4">
+                    <button onclick="toggleSolution('sol-${item.question_number}')" class="flex items-center gap-2 text-sm font-bold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 px-4 py-2 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ব্যাখ্যা দেখুন
+                    </button>
+                    <div id="sol-${item.question_number}" class="hidden mt-3 bg-white border border-brand-100 rounded-xl p-5 shadow-sm">
+                        <p class="text-[15px] text-slate-700 leading-relaxed">${item.solution}</p>
+                    </div>
+                </div>` : '';
+
+            const statusBadge = isCorrectQ 
+                ? `<span class="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> সঠিক</span>`
+                : `<span class="flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-100 px-2.5 py-1 rounded-md border border-rose-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg> ভুল</span>`;
+
+            const chapterTag = hideChapterTag ? '' : `<div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full mb-3 inline-block border border-slate-200">${chapterName}</div>`;
+
+            return `
+                <div class="bg-white border ${isCorrectQ ? 'border-emerald-100 shadow-emerald-500/5' : 'border-rose-100 shadow-rose-500/5'} rounded-2xl shadow-sm overflow-hidden animate-fade-in-up" style="animation-delay: ${Math.min(delayIndex * 0.05, 0.5)}s; opacity: 0;">
+                    <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-extrabold text-slate-700 bg-white px-3 py-1 rounded-md border border-slate-200 shadow-sm">প্রশ্ন ${toBanglaNum(qNumBangla)}</span>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <div class="p-5 md:p-6">
+                        ${chapterTag}
+                        ${stemHtml}
+                        <div class="text-[17px] font-semibold text-slate-800 mb-5 leading-relaxed">
+                            ${item.question_text}
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            ${optionsHtml}
+                        </div>
+                        ${solutionHtml}
+                    </div>
+                </div>`;
+        }
+
+        function generateGroupedHTML(filteredData) {
+            const grouped = {};
+            filteredData.forEach(q => {
+                const cId = questionToChapterMap[q.question_number] || "unknown";
+                if (!grouped[cId]) grouped[cId] = [];
+                grouped[cId].push(q);
+            });
+
+            const sortedChapterIds = Object.keys(grouped).sort((a,b) => (chaptersInfo[a]?.index||999) - (chaptersInfo[b]?.index||999));
+
+            return sortedChapterIds.map((cId, cIndex) => {
+                const chapterData = chaptersInfo[cId];
+                const questions = grouped[cId];
+                
+                // Hide chapter tag inside grouped mode since header already says it
+                const questionsHtml = questions.map((q, i) => generateCardHTML(q, i, true)).join('<hr class="border-slate-100 my-4">');
+
+                return `
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden animate-fade-in-up" style="animation-delay: ${Math.min(cIndex * 0.08, 0.5)}s; opacity: 0;">
+                        <button onclick="toggleAccordion('chapter-${cIndex}')" class="w-full px-6 py-5 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors focus:outline-none">
+                            <div class="flex items-center gap-4 text-left">
+                                <div class="bg-brand-50 border border-brand-200 text-brand-600 w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-extrabold text-slate-800">${chapterData.title}</h2>
+                                    <p class="text-sm font-medium text-slate-500 mt-0.5">${toBanglaNum(questions.length)} টি প্রশ্ন</p>
+                                </div>
+                            </div>
+                            <div id="icon-chapter-${cIndex}" class="text-slate-400 transform transition-transform duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </button>
+                        <div id="chapter-${cIndex}" class="accordion-content bg-slate-50/50 border-t border-slate-100 px-2 sm:px-6 py-2">
+                            ${questionsHtml}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // --- Interactions ---
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.classList.remove('rotate-180');
+            } else {
+                content.classList.add('open');
+                icon.classList.add('rotate-180');
+            }
+        }
+
+        function toggleSolution(id) {
+            const sol = document.getElementById(id);
+            if (sol.classList.contains('hidden')) {
+                sol.classList.remove('hidden');
+                sol.classList.add('animate-fade-in-up');
+            } else {
+                sol.classList.add('hidden');
+                sol.classList.remove('animate-fade-in-up');
+            }
+        }
+
+        // --- Boot ---
+        window.addEventListener('DOMContentLoaded', fetchQuestions);
+    </script>
+</body>
+</html>

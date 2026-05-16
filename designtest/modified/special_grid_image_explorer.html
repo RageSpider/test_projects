@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Stellar Cartography HUD</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700&family=Inter:wght@300;600&display=swap');
+
+		:root {
+			--gridSize: 4;
+			--gap: 4rem;
+            --hud-cyan: #00f3ff;
+            --hud-cyan-dim: rgba(0, 243, 255, 0.2);
+            --hud-blue: #0044ff;
+            --hud-alert: #ff0055;
+            --bg-void: #02050a;
+            --glass-bg: rgba(2, 5, 10, 0.6);
+			--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+			--ease-in-out-circ: cubic-bezier(0.85, 0, 0.15, 1);
+		}
+
+		* { margin: 0; padding: 0; box-sizing: border-box; }
+
+		html, body {
+			width: 100vw; height: 100vh; overflow: hidden;
+			background-color: var(--bg-void);
+			font-family: 'JetBrains Mono', monospace;
+			color: var(--hud-cyan);
+            cursor: crosshair; /* Fallback */
+            -webkit-user-select: none; user-select: none;
+		}
+
+        /* Custom Sci-Fi Cursor */
+        .cursor-reticle {
+            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+        }
+        .cursor-reticle::before, .cursor-reticle::after {
+            content: ''; position: absolute; background: var(--hud-cyan);
+        }
+        .cursor-reticle::before { top: 50%; left: 0; width: 100%; height: 1px; }
+        .cursor-reticle::after { left: 50%; top: 0; height: 100%; width: 1px; }
+        .cursor-reticle .ring {
+            position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px solid var(--hud-cyan-dim); border-radius: 50%;
+        }
+
+        /* CRT Scanline Overlay */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none; z-index: 100;
+            opacity: 0.6;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, #000 120%);
+            pointer-events: none; z-index: 99;
+        }
+
+		.viewport {
+			--zoom: 0.35;
+			position: absolute; width: 100vw; height: 100vh;
+			transform: scale3d(var(--zoom), var(--zoom), 1);
+			transform-origin: center;
+			transition: transform 0.8s var(--ease-out-expo), opacity 1s ease;
+			opacity: 1; z-index: 4;
+            will-change: transform;
+		}
+
+        .parallax-layer {
+            position: absolute; width: 100%; height: 100%;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+		.canvas {
+			--x: 0; --y: 0;
+			position: absolute; display: grid;
+			grid-template-columns: repeat(var(--gridSize), 100vw);
+			width: fit-content; gap: var(--gap); margin: auto;
+			transform: translate3d(
+				calc((-100vw * var(--x)) - (var(--gap) * var(--x))),
+				calc((-100vh * var(--y)) - (var(--gap) * var(--y))), 0
+			);
+			transition: transform 1s var(--ease-in-out-circ);
+			transform-origin: left top;
+            will-change: transform;
+		}
+
+		.canvas .sector {
+			width: 100vw; height: 100vh;
+			border-radius: 2rem; overflow: hidden;
+			background-color: #030812;
+            border: 1px solid rgba(0, 243, 255, 0.1);
+			transition: all 0.5s ease;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8) inset;
+		}
+
+        /* Streaming Ken Burns Effect inside grid */
+		.canvas img {
+			position: absolute; width: 100%; height: 100%;
+			object-fit: cover; pointer-events: none;
+            opacity: 0.4; filter: grayscale(60%) sepia(20%) hue-rotate(180deg);
+            transform: scale(1.1);
+            transition: opacity 0.8s ease, filter 0.8s ease;
+		}
+        
+        .canvas .sector.selected {
+            border-color: var(--hud-cyan);
+            box-shadow: 0 0 40px var(--hud-cyan-dim), inset 0 0 20px var(--hud-cyan-dim);
+        }
+
+        .canvas .sector.selected img {
+            opacity: 1; filter: grayscale(0%) contrast(1.1);
+            animation: kenBurns 30s linear infinite alternate;
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1.05) translate(0, 0); }
+            100% { transform: scale(1.2) translate(-2%, -2%); }
+        }
+
+        .hud-element {
+            position: absolute;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--hud-cyan-dim);
+            border-radius: 8px; z-index: 50;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Top Left Data Output */
+        .data-readout {
+            top: 2rem; left: 2rem; padding: 1rem;
+            font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .data-readout span { opacity: 0.7; }
+        .data-readout .highlight { color: #fff; font-weight: bold; text-shadow: 0 0 5px var(--hud-cyan); opacity: 1; }
+
+		/* MiniMap */
+		.map-container {
+			bottom: 2rem; right: 2rem; width: 180px; height: 180px; padding: 10px;
+		}
+		.map {
+			display: grid; height: 100%; width: 100%; gap: 4px;
+			grid-template: repeat(var(--gridSize), 1fr) / repeat(var(--gridSize), 1fr);
+		}
+		.map div {
+			background-color: var(--hud-cyan-dim); border-radius: 2px;
+			transition: all 0.3s ease; border: 1px solid transparent;
+		}
+		.map .selected {
+			background-color: var(--hud-cyan);
+            box-shadow: 0 0 10px var(--hud-cyan);
+		}
+
+        /* Fixed Zoom UI (No input ranges) */
+        .zoom-ui {
+            bottom: 2rem; left: 2rem; padding: 15px;
+            display: flex; align-items: flex-end; gap: 15px; height: 180px;
+        }
+        .zoom-track {
+            width: 8px; height: 100%; background: rgba(255,255,255,0.05);
+            border-radius: 4px; position: relative; overflow: hidden;
+            border: 1px solid var(--hud-cyan-dim);
+        }
+        .zoom-fill {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 35%;
+            background: var(--hud-cyan);
+            box-shadow: 0 0 10px var(--hud-cyan);
+            transition: height 0.1s linear;
+        }
+        .zoom-data {
+            display: flex; flex-direction: column; justify-content: space-between;
+            height: 100%; font-size: 10px; text-align: right;
+            padding-bottom: 5px;
+        }
+
+        /* Focus Mode Overlays */
+        .focus-layer {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10; display: flex; justify-content: center; align-items: center;
+        }
+        .focus-hitbox {
+            width: 100%; height: 100%; transform: scale(0.35); /* Match initial zoom */
+            position: absolute; cursor: none;
+        }
+
+        .btn-close {
+            position: absolute; top: 2rem; right: 2rem;
+            padding: 10px 20px; font-family: 'JetBrains Mono'; font-size: 14px;
+            background: rgba(255, 0, 85, 0.1); border: 1px solid var(--hud-alert);
+            color: var(--hud-alert); border-radius: 4px; cursor: none;
+            text-transform: uppercase; letter-spacing: 2px; opacity: 0; pointer-events: none;
+            transition: all 0.3s ease; z-index: 60;
+        }
+        .btn-close:hover {
+            background: var(--hud-alert); color: #fff; box-shadow: 0 0 15px var(--hud-alert);
+        }
+
+		.mode-focus .viewport { transform: scale3d(1, 1, 1); transition: transform 0.8s var(--ease-in-out-circ); }
+		.mode-focus .parallax-layer { transform: translate3d(0,0,0) !important; } /* Reset parallax on focus */
+        .mode-focus .hud-element { opacity: 0; transform: translateY(20px); pointer-events: none; }
+		.mode-focus .btn-close { opacity: 1; pointer-events: all; }
+        .mode-focus .focus-hitbox { display: none; }
+
+        /* Loader */
+        .loader-core {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100px; height: 100px; z-index: 900;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .loader-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 2px solid transparent;
+            border-top-color: var(--hud-cyan); border-bottom-color: var(--hud-cyan);
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        .loader-ring::before {
+            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%; border: 2px solid transparent;
+            border-left-color: var(--hud-blue);
+            animation: spin 1s linear infinite reverse;
+        }
+        .loader-text {
+            font-size: 10px; letter-spacing: 3px; animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 0.3; } 100% { opacity: 1; text-shadow: 0 0 8px var(--hud-cyan); } }
+
+        .loaded .loader-core { opacity: 0; pointer-events: none; }
+	</style>
+</head>
+<body>
+    <!-- Cursor & Effects -->
+    <div class="cursor-reticle" id="cursor"><div class="ring"></div></div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <!-- Loader -->
+    <div class="loader-core">
+        <div class="loader-ring"></div>
+        <div class="loader-text">SYNC...</div>
+    </div>
+
+    <!-- Main World -->
+	<div class="viewport" id="viewport">
+        <div class="parallax-layer" id="parallax">
+            <div class="canvas" id="canvas">
+                <!-- 16 Sectors injected via JS -->
+            </div>
+        </div>
+	</div>
+	
+    <!-- Hitbox to detect clicks on the currently centered item to zoom in -->
+    <div class="focus-layer">
+        <div class="focus-hitbox" id="focus-hitbox"></div>
+    </div>
+
+    <!-- HUD Elements -->
+    <div class="hud-element data-readout">
+        <span>SYS.STATUS // <span class="highlight">ONLINE</span></span>
+        <span>SECTOR.X // <span class="highlight" id="data-x">00</span></span>
+        <span>SECTOR.Y // <span class="highlight" id="data-y">00</span></span>
+        <span>OP.MODE // <span class="highlight" id="data-mode">NAV</span></span>
+    </div>
+
+	<div class="hud-element map-container">
+		<div class="map" id="minimap">
+			<!-- 16 Minimap blips injected via JS -->
+		</div>
+	</div>
+	
+    <div class="hud-element zoom-ui">
+        <div class="zoom-track">
+            <div class="zoom-fill" id="zoom-fill"></div>
+        </div>
+        <div class="zoom-data">
+            <span>[ MAX ]</span>
+            <span id="zoom-readout" class="highlight">35%</span>
+            <span>[ MIN ]</span>
+        </div>
+    </div>
+
+    <button class="btn-close" id="btn-close">DISENGAGE LOCK</button>
+
+	<script>
+        // High quality deep space & sci-fi textures
+        const ASSETS = [
+            "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1600&q=80",
+            "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1600&q=80",
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&q=80",
+            "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?w=1600&q=80",
+            "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?w=1600&q=80",
+            "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1600&q=80",
+            "https://images.unsplash.com/photo-1618172193622-ae2d025f4032?w=1600&q=80",
+            "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1600&q=80",
+            "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80",
+            "https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?w=1600&q=80",
+            "https://images.unsplash.com/photo-1614728263952-84ea256f9679?w=1600&q=80",
+            "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=1600&q=80",
+            "https://images.unsplash.com/photo-1537420327992-d6e192287183?w=1600&q=80",
+            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&q=80",
+            "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1600&q=80",
+            "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=1600&q=80"
+        ];
+
+		document.addEventListener("DOMContentLoaded", () => {
+            // DOM Refs
+            const root = document.documentElement;
+            const viewport = document.getElementById("viewport");
+            const parallaxLayer = document.getElementById("parallax");
+            const canvas = document.getElementById("canvas");
+            const minimap = document.getElementById("minimap");
+            const focusHitbox = document.getElementById("focus-hitbox");
+            const btnClose = document.getElementById("btn-close");
+            const zoomFill = document.getElementById("zoom-fill");
+            const zoomReadout = document.getElementById("zoom-readout");
+            const cursor = document.getElementById("cursor");
+            
+            // HUD Data Refs
+            const dataX = document.getElementById("data-x");
+            const dataY = document.getElementById("data-y");
+            const dataMode = document.getElementById("data-mode");
+
+            // System State
+            const gridSize = 4;
+            let coords = { x: 0, y: 0 };
+            let currentIndex = 0;
+            let isTransitioning = false;
+            let isFocused = false;
+
+            // Zoom Config
+            const ZOOM_MIN = 0.25;
+            const ZOOM_MAX = 0.65;
+            let currentZoom = 0.35; // Starting zoom
+
+            // Inject Grid Items & Minimap Items
+            for(let i=0; i < 16; i++) {
+                // Main Grid
+                const sector = document.createElement("div");
+                sector.className = "sector";
+                if(i === 0) sector.classList.add("selected");
+                
+                const img = new Image();
+                img.src = ASSETS[i];
+                img.crossOrigin = "anonymous";
+                img.alt = `Sector Data ${i}`;
+                sector.appendChild(img);
+                canvas.appendChild(sector);
+
+                // Minimap Grid
+                const blip = document.createElement("div");
+                if(i === 0) blip.classList.add("selected");
+                minimap.appendChild(blip);
+            }
+
+            // Image Load Handler
+            let loadedImages = 0;
+            const images = canvas.querySelectorAll("img");
+            images.forEach(img => {
+                if(img.complete) incrementLoad();
+                else img.addEventListener("load", incrementLoad);
+            });
+
+            function incrementLoad() {
+                loadedImages++;
+                if(loadedImages === images.length) {
+                    setTimeout(() => root.classList.replace("loading", "loaded"), 500);
+                }
+            }
+
+            const updateHUD = () => {
+                dataX.innerText = coords.x.toString().padStart(2, '0');
+                dataY.innerText = coords.y.toString().padStart(2, '0');
+            };
+
+            const navigateTo = (index) => {
+                if(isTransitioning || isFocused || index === currentIndex) return;
+                
+                // Update State
+                coords.x = index % gridSize;
+                coords.y = Math.floor(index / gridSize);
+                currentIndex = index;
+                
+                // Update UI visually
+                canvas.style.setProperty("--x", coords.x);
+                canvas.style.setProperty("--y", coords.y);
+
+                // Update Selections
+                canvas.querySelector(".sector.selected").classList.remove("selected");
+                canvas.children[currentIndex].classList.add("selected");
+                
+                minimap.querySelector(".selected").classList.remove("selected");
+                minimap.children[currentIndex].classList.add("selected");
+
+                updateHUD();
+                
+                // Block inputs during move to prevent glitching
+                isTransitioning = true;
+                setTimeout(() => { isTransitioning = false; }, 1000); 
+            };
+
+            // Custom Cursor Logic
+            document.addEventListener("mousemove", (e) => {
+                cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+                
+                if(isFocused || isTransitioning) return;
+
+                // Parallax Math
+                const xOffset = (e.clientX / window.innerWidth - 0.5) * 40; // max 20px shift
+                const yOffset = (e.clientY / window.innerHeight - 0.5) * 40;
+                parallaxLayer.style.transform = `translate3d(${-xOffset}px, ${-yOffset}px, 0)`;
+            });
+
+            // Interactive Cursor states
+            document.addEventListener("mousedown", () => cursor.style.transform += " scale(0.8)");
+            document.addEventListener("mouseup", () => {
+                // Re-apply translation to avoid snapping to 0,0 on mouseup
+                // Requires brief timeout to catch native mouse position or just clear scale
+                cursor.style.transform = cursor.style.transform.replace(" scale(0.8)", "");
+            });
+
+            const updateZoomEngine = () => {
+                // Apply to Viewport
+                viewport.style.setProperty("--zoom", currentZoom);
+                // Keep Hitbox synced to exact visual size
+                focusHitbox.style.transform = `scale(${currentZoom})`;
+                
+                // Update HUD Bars
+                const percent = ((currentZoom - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN)) * 100;
+                zoomFill.style.height = `${percent}%`;
+                zoomReadout.innerText = `${Math.round(percent)}%`;
+            };
+
+            document.addEventListener("wheel", (e) => {
+                if (isFocused || isTransitioning) return;
+                // Sensible scroll dampening
+                currentZoom += e.deltaY * -0.0005;
+                currentZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, currentZoom));
+                updateZoomEngine();
+            }, { passive: true });
+
+            const toggleFocusLock = () => {
+                if(isTransitioning) return;
+                isFocused = !isFocused;
+                
+                if(isFocused) {
+                    root.classList.add("mode-focus");
+                    dataMode.innerText = "LOCKED";
+                    dataMode.style.color = "var(--hud-alert)";
+                    cursor.style.width = "60px"; cursor.style.height = "60px";
+                } else {
+                    root.classList.remove("mode-focus");
+                    dataMode.innerText = "NAV";
+                    dataMode.style.color = "var(--hud-cyan)";
+                    cursor.style.width = "40px"; cursor.style.height = "40px";
+                    // Restore Zoom scaling instantly when dropping out of focus
+                    viewport.style.setProperty("--zoom", currentZoom);
+                }
+            };
+
+            // Keyboard Controls
+            document.addEventListener("keydown", (e) => {
+                if (isTransitioning) return;
+
+                let tx = coords.x, ty = coords.y;
+
+                switch (e.key) {
+                    case "ArrowLeft": tx = Math.max(0, tx - 1); break;
+                    case "ArrowRight": tx = Math.min(gridSize - 1, tx + 1); break;
+                    case "ArrowUp": ty = Math.max(0, ty - 1); break;
+                    case "ArrowDown": ty = Math.min(gridSize - 1, ty + 1); break;
+                    case "Enter": toggleFocusLock(); return;
+                    case "Escape": if(isFocused) toggleFocusLock(); return;
+                    default: return;
+                }
+                
+                if(tx !== coords.x || ty !== coords.y) {
+                    if(isFocused) toggleFocusLock(); // Break lock if moving
+                    navigateTo(ty * gridSize + tx);
+                }
+            });
+
+            // Click Nav on adjacent blocks
+            canvas.addEventListener("click", (e) => {
+                const sector = e.target.closest('.sector');
+                if(!sector) return;
+                const idx = Array.from(canvas.children).indexOf(sector);
+                if(idx !== -1 && idx !== currentIndex) {
+                    if(isFocused) toggleFocusLock();
+                    navigateTo(idx);
+                }
+            });
+
+            // Minimap Click Nav
+            minimap.addEventListener("click", (e) => {
+                if(e.target.tagName !== "DIV") return;
+                const idx = Array.from(minimap.children).indexOf(e.target);
+                if(idx !== -1 && idx !== currentIndex) {
+                    if(isFocused) toggleFocusLock();
+                    navigateTo(idx);
+                }
+            });
+
+            // The Hitbox sits directly over the center item to trigger focus
+            focusHitbox.addEventListener("click", toggleFocusLock);
+            btnClose.addEventListener("click", toggleFocusLock);
+
+            // Initialize State
+            updateHUD();
+            updateZoomEngine();
+		});
+	</script>
+</body>
+</html>
