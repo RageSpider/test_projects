@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behind the Scroll: How Social Media Affects the Brain</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@v3.12.0/dist/pptxgen.bundle.js"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --paper:#f4efe6; --paper-2:#ebe4d6;
+  --ink:#1c1b17; --ink-soft:#403b31; --muted:#8a8378;
+  --accent:#b5432b; --accent-2:#2d4a3e;
+  --rule:rgba(28,27,23,.16); --rule-strong:rgba(28,27,23,.42);
+}
+[data-theme="dark"] {
+  --paper:#191713; --paper-2:#232019;
+  --ink:#ece5d4; --ink-soft:#c6bda8; --muted:#8a8378;
+  --accent:#e0664a; --accent-2:#84a896;
+  --rule:rgba(236,229,212,.14); --rule-strong:rgba(236,229,212,.36);
+}
+
+html,body { height:100%; overflow:hidden; }
+body {
+  background:var(--paper); color:var(--ink);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  transition:background .5s ease,color .5s ease;
+}
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:2; opacity:.3;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+[data-theme="dark"] body::after { mix-blend-mode:screen; opacity:.12; }
+
+/* ---------- chrome ---------- */
+.masthead {
+  position:fixed; top:0; left:0; right:0; height:44px; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 26px; border-bottom:1px solid var(--rule);
+  background:var(--paper);
+  font-family:'JetBrains Mono',monospace; font-size:10.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  transition:transform .35s ease, background .5s ease;
+}
+.masthead .wordmark { font-family:'Fraunces',serif; font-size:14px; letter-spacing:0; text-transform:none; color:var(--ink); font-weight:500; }
+.masthead .wordmark i { font-style:italic; color:var(--accent); font-weight:400; }
+.masthead .sep { margin:0 10px; opacity:.5; }
+body.zen .masthead { transform:translateY(-100%); }
+
+.toolbar {
+  position:fixed; top:44px; right:0; z-index:45;
+  display:flex; flex-direction:column;
+  border-left:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  background:var(--rule); gap:1px;
+  transition:transform .35s ease;
+}
+body.zen .toolbar { transform:translateX(100%); }
+.tool-btn {
+  width:44px; height:44px; border:none; background:var(--paper);
+  color:var(--ink-soft); cursor:pointer; font-size:13.5px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; transition:background .2s, color .2s;
+}
+.tool-btn:hover { background:var(--paper-2); color:var(--accent); }
+.tool-btn.active { background:var(--ink); color:var(--paper); }
+.tool-btn .kbd {
+  position:absolute; bottom:3px; right:5px;
+  font-family:'JetBrains Mono',monospace; font-size:8px; opacity:.55;
+}
+
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; height:56px; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 22px; border-top:1px solid var(--rule); background:var(--paper);
+  transition:transform .35s ease, background .5s ease;
+}
+body.zen .bottom-nav { transform:translateY(100%); }
+.nav-group { display:flex; align-items:center; gap:2px; }
+.nav-btn {
+  width:38px; height:38px; border:none; background:transparent;
+  color:var(--ink-soft); border-radius:3px; cursor:pointer; font-size:12.5px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s, color .2s;
+}
+.nav-btn:hover { background:var(--paper-2); color:var(--accent); }
+.nav-btn.active { background:var(--ink); color:var(--paper); }
+.nav-btn:disabled { opacity:.22; cursor:default; }
+.nav-btn:disabled:hover { background:transparent; color:var(--ink-soft); }
+
+.progress-dots { display:flex; gap:6px; align-items:center; }
+.progress-dots .dot { width:16px; height:2px; background:var(--rule-strong); cursor:pointer; transition:all .3s; }
+.progress-dots .dot.active { width:34px; background:var(--accent); }
+.progress-dots .dot:hover { background:var(--ink-soft); }
+
+.meta-group { display:flex; align-items:center; gap:16px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:.06em; }
+.meta-group .counter { color:var(--ink); font-weight:500; }
+
+/* ---------- stage & frame ---------- */
+.stage {
+  position:fixed; top:44px; bottom:56px; left:0; right:0;
+  overflow:hidden; z-index:1;
+}
+body.zen .stage { top:0; bottom:0; }
+.frame {
+  position:absolute; left:50%; top:50%;
+  width:1280px; height:720px;
+  transform:translate(-50%,-50%);
+  transform-origin:center;
+}
+
+.slide {
+  position:absolute; inset:0; width:1280px; height:720px;
+  padding:50px 72px 66px; overflow:hidden;
+  display:flex; flex-direction:column;
+  opacity:0; visibility:hidden;
+  background:var(--paper);
+}
+.slide.active { opacity:1; visibility:visible; }
+
+.folio {
+  position:absolute; left:72px; right:72px; bottom:24px;
+  display:flex; justify-content:space-between;
+  border-top:1px solid var(--rule); padding-top:11px;
+  font-family:'JetBrains Mono',monospace; font-size:9.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+}
+.folio .sec { font-family:'Fraunces',serif; font-style:italic; text-transform:none; letter-spacing:0; font-size:12px; }
+
+/* ---------- type system ---------- */
+.eyebrow {
+  font-family:'JetBrains Mono',monospace; font-size:10.5px;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--accent);
+  display:flex; align-items:center; gap:11px; margin-bottom:22px;
+}
+.eyebrow::before { content:''; width:26px; height:1px; background:var(--accent); }
+
+.display { font-family:'Fraunces',serif; font-weight:500; letter-spacing:-.02em; line-height:1.05; color:var(--ink); }
+.display em { font-style:italic; color:var(--accent); font-weight:500; }
+
+.lede {
+  font-family:'Fraunces',serif; font-size:19px; line-height:1.55;
+  color:var(--ink-soft); max-width:760px; font-weight:400;
+}
+
+.body-text { font-size:15px; line-height:1.65; color:var(--ink-soft); }
+
+.points { list-style:none; }
+.points li {
+  display:grid; grid-template-columns:34px 1fr; gap:16px;
+  padding:12px 0; border-top:1px solid var(--rule); align-items:start;
+}
+.points li:last-child { border-bottom:1px solid var(--rule); }
+.points .marker { font-family:'Fraunces',serif; font-style:italic; font-size:19px; color:var(--accent); line-height:1.2; }
+.points .pt { font-size:15.5px; line-height:1.5; color:var(--ink-soft); }
+
+/* ---------- cover ---------- */
+.cover .grid { display:grid; grid-template-columns:1fr 288px; gap:56px; height:100%; align-items:center; }
+.cover .issue {
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:34px;
+  display:flex; align-items:center; gap:14px;
+}
+.cover .issue::before { content:''; width:38px; height:1px; background:var(--ink); }
+.cover h1 { font-size:112px; line-height:.92; letter-spacing:-.03em; margin-bottom:30px; }
+.cover h1 .line { display:block; }
+.cover h1 .line-2 { font-style:italic; color:var(--accent); margin-left:74px; font-weight:400; }
+.cover .deck { font-family:'Fraunces',serif; font-size:21px; line-height:1.5; color:var(--ink-soft); max-width:580px; margin-bottom:38px; }
+.cover .byline { border-top:1px solid var(--rule-strong); padding-top:18px; max-width:580px; }
+.cover .byline .label { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.cover .byline .names { font-family:'Fraunces',serif; font-size:15.5px; line-height:1.6; }
+.cover .byline .names span { color:var(--muted); margin:0 7px; }
+
+.cover .sidebar { border-left:1px solid var(--rule); padding-left:30px; align-self:stretch; display:flex; flex-direction:column; justify-content:space-between; padding-top:16px; padding-bottom:16px; }
+.cover .meta-label { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+.cover .meta-value { font-family:'Fraunces',serif; font-size:17px; line-height:1.35; margin-bottom:26px; }
+.cover .meta-value i { font-style:italic; color:var(--accent); }
+.cover .big-num { font-family:'Fraunces',serif; font-size:88px; line-height:1; font-weight:300; letter-spacing:-.04em; }
+.cover .big-num i { font-style:italic; color:var(--accent); }
+
+/* ---------- question slide ---------- */
+.q-slide .grid { display:grid; grid-template-columns:1.15fr 1fr; gap:64px; height:100%; align-items:center; }
+.q-slide h2 { font-size:57px; line-height:1.04; }
+.q-slide .aside { border-left:1px solid var(--rule-strong); padding-left:34px; display:flex; flex-direction:column; gap:18px; }
+.q-slide .credit { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-top:8px; }
+
+/* ---------- four areas ---------- */
+.areas { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--rule-strong); margin-top:38px; }
+.area { padding:22px 26px 22px 0; border-right:1px solid var(--rule); }
+.area:last-child { border-right:none; }
+.area .num { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; color:var(--accent); margin-bottom:12px; }
+.area .word { font-family:'Fraunces',serif; font-size:27px; letter-spacing:-.01em; line-height:1.15; }
+
+/* ---------- content slides ---------- */
+.content-slide .layout { display:grid; grid-template-columns:272px 1fr; gap:60px; flex:1; padding-top:4px; }
+.content-slide .side { border-right:1px solid var(--rule); padding-right:36px; }
+.content-slide .ch-num { font-family:'Fraunces',serif; font-size:104px; line-height:.95; font-weight:300; letter-spacing:-.05em; margin-bottom:16px; }
+.content-slide .ch-num i { font-style:italic; color:var(--accent); }
+.content-slide .side .eyebrow { margin-bottom:0; }
+.content-slide .speaker-block { margin-top:30px; padding-top:18px; border-top:1px solid var(--rule); }
+.content-slide .speaker-name { font-family:'Fraunces',serif; font-size:17px; margin-bottom:4px; }
+.content-slide .speaker-role { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+.content-slide .main h2 { font-size:45px; margin-bottom:18px; max-width:820px; }
+.content-slide .main .lede { margin-bottom:22px; }
+
+.chips { display:flex; align-items:center; gap:12px; margin-top:24px; flex-wrap:wrap; }
+.chip {
+  padding:12px 18px; border:1px solid var(--rule-strong); background:var(--paper-2);
+  font-family:'Fraunces',serif; font-size:15px; color:var(--ink);
+}
+.chip.accent { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.chips .arrow { font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:14px; }
+
+.pull {
+  font-family:'Fraunces',serif; font-style:italic; font-size:21px; line-height:1.45;
+  color:var(--ink); border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  padding:18px 0; margin-top:24px; max-width:720px;
+}
+.pull b { color:var(--accent); font-weight:500; }
+
+/* ---------- tips ---------- */
+.tips { display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--rule-strong); margin-top:36px; }
+.tip { padding:22px 26px 22px 0; border-right:1px solid var(--rule); }
+.tip:last-child { border-right:none; }
+.tip .num { font-family:'Fraunces',serif; font-style:italic; font-size:14px; color:var(--accent); margin-bottom:12px; }
+.tip .txt { font-family:'Fraunces',serif; font-size:19px; line-height:1.32; letter-spacing:-.01em; }
+
+/* ---------- final ---------- */
+.final { justify-content:center; align-items:center; text-align:center; }
+.final .eyebrow { justify-content:center; }
+.final .eyebrow::before { display:none; }
+.final h2 { font-size:62px; line-height:1.06; max-width:980px; margin-bottom:30px; }
+.final .or { display:block; font-family:'Fraunces',serif; font-style:italic; font-size:24px; color:var(--muted); font-weight:400; margin:14px 0; letter-spacing:0; }
+.final .colophon { font-family:'Fraunces',serif; font-style:italic; font-size:19px; line-height:1.55; color:var(--ink-soft); max-width:640px; margin-bottom:34px; }
+.final .thanks { font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); border-top:1px solid var(--rule); padding-top:18px; width:340px; }
+
+/* ---------- overlays ---------- */
+.speaker-notes {
+  position:fixed; bottom:56px; left:0; right:0; z-index:48;
+  background:var(--paper-2); border-top:1px solid var(--rule-strong);
+  padding:16px 72px; max-height:172px; overflow-y:auto; display:none;
+}
+.speaker-notes.active { display:block; }
+body.zen .speaker-notes { display:none !important; }
+.speaker-notes .nl { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+.speaker-notes .nc { font-family:'Fraunces',serif; font-size:15.5px; line-height:1.6; color:var(--ink-soft); }
+
+.overview { position:fixed; inset:44px 0 56px 0; z-index:46; background:var(--paper); padding:36px 44px; overflow-y:auto; display:none; }
+.overview.active { display:block; }
+.overview-head { display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--rule); padding-bottom:14px; margin-bottom:26px; }
+.overview-head h2 { font-family:'Fraunces',serif; font-weight:500; font-size:26px; letter-spacing:-.01em; }
+.overview-head h2 em { color:var(--accent); }
+.overview-head .hint { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+.overview-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+.ov-card {
+  aspect-ratio:16/9; background:var(--paper-2); border:1px solid var(--rule);
+  padding:16px; cursor:pointer; position:relative; transition:border-color .2s, transform .2s;
+}
+.ov-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+.ov-card.current { border:2px solid var(--accent); }
+.ov-card .n { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; color:var(--muted); }
+.ov-card .t { position:absolute; bottom:34px; left:16px; right:16px; font-family:'Fraunces',serif; font-size:15.5px; line-height:1.25; }
+.ov-card .s { position:absolute; bottom:13px; left:16px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+
+.laser { position:fixed; width:14px; height:14px; border-radius:50%; background:var(--accent); box-shadow:0 0 18px var(--accent), 0 0 36px var(--accent); pointer-events:none; z-index:120; transform:translate(-50%,-50%); display:none; }
+.laser.active { display:block; }
+.spotlight { position:fixed; inset:0; pointer-events:none; z-index:110; display:none; background:radial-gradient(circle 130px at var(--mx,50%) var(--my,50%), transparent 0%, rgba(20,18,14,.88) 100%); }
+.spotlight.active { display:block; }
+#drawCanvas { position:fixed; inset:0; z-index:115; display:none; cursor:crosshair; }
+#drawCanvas.active { display:block; }
+
+.modal { position:fixed; inset:0; z-index:200; background:rgba(24,22,18,.55); display:none; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+.modal.active { display:flex; }
+.modal-box { background:var(--paper); border:1px solid var(--rule-strong); padding:34px 38px; width:540px; max-width:92vw; max-height:82vh; overflow-y:auto; }
+.modal-box h3 { font-family:'Fraunces',serif; font-weight:500; font-size:25px; margin-bottom:4px; }
+.modal-box h3 em { color:var(--accent); }
+.modal-box .sub { font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
+.sc-list { list-style:none; }
+.sc-list li { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--rule); font-size:13.5px; color:var(--ink-soft); }
+.sc-list .keys { display:flex; gap:4px; align-items:center; }
+.key { display:inline-block; padding:2px 8px; background:var(--paper-2); border:1px solid var(--rule-strong); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--ink); min-width:24px; text-align:center; }
+
+.toast {
+  position:fixed; bottom:76px; left:50%; transform:translate(-50%,14px);
+  background:var(--ink); color:var(--paper); padding:9px 18px;
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  opacity:0; transition:all .3s ease; z-index:300; pointer-events:none;
+}
+.toast.show { opacity:1; transform:translate(-50%,0); }
+
+.zen-hint {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); opacity:0; transition:opacity .3s; z-index:60; pointer-events:none;
+}
+.zen-hint.show { opacity:.85; }
+
+@media print {
+  @page { size:landscape; margin:0; }
+  :root, [data-theme="dark"] { --paper:#f4efe6; --paper-2:#ebe4d6; --ink:#1c1b17; --ink-soft:#403b31; --muted:#8a8378; --accent:#b5432b; --rule:rgba(28,27,23,.16); --rule-strong:rgba(28,27,23,.42); }
+  body { background:#f4efe6; }
+  body::after, .masthead, .toolbar, .bottom-nav, .speaker-notes, .overview, .modal, .toast, .laser, .spotlight, #drawCanvas, .zen-hint { display:none !important; }
+  .stage { position:static; overflow:visible; }
+  .frame { position:static; transform-origin:top left; }
+  .slide { position:relative !important; opacity:1 !important; visibility:visible !important; break-after:page; page-break-after:always; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <span class="wordmark">Behind <i>the Scroll</i></span>
+    <span class="sep">/</span>
+    <span>How Social Media Affects the Brain</span>
+  </div>
+  <div>Saturday, 31 October 2026</div>
+</header>
+
+<aside class="toolbar">
+  <button class="tool-btn" id="tOverview" title="Overview"><i class="fas fa-table-cells-large"></i><span class="kbd">O</span></button>
+  <button class="tool-btn" id="tNotes" title="Speaker notes"><i class="fas fa-align-left"></i><span class="kbd">N</span></button>
+  <button class="tool-btn" id="tLaser" title="Laser pointer"><i class="fas fa-location-crosshairs"></i><span class="kbd">&#8679;</span></button>
+  <button class="tool-btn" id="tSpot" title="Spotlight"><i class="fas fa-circle-half-stroke"></i><span class="kbd">L</span></button>
+  <button class="tool-btn" id="tDraw" title="Draw"><i class="fas fa-pencil"></i><span class="kbd">D</span></button>
+  <button class="tool-btn" id="tTheme" title="Theme"><i class="fas fa-moon"></i><span class="kbd">T</span></button>
+  <button class="tool-btn" id="tFull" title="Fullscreen"><i class="fas fa-expand"></i><span class="kbd">F</span></button>
+  <button class="tool-btn" id="tZen" title="Hide controls"><i class="fas fa-eye-slash"></i><span class="kbd">H</span></button>
+  <button class="tool-btn" id="tPdf" title="Print / PDF"><i class="fas fa-print"></i><span class="kbd">P</span></button>
+  <button class="tool-btn" id="tPptx" title="Export PPTX"><i class="fas fa-file-arrow-down"></i><span class="kbd">E</span></button>
+  <button class="tool-btn" id="tHelp" title="Shortcuts"><i class="fas fa-keyboard"></i><span class="kbd">?</span></button>
+</aside>
+
+<main class="stage" id="stage">
+  <div class="frame" id="frame">
+
+    <!-- 01 COVER -->
+    <section class="slide cover active">
+      <div class="grid">
+        <div>
+          <div class="issue rv">A presentation in ten slides</div>
+          <h1 class="display split">Behind the Scroll.</h1>
+          <p class="deck rv">How Social Media Affects the Brain. What happens with our attention, motivation, emotions, and habits every time we pick up our phones.</p>
+          <div class="byline rv">
+            <div class="label">Presented by</div>
+            <div class="names">Azuba Taiba Akanda<span>/</span>Shahriyar<span>/</span>Irfan Sadik<span>/</span>Maruf Hasan<span>/</span>Labib Mirza</div>
+          </div>
+        </div>
+        <aside class="sidebar">
+          <div>
+            <div class="rv"><div class="meta-label">Topic</div><div class="meta-value">Social media and <i>the brain</i></div></div>
+            <div class="rv"><div class="meta-label">Speakers</div><div class="meta-value">Five presenters</div></div>
+            <div class="rv"><div class="meta-label">Slides</div><div class="meta-value"><i>Ten</i></div></div>
+          </div>
+          <div class="big-num rv">10<i>.</i></div>
+        </aside>
+      </div>
+      <div class="folio"><span class="sec">Cover</span><span>01 / 10</span></div>
+    </section>
+
+    <!-- 02 THE QUESTION -->
+    <section class="slide q-slide">
+      <div class="eyebrow">Introduction</div>
+      <div class="grid">
+        <h2 class="display split">How many times do we check our phones without even realizing it?</h2>
+        <div class="aside">
+          <p class="body-text rv">We open our phones to reply to one message, watch one video, or check one notification. But somehow, a few seconds can turn into 20 or 30 minutes of scrolling.</p>
+          <p class="body-text rv">Good morning everyone. Let me start with a simple question.</p>
+          <div class="credit rv">Azuba Taiba Akanda, Speaker 1</div>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">Introduction</span><span>02 / 10</span></div>
+    </section>
+
+    <!-- 03 GOING BEHIND THE SCROLL -->
+    <section class="slide">
+      <div class="eyebrow">Introduction</div>
+      <h2 class="display split" style="font-size:46px;margin-bottom:18px;">Going behind the scroll.</h2>
+      <p class="lede rv">Social media has become such a normal part of our lives that we often forget to think about what it is doing to us. Not just socially, but biologically. Every scroll, like, comment, and notification interacts with different processes in our brain.</p>
+      <div class="areas">
+        <div class="area rv"><div class="num">01</div><div class="word">Attention</div></div>
+        <div class="area rv"><div class="num">02</div><div class="word">Motivation</div></div>
+        <div class="area rv"><div class="num">03</div><div class="word">Emotions</div></div>
+        <div class="area rv"><div class="num">04</div><div class="word">Daily habits</div></div>
+      </div>
+      <div class="folio"><span class="sec">Introduction</span><span>03 / 10</span></div>
+    </section>
+
+    <!-- 04 REWARD SYSTEM -->
+    <section class="slide content-slide">
+      <div class="eyebrow">The Brain's Reward System</div>
+      <div class="layout">
+        <div class="side">
+          <div class="ch-num rv">01<i>.</i></div>
+          <div class="speaker-block rv">
+            <div class="speaker-name">Shahriyar</div>
+            <div class="speaker-role">Speaker 2</div>
+          </div>
+        </div>
+        <div class="main">
+          <h2 class="display split">The brain's reward system.</h2>
+          <p class="lede rv">First, let's look at how social media interacts with our brain's reward system.</p>
+          <ul class="points">
+            <li class="rv"><span class="marker">i.</span><span class="pt">When we receive a like, comment, message, or notification, it can feel rewarding.</span></li>
+            <li class="rv"><span class="marker">ii.</span><span class="pt">One important chemical involved in the brain's reward and motivation system is dopamine.</span></li>
+          </ul>
+          <div class="chips">
+            <div class="chip rv">A like, comment, or notification</div>
+            <div class="arrow rv">&rarr;</div>
+            <div class="chip accent rv">Dopamine</div>
+            <div class="arrow rv">&rarr;</div>
+            <div class="chip rv">Feels rewarding</div>
+          </div>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">The Brain's Reward System</span><span>04 / 10</span></div>
+    </section>
+
+    <!-- 05 UNPREDICTABLE REWARDS -->
+    <section class="slide content-slide">
+      <div class="eyebrow">The Brain's Reward System</div>
+      <div class="layout">
+        <div class="side">
+          <div class="ch-num rv">02<i>.</i></div>
+          <div class="speaker-block rv">
+            <div class="speaker-name">Shahriyar</div>
+            <div class="speaker-role">Speaker 2</div>
+          </div>
+        </div>
+        <div class="main">
+          <h2 class="display split">Why we keep checking.</h2>
+          <p class="lede rv">Social media also gives us unpredictable rewards. Sometimes we get many likes or an interesting video, and sometimes we don't.</p>
+          <ul class="points">
+            <li class="rv"><span class="marker">i.</span><span class="pt">This uncertainty can encourage us to keep checking our phones.</span></li>
+            <li class="rv"><span class="marker">ii.</span><span class="pt">That is why we sometimes open social media without even planning to.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">The Brain's Reward System</span><span>05 / 10</span></div>
+    </section>
+
+    <!-- 06 ATTENTION -->
+    <section class="slide content-slide">
+      <div class="eyebrow">Attention and Scrolling</div>
+      <div class="layout">
+        <div class="side">
+          <div class="ch-num rv">03<i>.</i></div>
+          <div class="speaker-block rv">
+            <div class="speaker-name">Irfan Sadik</div>
+            <div class="speaker-role">Speaker 3</div>
+          </div>
+        </div>
+        <div class="main">
+          <h2 class="display split">Attention and scrolling.</h2>
+          <p class="lede rv">Now, let's talk about attention. Social media gives us a continuous flow of new content.</p>
+          <ul class="points">
+            <li class="rv"><span class="marker">i.</span><span class="pt">We can move from one video or post to another within seconds.</span></li>
+            <li class="rv"><span class="marker">ii.</span><span class="pt">Notifications can interrupt us while we are studying, working, or even talking to someone.</span></li>
+            <li class="rv"><span class="marker">iii.</span><span class="pt">This does not mean social media permanently damages our attention. However, constant switching and frequent interruptions can make it harder to stay focused on one task.</span></li>
+            <li class="rv"><span class="marker">iv.</span><span class="pt">For students, this can be especially important, because studying often requires long periods of concentration.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">Attention and Scrolling</span><span>06 / 10</span></div>
+    </section>
+
+    <!-- 07 EMOTIONS -->
+    <section class="slide content-slide">
+      <div class="eyebrow">Emotions and Self-Image</div>
+      <div class="layout">
+        <div class="side">
+          <div class="ch-num rv">04<i>.</i></div>
+          <div class="speaker-block rv">
+            <div class="speaker-name">Maruf Hasan</div>
+            <div class="speaker-role">Speaker 4</div>
+          </div>
+        </div>
+        <div class="main">
+          <h2 class="display split">Emotions and self-image.</h2>
+          <p class="lede rv">Let's talk about emotions and self-image. Social media can also affect our emotions and how we see ourselves.</p>
+          <ul class="points">
+            <li class="rv"><span class="marker">i.</span><span class="pt">We mostly see people's happy moments in social media. We do not always see their real struggles.</span></li>
+            <li class="rv"><span class="marker">ii.</span><span class="pt">So, when we compare our life with what we see online, we may sometimes feel that we are not doing well enough.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">Emotions and Self-Image</span><span>07 / 10</span></div>
+    </section>
+
+    <!-- 08 POSITIVE SIDE -->
+    <section class="slide content-slide">
+      <div class="eyebrow">Emotions and Self-Image</div>
+      <div class="layout">
+        <div class="side">
+          <div class="ch-num rv">05<i>.</i></div>
+          <div class="speaker-block rv">
+            <div class="speaker-name">Maruf Hasan</div>
+            <div class="speaker-role">Speaker 4</div>
+          </div>
+        </div>
+        <div class="main">
+          <h2 class="display split">The positive side.</h2>
+          <ul class="points" style="margin-top:6px;">
+            <li class="rv"><span class="marker">i.</span><span class="pt">Social media also has positive sides. It helps us stay connected with others.</span></li>
+            <li class="rv"><span class="marker">ii.</span><span class="pt">It also helps us find communities.</span></li>
+          </ul>
+          <div class="pull rv">The effect of social media can be both positive and negative, <b>depending on how we use it.</b></div>
+        </div>
+      </div>
+      <div class="folio"><span class="sec">Emotions and Self-Image</span><span>08 / 10</span></div>
+    </section>
+
+    <!-- 09 SMALL CHANGES -->
+    <section class="slide">
+      <div class="eyebrow">Conclusion</div>
+      <h2 class="display split" style="font-size:46px;margin-bottom:16px;">Use it intentionally, not automatically.</h2>
+      <p class="lede rv">After looking at the effects of social media on our brain, one thing becomes clear. Social media is not necessarily our enemy, but our relationship with it matters. We can make small changes.</p>
+      <div class="tips">
+        <div class="tip rv"><div class="num">i.</div><div class="txt">Turn off unnecessary notifications.</div></div>
+        <div class="tip rv"><div class="num">ii.</div><div class="txt">Take short screen breaks.</div></div>
+        <div class="tip rv"><div class="num">iii.</div><div class="txt">Avoid social media when we need to concentrate.</div></div>
+        <div class="tip rv"><div class="num">iv.</div><div class="txt">Avoid social media when we need to sleep.</div></div>
+      </div>
+      <div class="folio"><span class="sec">Conclusion</span><span>09 / 10</span></div>
+    </section>
+
+    <!-- 10 FINAL -->
+    <section class="slide final">
+      <div class="eyebrow">Conclusion</div>
+      <h2 class="display split">Am I using social media,<span class="or">or</span>is social media <em>using me?</em></h2>
+      <p class="colophon rv">Behind every scroll, there is a brain paying attention, processing information, and making habits. So the next time we pick up our phone, let's take a moment to ask ourselves.</p>
+      <div class="thanks rv">Thank you everyone for listening</div>
+      <div class="folio"><span class="sec">Conclusion</span><span>10 / 10</span></div>
+    </section>
+
+  </div>
+</main>
+
+<div class="speaker-notes" id="notesPanel">
+  <div class="nl">Speaker notes, read aloud</div>
+  <div class="nc" id="notesContent"></div>
+</div>
+
+<div class="overview" id="overview">
+  <div class="overview-head">
+    <h2>All <em>slides</em></h2>
+    <span class="hint">Click a slide to jump. Press O or Esc to close.</span>
+  </div>
+  <div class="overview-grid" id="ovGrid"></div>
+</div>
+
+<nav class="bottom-nav">
+  <div class="nav-group">
+    <button class="nav-btn" id="bFirst" title="First slide"><i class="fas fa-angles-left"></i></button>
+    <button class="nav-btn" id="bPrev" title="Previous slide"><i class="fas fa-chevron-left"></i></button>
+    <button class="nav-btn" id="bPlay" title="Autoplay"><i class="fas fa-play"></i></button>
+    <button class="nav-btn" id="bNext" title="Next slide"><i class="fas fa-chevron-right"></i></button>
+    <button class="nav-btn" id="bLast" title="Last slide"><i class="fas fa-angles-right"></i></button>
+  </div>
+  <div class="progress-dots" id="dots"></div>
+  <div class="meta-group">
+    <span class="counter" id="counter">01 / 10</span>
+    <span id="timer">00:00</span>
+  </div>
+</nav>
+
+<div class="laser" id="laser"></div>
+<div class="spotlight" id="spot"></div>
+<canvas id="drawCanvas"></canvas>
+<div class="zen-hint" id="zenHint">Press H to show controls</div>
+
+<div class="modal" id="helpModal">
+  <div class="modal-box">
+    <h3>Keyboard <em>shortcuts</em></h3>
+    <div class="sub">Every control in the deck</div>
+    <ul class="sc-list">
+      <li><span>Next slide</span><span class="keys"><span class="key">&rarr;</span><span class="key">Space</span><span class="key">PgDn</span></span></li>
+      <li><span>Previous slide</span><span class="keys"><span class="key">&larr;</span><span class="key">PgUp</span></span></li>
+      <li><span>First / last slide</span><span class="keys"><span class="key">Home</span><span class="key">End</span></span></li>
+      <li><span>Jump to slide</span><span class="keys"><span class="key">1</span>&#8230;<span class="key">9</span><span class="key">0</span></span></li>
+      <li><span>Overview grid</span><span class="keys"><span class="key">O</span></span></li>
+      <li><span>Speaker notes</span><span class="keys"><span class="key">N</span></span></li>
+      <li><span>Laser pointer</span><span class="keys"><span class="key">Shift</span><span style="font-size:11px;color:var(--muted)">hold</span></span></li>
+      <li><span>Spotlight</span><span class="keys"><span class="key">L</span></span></li>
+      <li><span>Draw / clear drawing</span><span class="keys"><span class="key">D</span><span class="key">C</span></span></li>
+      <li><span>Hide / show all controls</span><span class="keys"><span class="key">H</span></span></li>
+      <li><span>Dark / light theme</span><span class="keys"><span class="key">T</span></span></li>
+      <li><span>Fullscreen</span><span class="keys"><span class="key">F</span></span></li>
+      <li><span>Autoplay</span><span class="keys"><span class="key">A</span></span></li>
+      <li><span>Print / save as PDF</span><span class="keys"><span class="key">P</span></span></li>
+      <li><span>Export PPTX</span><span class="keys"><span class="key">E</span></span></li>
+      <li><span>Reset timer</span><span class="keys"><span class="key">R</span></span></li>
+      <li><span>Close / exit anything</span><span class="keys"><span class="key">Esc</span></span></li>
+      <li><span>This panel</span><span class="keys"><span class="key">?</span></span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= data ================= */
+const NOTES = [
+  "Everyone is on stage. Azuba begins the presentation.",
+  "Azuba: Good morning everyone. Let me start with a simple question. How many times do we check our phones without even realizing it? We open our phones to reply to one message, watch one video, or check one notification. But somehow, a few seconds can turn into 20 or 30 minutes of scrolling.",
+  "Azuba: Social media has become such a normal part of our lives that we often forget to think about what it is doing to us, not just socially, but biologically. Every scroll, like, comment, and notification interacts with different processes in our brain. It can influence our attention, motivation, emotions, and even some of our daily habits. So today, we are going behind the scroll to understand what actually happens inside our brain when we use social media. Our topic is Behind the Scroll: How Social Media Affects the Brain. Now, I would like to hand it over to Shahriyar, who will explain the connection between social media and our brain's reward system.",
+  "Shahriyar: Good morning everyone. First let's look at how social media interacts with our brain's reward system. When we receive a like, comment, message, or notification, it can feel rewarding. One important chemical involved in the brain's reward and motivation system is dopamine.",
+  "Shahriyar: Social media also gives us unpredictable rewards. Sometimes we get many likes or an interesting video, and sometimes we don't. This uncertainty can encourage us to keep checking our phones. That is why we sometimes open social media without even planning to. Now, I would like to hand it over to Irfan Sadik, who will talk about how social media can influence our attention.",
+  "Irfan: Good morning everyone. Now, let's talk about attention. Social media gives us a continuous flow of new content. We can move from one video or post to another within seconds. Notifications can also interrupt us while we are studying, working, or even talking to someone. This does not mean social media permanently damages our attention. However, constant switching and frequent interruptions can make it harder to stay focused on one task. For students, this can be especially important because studying often requires long periods of concentration. Now, I would like to invite Maruf Hasan to explain how social media can affect our emotions and self-image.",
+  "Maruf: Good morning everyone. Let's talk about emotions and self image. Social media can also affect our emotions and how we see ourselves. We mostly see people's happy moments in social media. We do not always see their real struggles. So, when we compare our life with what we see online, we may sometimes feel that we are not doing well enough.",
+  "Maruf: But social media also has positive sides. It helps us stay connected with others, and find communities. So, the effect of social media can be both positive and negative, depending on how we use it. Now, Labib Mirza will talk about the next part.",
+  "Labib: Good morning everyone. So, after looking at the effects of social media on our brain, one thing becomes clear: social media is not necessarily our enemy, but our relationship with it matters. We can make small changes, such as turning off unnecessary notifications, taking short screen breaks, and avoiding social media when we need to concentrate or sleep. The important thing is to use social media intentionally, rather than automatically.",
+  "Labib: Because behind every scroll, there is a brain paying attention, processing information, and making habits. So, the next time we pick up our phone, take a moment to ask ourself: Am I using social media, or is social media using me? That's it. Thank you everyone for listening."
+];
+
+const OV = [
+  ["Cover", "All"],
+  ["The simple question", "Azuba"],
+  ["Going behind the scroll", "Azuba"],
+  ["The brain's reward system", "Shahriyar"],
+  ["Why we keep checking", "Shahriyar"],
+  ["Attention and scrolling", "Irfan"],
+  ["Emotions and self-image", "Maruf"],
+  ["The positive side", "Maruf"],
+  ["Use it intentionally", "Labib"],
+  ["The final question", "Labib"]
+];
+
+/* ================= core ================= */
+const slides = [...document.querySelectorAll('.slide')];
+const TOTAL = slides.length;
+let current = 0, busy = false, autoTimer = null, t0 = Date.now();
+
+const stage = document.getElementById('stage');
+const frame = document.getElementById('frame');
+
+function fit() {
+  const s = Math.min(stage.clientWidth / 1280, stage.clientHeight / 720);
+  frame.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+window.addEventListener('resize', fit);
+fit();
+
+/* split headings once at load */
+document.querySelectorAll('.split').forEach(el => {
+  if (typeof SplitType === 'undefined') return;
+  try {
+    const st = new SplitType(el, { types: 'words' });
+    el._words = st.words;
+  } catch (e) {}
+});
+
+function animateIn(slide) {
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  const eb = slide.querySelector('.eyebrow');
+  if (eb) tl.fromTo(eb, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .45 }, 0);
+
+  const h = slide.querySelector('.split');
+  if (h && h._words) {
+    tl.fromTo(h._words, { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: .6, stagger: .022 }, .08);
+  } else if (h) {
+    tl.fromTo(h, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .6 }, .08);
+  }
+
+  const items = slide.querySelectorAll('.rv');
+  if (items.length) tl.fromTo(items, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .5, stagger: .06 }, .3);
+
+  const fol = slide.querySelector('.folio');
+  if (fol) tl.fromTo(fol, { opacity: 0 }, { opacity: 1, duration: .5 }, .5);
+}
+
+function goTo(i) {
+  if (i === current || i < 0 || i >= TOTAL || busy) return;
+  busy = true;
+  const out = slides[current], inn = slides[i];
+  current = i;
+
+  inn.classList.add('active');
+  gsap.set(inn, { opacity: 0, scale: .995, transformOrigin: '50% 50%' });
+
+  gsap.to(out, {
+    opacity: 0, scale: 1.01, duration: .35, ease: 'power1.in',
+    onComplete: () => {
+      out.classList.remove('active');
+      gsap.set(out, { clearProps: 'all' });
+    }
+  });
+  gsap.to(inn, { opacity: 1, scale: 1, duration: .45, ease: 'power1.out', delay: .12 });
+  animateIn(inn);
+  updateUI();
+  setTimeout(() => busy = false, 520);
+}
+
+const next = () => goTo(current + 1);
+const prev = () => goTo(current - 1);
+
+function updateUI() {
+  document.getElementById('counter').textContent =
+    String(current + 1).padStart(2, '0') + ' / ' + TOTAL;
+  document.getElementById('notesContent').textContent = NOTES[current];
+  document.querySelectorAll('#dots .dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('bPrev').disabled = current === 0;
+  document.getElementById('bFirst').disabled = current === 0;
+  document.getElementById('bNext').disabled = current === TOTAL - 1;
+  document.getElementById('bLast').disabled = current === TOTAL - 1;
+  document.querySelectorAll('.ov-card').forEach((c, i) => c.classList.toggle('current', i === current));
+}
+
+/* dots + overview */
+const dots = document.getElementById('dots');
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i ? '' : ' active');
+  d.onclick = () => goTo(i);
+  dots.appendChild(d);
+}
+const ovGrid = document.getElementById('ovGrid');
+OV.forEach((s, i) => {
+  const c = document.createElement('div');
+  c.className = 'ov-card' + (i ? '' : ' current');
+  c.innerHTML = `<div class="n">${String(i + 1).padStart(2, '0')} / ${TOTAL}</div><div class="t">${s[0]}</div><div class="s">${s[1]}</div>`;
+  c.onclick = () => { goTo(i); toggleOverview(false); };
+  ovGrid.appendChild(c);
+});
+
+/* ================= modes ================= */
+const overview = document.getElementById('overview');
+const notesPanel = document.getElementById('notesPanel');
+const spot = document.getElementById('spot');
+const laser = document.getElementById('laser');
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+const helpModal = document.getElementById('helpModal');
+const zenHint = document.getElementById('zenHint');
+let spotlightOn = false, laserOn = false, drawOn = false, drawing = false, lx = 0, ly = 0, zenHintT;
+
+function toggleOverview(f) {
+  const v = f === undefined ? !overview.classList.contains('active') : f;
+  overview.classList.toggle('active', v);
+  document.getElementById('tOverview').classList.toggle('active', v);
+}
+function toggleNotes(f) {
+  const v = f === undefined ? !notesPanel.classList.contains('active') : f;
+  notesPanel.classList.toggle('active', v);
+  document.getElementById('tNotes').classList.toggle('active', v);
+}
+function toggleZen() {
+  document.body.classList.toggle('zen');
+  const on = document.body.classList.contains('zen');
+  document.getElementById('tZen').classList.toggle('active', on);
+  requestAnimationFrame(fit);
+  if (on) { setSpotlight(false); setDraw(false); toggleOverview(false); }
+  showToast(on ? 'Controls hidden. Press H to show them' : 'Controls shown');
+}
+function setSpotlight(v) {
+  spotlightOn = v;
+  spot.classList.toggle('active', v);
+  document.getElementById('tSpot').classList.toggle('active', v);
+}
+function setLaser(v) {
+  laserOn = v;
+  laser.classList.toggle('active', v);
+  document.getElementById('tLaser').classList.toggle('active', v);
+}
+function sizeCanvas() {
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 3;
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#b5432b';
+}
+sizeCanvas();
+window.addEventListener('resize', sizeCanvas);
+function setDraw(v) {
+  drawOn = v;
+  canvas.classList.toggle('active', v);
+  document.getElementById('tDraw').classList.toggle('active', v);
+}
+function clearDraw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (drawOn) showToast('Drawing cleared');
+}
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (dark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+  document.querySelector('#tTheme i').className = dark ? 'fas fa-moon' : 'fas fa-sun';
+  sizeCanvas();
+  showToast(dark ? 'Light theme' : 'Dark theme');
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+}
+function toggleAutoplay() {
+  const b = document.getElementById('bPlay');
+  if (autoTimer) {
+    clearInterval(autoTimer); autoTimer = null;
+    b.innerHTML = '<i class="fas fa-play"></i>'; b.classList.remove('active');
+    showToast('Autoplay off');
+  } else {
+    autoTimer = setInterval(() => { current < TOTAL - 1 ? next() : toggleAutoplay(); }, 7000);
+    b.innerHTML = '<i class="fas fa-pause"></i>'; b.classList.add('active');
+    showToast('Autoplay, 7 seconds per slide');
+  }
+}
+function toggleHelp(f) {
+  const v = f === undefined ? !helpModal.classList.contains('active') : f;
+  helpModal.classList.toggle('active', v);
+}
+
+document.addEventListener('mousemove', e => {
+  if (laserOn) { laser.style.left = e.clientX + 'px'; laser.style.top = e.clientY + 'px'; }
+  if (spotlightOn) { spot.style.setProperty('--mx', e.clientX + 'px'); spot.style.setProperty('--my', e.clientY + 'px'); }
+  if (document.body.classList.contains('zen')) {
+    zenHint.classList.add('show');
+    clearTimeout(zenHintT);
+    zenHintT = setTimeout(() => zenHint.classList.remove('show'), 1400);
+  }
+});
+canvas.addEventListener('mousedown', e => { drawing = true; lx = e.clientX; ly = e.clientY; });
+canvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(e.clientX, e.clientY); ctx.stroke();
+  lx = e.clientX; ly = e.clientY;
+});
+addEventListener('mouseup', () => drawing = false);
+
+/* timer */
+setInterval(() => {
+  const s = Math.floor((Date.now() - t0) / 1000);
+  document.getElementById('timer').textContent =
+    String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}, 1000);
+
+/* toast */
+const toast = document.getElementById('toast');
+let toastT;
+function showToast(m) {
+  toast.textContent = m;
+  toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* buttons */
+document.getElementById('bFirst').onclick = () => goTo(0);
+document.getElementById('bPrev').onclick = prev;
+document.getElementById('bNext').onclick = next;
+document.getElementById('bLast').onclick = () => goTo(TOTAL - 1);
+document.getElementById('bPlay').onclick = toggleAutoplay;
+document.getElementById('tOverview').onclick = () => toggleOverview();
+document.getElementById('tNotes').onclick = () => toggleNotes();
+document.getElementById('tLaser').onclick = () => setLaser(!laserOn);
+document.getElementById('tSpot').onclick = () => setSpotlight(!spotlightOn);
+document.getElementById('tDraw').onclick = () => setDraw(!drawOn);
+document.getElementById('tTheme').onclick = toggleTheme;
+document.getElementById('tFull').onclick = toggleFullscreen;
+document.getElementById('tZen').onclick = toggleZen;
+document.getElementById('tPdf').onclick = () => { showToast('Opening print dialog'); setTimeout(print, 350); };
+document.getElementById('tPptx').onclick = exportPptx;
+document.getElementById('tHelp').onclick = () => toggleHelp();
+helpModal.addEventListener('click', e => { if (e.target === helpModal) toggleHelp(false); });
+
+/* stage click navigation */
+stage.addEventListener('click', e => {
+  if (drawOn || spotlightOn || e.target.closest('.chip,.tip,.area')) return;
+  const x = e.clientX / innerWidth;
+  if (x < .22) prev(); else if (x > .78) next();
+});
+
+/* touch */
+let tx = 0;
+addEventListener('touchstart', e => tx = e.changedTouches[0].screenX);
+addEventListener('touchend', e => {
+  const d = e.changedTouches[0].screenX - tx;
+  if (Math.abs(d) > 60) d < 0 ? next() : prev();
+});
+
+/* keyboard */
+addEventListener('keydown', e => {
+  if (e.key === 'Shift') { setLaser(true); return; }
+  if (helpModal.classList.contains('active')) {
+    if (e.key === 'Escape' || e.key === '?') toggleHelp(false);
+    return;
+  }
+  switch (e.key) {
+    case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': e.preventDefault(); next(); break;
+    case 'ArrowLeft': case 'PageUp': e.preventDefault(); prev(); break;
+    case 'Home': e.preventDefault(); goTo(0); break;
+    case 'End': e.preventDefault(); goTo(TOTAL - 1); break;
+    case 'o': case 'O': case 'g': case 'G': toggleOverview(); break;
+    case 'n': case 'N': toggleNotes(); break;
+    case 'l': case 'L': setSpotlight(!spotlightOn); break;
+    case 'd': case 'D': setDraw(!drawOn); break;
+    case 'c': case 'C': clearDraw(); break;
+    case 't': case 'T': toggleTheme(); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+    case 'a': case 'A': toggleAutoplay(); break;
+    case 'h': case 'H': toggleZen(); break;
+    case 'p': case 'P': showToast('Opening print dialog'); setTimeout(print, 350); break;
+    case 'e': case 'E': exportPptx(); break;
+    case 'r': case 'R': t0 = Date.now(); showToast('Timer reset'); break;
+    case '?': toggleHelp(); break;
+    case 'Escape':
+      if (overview.classList.contains('active')) toggleOverview(false);
+      else if (notesPanel.classList.contains('active')) toggleNotes(false);
+      else if (spotlightOn) setSpotlight(false);
+      else if (drawOn) setDraw(false);
+      break;
+    default:
+      if (/^[1-9]$/.test(e.key)) goTo(+e.key - 1);
+      else if (e.key === '0') goTo(9);
+  }
+});
+addEventListener('keyup', e => { if (e.key === 'Shift') setLaser(false); });
+
+/* print prep */
+addEventListener('beforeprint', () => {
+  const s = Math.min(1, innerWidth / 1280);
+  frame.style.transform = `scale(${s})`;
+});
+addEventListener('afterprint', fit);
+
+/* ================= export pptx ================= */
+async function exportPptx() {
+  showToast('Building PPTX');
+  try {
+    const p = new PptxGenJS();
+    p.layout = 'LAYOUT_WIDE';
+    p.title = 'Behind the Scroll: How Social Media Affects the Brain';
+    p.author = 'Azuba, Shahriyar, Irfan, Maruf, Labib';
+
+    const PAPER = 'F4EFE6', INK = '1C1B17', SOFT = '403B31', MUTED = '8A8378', ACCENT = 'B5432B', RULE = 'D9D1BF';
+    const folio = (s, sec, n) => {
+      s.addShape(p.ShapeType.rect, { x: .7, y: 6.95, w: 11.9, h: .012, fill: { color: RULE } });
+      s.addText(sec, { x: .7, y: 7.0, w: 6, h: .35, fontSize: 11, italic: true, color: MUTED, fontFace: 'Georgia' });
+      s.addText(String(n).padStart(2, '0') + ' / 10', { x: 10, y: 7.0, w: 2.6, h: .35, fontSize: 9, color: MUTED, fontFace: 'Courier New', align: 'right' });
+    };
+    const eyebrow = (s, t) => {
+      s.addShape(p.ShapeType.rect, { x: .7, y: .62, w: .35, h: .02, fill: { color: ACCENT } });
+      s.addText(t.toUpperCase(), { x: 1.15, y: .5, w: 8, h: .3, fontSize: 10, color: ACCENT, fontFace: 'Courier New', charSpacing: 3 });
+    };
+
+    /* 01 cover */
+    let s = p.addSlide(); s.background = { color: PAPER };
+    s.addText('A PRESENTATION IN TEN SLIDES', { x: .7, y: .8, w: 8, h: .3, fontSize: 10, color: MUTED, fontFace: 'Courier New', charSpacing: 3 });
+    s.addText('Behind the Scroll.', { x: .7, y: 1.5, w: 12, h: 1.6, fontSize: 84, color: INK, fontFace: 'Georgia' });
+    s.addText('How Social Media Affects the Brain. What happens with our attention, motivation, emotions, and habits every time we pick up our phones.', { x: .7, y: 3.4, w: 7.8, h: 1, fontSize: 17, color: SOFT, fontFace: 'Georgia' });
+    s.addShape(p.ShapeType.rect, { x: .7, y: 4.75, w: 7.8, h: .012, fill: { color: '1C1B17' } });
+    s.addText('PRESENTED BY', { x: .7, y: 4.9, w: 4, h: .25, fontSize: 9, color: MUTED, fontFace: 'Courier New', charSpacing: 3 });
+    s.addText('Azuba Taiba Akanda / Shahriyar / Irfan Sadik / Maruf Hasan / Labib Mirza', { x: .7, y: 5.2, w: 8, h: .5, fontSize: 14, color: INK, fontFace: 'Georgia' });
+    s.addText('10.', { x: 10.4, y: 4.9, w: 2, h: 1.4, fontSize: 72, color: INK, fontFace: 'Georgia' });
+    folio(s, 'Cover', 1);
+
+    /* 02 question */
+    s = p.addSlide(); s.background = { color: PAPER };
+    eyebrow(s, 'Introduction');
+    s.addText('How many times do we check our phones without even realizing it?', { x: .7, y: 1.4, w: 6.8, h: 3.4, fontSize: 40, color: INK, fontFace: 'Georgia' });
+    s.addShape(p.ShapeType.rect, { x: 7.9, y: 1.4, w: .012, h: 3.6, fill: { color: '1C1B17' } });
+    s.addText('We open our phones to reply to one message, watch one video, or check one notification. But somehow, a few seconds can turn into 20 or 30 minutes of scrolling.', { x: 8.2, y: 1.5, w: 4.4, h: 1.8, fontSize: 13, color: SOFT, fontFace: 'Calibri' });
+    s.addText('Good morning everyone. Let me start with a simple question.', { x: 8.2, y: 3.5, w: 4.4, h: 1, fontSize: 13, color: SOFT, fontFace: 'Calibri' });
+    s.addText('AZUBA TAIBA AKANDA, SPEAKER 1', { x: 8.2, y: 4.7, w: 4.4, h: .3, fontSize: 9, color: MUTED, fontFace: 'Courier New', charSpacing: 2 });
+    folio(s, 'Introduction', 2);
+
+    /* content helper */
+    const content = (n, sec, speaker, spk, title, lede, bullets) => {
+      const sl = p.addSlide(); sl.background = { color: PAPER };
+      eyebrow(sl, sec);
+      sl.addText(n + '.', { x: .7, y: 1.1, w: 2.4, h: 1.6, fontSize: 80, color: INK, fontFace: 'Georgia' });
+      sl.addShape(p.ShapeType.rect, { x: .7, y: 3.1, w: 2.4, h: .012, fill: { color: RULE } });
+      sl.addText(speaker, { x: .7, y: 3.3, w: 2.4, h: .4, fontSize: 15, color: INK, fontFace: 'Georgia' });
+      sl.addText(spk, { x: .7, y: 3.75, w: 2.4, h: .3, fontSize: 9, color: MUTED, fontFace: 'Courier New', charSpacing: 2 });
+      sl.addShape(p.ShapeType.rect, { x: 3.4, y: 1.1, w: .012, h: 5.4, fill: { color: RULE } });
+      sl.addText(title, { x: 3.8, y: 1.1, w: 8.9, h: 1.1, fontSize: 34, color: INK, fontFace: 'Georgia' });
+      let y = 2.3;
+      if (lede) { sl.addText(lede, { x: 3.8, y, w: 8.9, h: .8, fontSize: 13.5, color: SOFT, fontFace: 'Georgia' }); y += .9; }
+      const rows = bullets.map(b => ({ text: b, options: { fontSize: 13, color: SOFT, fontFace: 'Calibri', bullet: { code: '2022', color: ACCENT }, paraSpaceAfter: 9, breakLine: true } }));
+      sl.addText(rows, { x: 3.8, y, w: 8.9, h: 6.6 - y });
+      folio(sl, sec, n);
+      return sl;
+    };
+
+    /* 03 four areas */
+    s = p.addSlide(); s.background = { color: PAPER };
+    eyebrow(s, 'Introduction');
+    s.addText('Going behind the scroll.', { x: .7, y: 1.1, w: 11, h: 1, fontSize: 36, color: INK, fontFace: 'Georgia' });
+    s.addText("Social media has become such a normal part of our lives that we often forget to think about what it is doing to us. Not just socially, but biologically. Every scroll, like, comment, and notification interacts with different processes in our brain.", { x: .7, y: 2.2, w: 10.5, h: 1.1, fontSize: 14, color: SOFT, fontFace: 'Georgia' });
+    s.addShape(p.ShapeType.rect, { x: .7, y: 3.7, w: 11.9, h: .012, fill: { color: '1C1B17' } });
+    ['Attention', 'Motivation', 'Emotions', 'Daily habits'].forEach((w, i) => {
+      const x = .7 + i * 3.05;
+      s.addText('0' + (i + 1), { x, y: 4.0, w: 2.8, h: .3, fontSize: 10, color: ACCENT, fontFace: 'Courier New', charSpacing: 2 });
+      s.addText(w, { x, y: 4.4, w: 2.8, h: .6, fontSize: 21, color: INK, fontFace: 'Georgia' });
+      if (i < 3) s.addShape(p.ShapeType.rect, { x: x + 2.95, y: 4.0, w: .012, h: 1.2, fill: { color: RULE } });
+    });
+    folio(s, 'Introduction', 3);
+
+    /* 04 */
+    s = content(4, "The Brain's Reward System", 'Shahriyar', 'SPEAKER 2',
+      "The brain's reward system.",
+      "First, let's look at how social media interacts with our brain's reward system.",
+      ['When we receive a like, comment, message, or notification, it can feel rewarding.',
+       "One important chemical involved in the brain's reward and motivation system is dopamine."]);
+    ['A like, comment, or notification', 'Dopamine', 'Feels rewarding'].forEach((t, i) => {
+      const x = 3.8 + i * 3.05;
+      s.addShape(p.ShapeType.roundRect, { x, y: 5.5, w: 2.7, h: .6, rectRadius: .05, fill: { color: i === 1 ? INK : PAPER }, line: { color: INK, width: 1 } });
+      s.addText(t, { x, y: 5.5, w: 2.7, h: .6, fontSize: 11, color: i === 1 ? PAPER : INK, fontFace: 'Georgia', align: 'center', valign: 'middle' });
+      if (i < 2) s.addText('>', { x: x + 2.68, y: 5.5, w: .4, h: .6, fontSize: 14, color: ACCENT, fontFace: 'Courier New', align: 'center', valign: 'middle' });
+    });
+
+    /* 05 */
+    content(5, "The Brain's Reward System", 'Shahriyar', 'SPEAKER 2',
+      'Why we keep checking.',
+      "Social media also gives us unpredictable rewards. Sometimes we get many likes or an interesting video, and sometimes we don't.",
+      ['This uncertainty can encourage us to keep checking our phones.',
+       'That is why we sometimes open social media without even planning to.']);
+
+    /* 06 */
+    content(6, 'Attention and Scrolling', 'Irfan Sadik', 'SPEAKER 3',
+      'Attention and scrolling.',
+      "Now, let's talk about attention. Social media gives us a continuous flow of new content.",
+      ['We can move from one video or post to another within seconds.',
+       'Notifications can interrupt us while we are studying, working, or even talking to someone.',
+       'This does not mean social media permanently damages our attention. However, constant switching and frequent interruptions can make it harder to stay focused on one task.',
+       'For students, this can be especially important, because studying often requires long periods of concentration.']);
+
+    /* 07 */
+    content(7, 'Emotions and Self-Image', 'Maruf Hasan', 'SPEAKER 4',
+      'Emotions and self-image.',
+      "Let's talk about emotions and self-image. Social media can also affect our emotions and how we see ourselves.",
+      ["We mostly see people's happy moments in social media. We do not always see their real struggles.",
+       'So, when we compare our life with what we see online, we may sometimes feel that we are not doing well enough.']);
+
+    /* 08 */
+    s = content(8, 'Emotions and Self-Image', 'Maruf Hasan', 'SPEAKER 4',
+      'The positive side.',
+      null,
+      ['Social media also has positive sides. It helps us stay connected with others.',
+       'It also helps us find communities.']);
+    s.addShape(p.ShapeType.rect, { x: 3.8, y: 4.3, w: 8.9, h: .012, fill: { color: RULE } });
+    s.addShape(p.ShapeType.rect, { x: 3.8, y: 5.35, w: 8.9, h: .012, fill: { color: RULE } });
+    s.addText([
+      { text: 'The effect of social media can be both positive and negative, ', options: { color: INK } },
+      { text: 'depending on how we use it.', options: { color: ACCENT } }
+    ], { x: 3.8, y: 4.45, w: 8.9, h: .8, fontSize: 17, italic: true, fontFace: 'Georgia' });
+
+    /* 09 tips */
+    s = p.addSlide(); s.background = { color: PAPER };
+    eyebrow(s, 'Conclusion');
+    s.addText('Use it intentionally, not automatically.', { x: .7, y: 1.1, w: 11.5, h: 1, fontSize: 36, color: INK, fontFace: 'Georgia' });
+    s.addText('After looking at the effects of social media on our brain, one thing becomes clear. Social media is not necessarily our enemy, but our relationship with it matters. We can make small changes.', { x: .7, y: 2.2, w: 10.5, h: 1, fontSize: 14, color: SOFT, fontFace: 'Georgia' });
+    s.addShape(p.ShapeType.rect, { x: .7, y: 3.6, w: 11.9, h: .012, fill: { color: '1C1B17' } });
+    ['Turn off unnecessary notifications.', 'Take short screen breaks.', 'Avoid social media when we need to concentrate.', 'Avoid social media when we need to sleep.'].forEach((t, i) => {
+      const x = .7 + i * 3.05;
+      s.addText(['i.', 'ii.', 'iii.', 'iv.'][i], { x, y: 3.9, w: 2.8, h: .35, fontSize: 13, italic: true, color: ACCENT, fontFace: 'Georgia' });
+      s.addText(t, { x, y: 4.35, w: 2.8, h: 1.3, fontSize: 16, color: INK, fontFace: 'Georgia' });
+      if (i < 3) s.addShape(p.ShapeType.rect, { x: x + 2.95, y: 3.9, w: .012, h: 1.8, fill: { color: RULE } });
+    });
+    folio(s, 'Conclusion', 9);
+
+    /* 10 final */
+    s = p.addSlide(); s.background = { color: PAPER };
+    s.addText('CONCLUSION', { x: 0, y: .9, w: 13.33, h: .3, fontSize: 10, color: ACCENT, fontFace: 'Courier New', align: 'center', charSpacing: 3 });
+    s.addText('Am I using social media,', { x: .7, y: 1.9, w: 11.93, h: 1, fontSize: 44, color: INK, fontFace: 'Georgia', align: 'center' });
+    s.addText('or', { x: .7, y: 3.0, w: 11.93, h: .5, fontSize: 20, italic: true, color: MUTED, fontFace: 'Georgia', align: 'center' });
+    s.addText('is social media using me?', { x: .7, y: 3.5, w: 11.93, h: 1, fontSize: 44, italic: true, color: ACCENT, fontFace: 'Georgia', align: 'center' });
+    s.addText("Behind every scroll, there is a brain paying attention, processing information, and making habits. So the next time we pick up our phone, let's take a moment to ask ourselves.", { x: 2.7, y: 4.8, w: 7.9, h: .9, fontSize: 14, italic: true, color: SOFT, fontFace: 'Georgia', align: 'center' });
+    s.addText('THANK YOU EVERYONE FOR LISTENING', { x: 0, y: 6.0, w: 13.33, h: .35, fontSize: 10, color: MUTED, fontFace: 'Courier New', align: 'center', charSpacing: 3 });
+    folio(s, 'Conclusion', 10);
+
+    await p.writeFile({ fileName: 'Behind-the-Scroll.pptx' });
+    showToast('PPTX downloaded');
+  } catch (err) {
+    console.error(err);
+    showToast('Export failed. Check console');
+  }
+}
+
+/* init */
+updateUI();
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => animateIn(slides[0]));
+} else {
+  animateIn(slides[0]);
+}
+setTimeout(() => showToast('Press ? for all shortcuts'), 1200);
+</script>
+</body>
+</html>
