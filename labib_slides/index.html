@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labib Slides — Deck Selector</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #f4efe6;
+    --ink: #1c1b17;
+    --ink-soft: #403b31;
+    --accent: #b5432b;
+    --rule: rgba(28, 27, 23, .14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: .28;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  .masthead {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 44px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 26px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .masthead .wordmark {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .masthead .wordmark i { font-style: italic; color: var(--accent); font-weight: 400; }
+  .masthead .sep { margin: 0 10px; opacity: .5; }
+
+  .stage {
+    position: absolute;
+    inset: 64px 26px 26px;
+    z-index: 2;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 22px;
+  }
+  h1 i { color: var(--accent); font-style: italic; }
+
+  .subtitle {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    max-width: 460px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+    max-width: 620px;
+  }
+
+  .card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 18px;
+    transition: all .16s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(181, 67, 43, .09);
+  }
+  .card .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .card .title {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+  .card .title i { color: var(--accent); }
+
+  /* fallback font stacks for local-only environment */
+  @supports (font-family: ui-monospace) {
+    .masthead, .card .num { font-family: ui-monospace, 'Fira Code', 'Courier New', monospace; }
+  }
+</style>
+</head>
+<body>
+  <header class="masthead">
+    <span class="wordmark">Labib <i>Slidedeck</i></span>
+    <span class="sep"></span>
+    <span class="count">6 decks</span>
+  </header>
+
+  <main class="stage">
+    <h1>Labib <i>slides</i></h1>
+    <p class="subtitle">Choose a deck to open. Each file is a standalone slide deck — just click the one you want.</p>
+
+    <div class="grid">
+      <a class="card" href="slide_1.html">
+        <span class="num">Slide 1</span>
+        <span class="title">Behind the Scroll: How Social Media Affects the Brain</span>
+      </a>
+      <a class="card" href="slide_2.html">
+        <span class="num">Slide 2</span>
+        <span class="title">Behind the Scroll / Signal Deck</span>
+      </a>
+      <a class="card" href="slide_3.html">
+        <span class="num">Slide 3</span>
+        <span class="title">Behind the Scroll / Bauhaus Deck</span>
+      </a>
+      <a class="card" href="slide_4.html">
+        <span class="num">Slide 4</span>
+        <span class="title">Behind the Scroll / The Screening</span>
+      </a>
+      <a class="card" href="slide_5.html">
+        <span class="num">Slide 5</span>
+        <span class="title">Behind the Scroll / Swiss Grid</span>
+      </a>
+      <a class="card" href="slide_6.html">
+        <span class="num">Slide 6</span>
+        <span class="title">Behind the Scroll / brainfeed</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>
