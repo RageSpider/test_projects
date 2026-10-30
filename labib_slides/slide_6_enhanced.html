@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Social Media Changes Our Brains</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:#fafafa; --card:#ffffff; --panel:#f6f7f9;
+  --ink:#101318; --dim:#737373; --rule:#dbdbdb;
+  --blue:#0095f6; --coral:#ed4956; --green:#16a34a;
+  --shadow:0 16px 44px rgba(16,19,24,.10), 0 2px 8px rgba(16,19,24,.06);
+}
+[data-theme="dark"] {
+  --bg:#000000; --card:#0f0f0f; --panel:#171717;
+  --ink:#f5f5f5; --dim:#a8a8a8; --rule:#262626;
+  --blue:#2ea6ff; --coral:#ff5a67; --green:#34c76a;
+  --shadow:0 16px 44px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.4);
+}
+html,body { height:100%; overflow:hidden; }
+body { background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',sans-serif; -webkit-font-smoothing:antialiased; transition:background .4s,color .4s; }
+
+.vbdg { width:13px; height:13px; flex-shrink:0; vertical-align:-1px; }
+
+.igring { border-radius:50%; padding:2.5px; background:linear-gradient(45deg,#FCAF45,#E1306C,#C13584,#833AB4); flex-shrink:0; }
+.igring .gap { background:var(--card); border-radius:50%; padding:2.5px; transition:background .4s; }
+
+/* ---------- stage + feed strip ---------- */
+.stage { position:fixed; inset:0; overflow:hidden; }
+.framebox {
+  position:absolute; left:50%; top:50%;
+  width:1280px; height:720px; overflow:hidden;
+  transform:translate(-50%,-50%); transform-origin:center;
+}
+.strip { position:absolute; left:0; top:0; width:100%; will-change:transform; }
+
+.slide { height:667px; display:flex; justify-content:center; align-items:flex-start; padding-top:35px; pointer-events:none; }
+.slide .card { pointer-events:auto; }
+
+/* ---------- post card ---------- */
+.card {
+  width:740px; height:650px; background:var(--card);
+  border:1px solid var(--rule); border-radius:8px;
+  overflow:hidden; display:flex; flex-direction:column; position:relative;
+  transition:background .4s, border-color .4s;
+}
+
+.p-head { display:flex; align-items:center; gap:12px; padding:12px 16px; }
+.avatar { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:15px; }
+.p-id { flex:1; min-width:0; }
+.p-id .nm { font-size:14px; font-weight:700; display:flex; align-items:center; gap:5px; letter-spacing:-.01em; }
+.p-id .hd { font-size:12px; color:var(--dim); margin-top:1px; }
+.p-time { font-size:12px; color:var(--dim); }
+.follow-btn { background:none; border:none; color:var(--blue); font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+.follow-btn.on { color:var(--dim); }
+.p-more { background:none; border:none; color:var(--ink); font-size:15px; cursor:pointer; padding:4px; margin-left:6px; }
+
+.p-media {
+  flex:1; min-height:0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  background:var(--panel); padding:24px 28px; position:relative;
+  display:flex; flex-direction:column; justify-content:center; cursor:pointer;
+  transition:background .4s, border-color .4s; user-select:none;
+}
+.bighart { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:110px; color:#fff; filter:drop-shadow(0 6px 24px rgba(0,0,0,.35)); pointer-events:none; z-index:5; }
+
+.p-cap { padding:12px 16px 4px; font-size:14.5px; line-height:1.5; }
+.p-cap .who { font-weight:700; margin-right:6px; }
+.p-cap b { font-weight:700; }
+
+.p-cmt-prev { padding:2px 16px 6px; }
+.p-cmt-prev .vac { background:none; border:none; color:var(--dim); font-size:13.5px; cursor:pointer; font-family:inherit; padding:2px 0; display:block; }
+.p-cmt-prev .prev-row { font-size:13.5px; margin-top:3px; line-height:1.4; }
+.p-cmt-prev .prev-row .h { font-weight:700; margin-right:6px; }
+
+.p-foot { display:flex; align-items:center; gap:16px; padding:10px 16px 12px; }
+.p-foot .ic { background:none; border:none; cursor:pointer; font-size:23px; color:var(--ink); transition:transform .12s, opacity .12s; padding:2px; }
+.p-foot .ic:hover { opacity:.6; }
+.p-foot .ic:active { transform:scale(.85); }
+.p-foot .ic.heart { color:var(--coral); }
+.p-foot .ic.bookmark.on { color:var(--blue); }
+.p-foot .spacer { flex:1; }
+.p-likes { padding:0 16px 8px; font-size:13.5px; }
+.p-likes b { font-weight:700; }
+.p-ts { padding:0 16px 12px; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); }
+
+/* ---------- media content ---------- */
+.m-q .big { font-size:34px; font-weight:800; line-height:1.22; letter-spacing:-.02em; }
+.m-q .big em { font-style:normal; color:var(--coral); }
+.m-q .drift { display:flex; align-items:center; gap:12px; margin-top:22px; font-family:'DM Mono',monospace; font-size:11.5px; color:var(--dim); text-transform:uppercase; letter-spacing:.04em; flex-wrap:wrap; }
+.m-q .pillx { background:var(--card); border:1px solid var(--rule); padding:9px 16px; border-radius:100px; color:var(--ink); font-weight:500; }
+.m-q .pillx.hot { background:var(--coral); border-color:var(--coral); color:#fff; }
+
+.m-tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.m-tile { background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:18px 16px; }
+.m-tile .t-no { font-family:'DM Mono',monospace; font-size:9.5px; letter-spacing:.16em; color:var(--coral); margin-bottom:12px; text-transform:uppercase; }
+.m-tile .t-nm { font-size:17px; font-weight:800; margin-bottom:7px; letter-spacing:-.01em; }
+.m-tile .t-ds { font-size:12px; line-height:1.45; color:var(--dim); }
+
+.m-flow { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.m-node { background:var(--card); border:1px solid var(--rule); border-radius:16px; padding:22px 14px; text-align:center; flex:1; }
+.m-node.hot { background:var(--coral); border-color:var(--coral); color:#fff; }
+.m-node .n-l { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.2em; text-transform:uppercase; opacity:.6; margin-bottom:8px; }
+.m-node .n-t { font-size:15px; font-weight:800; line-height:1.25; }
+.m-arrow { color:var(--dim); font-size:17px; }
+
+.m-matrix { display:grid; grid-template-columns:repeat(6,1fr); gap:18px; justify-items:center; margin-bottom:22px; }
+.m-dot { width:32px; height:32px; border-radius:50%; border:2.5px solid var(--ink); background:transparent; }
+.m-dot.f { background:var(--ink); }
+.m-dot.r { background:var(--coral); border-color:var(--coral); }
+.m-legend { display:flex; gap:24px; justify-content:center; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); }
+.m-legend .sw { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:-1px; }
+
+.m-tl .m-tl-row { display:grid; grid-template-columns:70px 1fr; gap:14px; padding:11px 0; border-bottom:1px solid var(--rule); align-items:baseline; }
+.m-tl .m-tl-row:last-child { border-bottom:none; }
+.m-tl .ts { font-family:'DM Mono',monospace; font-size:12px; color:var(--dim); }
+.m-tl .ev { font-size:14px; }
+.m-tl .row.ping .ts, .m-tl .row.ping .ev { color:var(--coral); font-weight:700; }
+
+.m-split { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.m-half { border-radius:16px; padding:26px 24px; min-height:200px; display:flex; flex-direction:column; justify-content:center; }
+.m-half.on { background:var(--card); border:1px solid var(--rule); }
+.m-half.off { background:var(--ink); color:var(--bg); }
+.m-half .h { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; margin-bottom:12px; }
+.m-half.on .h { color:var(--green); }
+.m-half.off .h { color:var(--coral); }
+.m-half p { font-size:16.5px; font-weight:700; line-height:1.45; }
+
+.m-quote { text-align:center; padding:8px 26px; }
+.m-quote .qm { font-size:52px; line-height:.5; color:var(--coral); font-weight:800; display:block; margin-bottom:20px; }
+.m-quote .qt { font-size:26px; font-weight:800; line-height:1.35; letter-spacing:-.015em; }
+.m-quote .qt em { font-style:normal; color:var(--coral); }
+
+.m-check { display:flex; flex-direction:column; gap:11px; }
+.m-check-row { display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:16px 18px; }
+.m-check-row .box { width:26px; height:26px; border-radius:8px; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.m-check-row .tx { font-size:15.5px; font-weight:700; letter-spacing:-.01em; }
+
+.m-poll .pq { font-size:27px; font-weight:800; letter-spacing:-.02em; line-height:1.25; margin-bottom:20px; }
+.m-poll .pq em { font-style:normal; color:var(--coral); }
+.m-opt { border:1.5px solid var(--rule); border-radius:12px; padding:14px 18px; margin-bottom:10px; position:relative; overflow:hidden; background:var(--card); cursor:pointer; transition:border-color .15s; }
+.m-opt:hover { border-color:var(--blue); }
+.m-opt.voted { border-color:var(--blue); }
+.m-opt .fill { position:absolute; inset:0; background:rgba(0,149,246,.12); width:0%; }
+.m-opt .lab { position:relative; display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; }
+.m-opt .pct { font-family:'DM Mono',monospace; font-size:12px; color:var(--dim); opacity:0; transition:opacity .4s; }
+.m-opt.revealed .pct { opacity:1; }
+.m-end { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:18px; font-size:13.5px; font-weight:700; color:var(--dim); }
+.m-end .ok { width:22px; height:22px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; }
+
+/* profile cover */
+.stories { display:flex; gap:18px; padding:18px 20px 16px; border-bottom:1px solid var(--rule); overflow:hidden; }
+.story { display:flex; flex-direction:column; align-items:center; gap:7px; width:74px; flex-shrink:0; }
+.story .s-av { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:19px; }
+.story .s-nm { font-size:11px; color:var(--ink); max-width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.profile { padding:22px 20px 14px; display:flex; gap:20px; align-items:flex-start; }
+.profile .big-av { width:84px; height:84px; border-radius:50%; background:var(--ink); color:var(--bg); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; letter-spacing:.02em; flex-shrink:0; text-align:center; line-height:1.2; }
+.profile .info { flex:1; }
+.profile .nm { font-size:20px; font-weight:800; display:flex; align-items:center; gap:7px; letter-spacing:-.02em; }
+.profile .hd { font-size:12.5px; color:var(--dim); margin:4px 0 10px; }
+.profile .bio { font-size:14px; line-height:1.5; }
+.profile .bio b { font-weight:700; }
+.profile .bio .cat { color:var(--dim); font-size:13px; }
+.stats { display:flex; gap:26px; padding:4px 20px 16px; }
+.stats .st { font-size:14px; }
+.stats .st b { font-weight:800; }
+.follow-row { padding:0 20px 18px; display:flex; gap:8px; }
+.f-btn { border-radius:9px; padding:10px 18px; font-size:13.5px; font-weight:700; border:none; background:var(--panel); color:var(--ink); cursor:pointer; font-family:inherit; flex:1; transition:opacity .15s; }
+.f-btn:hover { opacity:.8; }
+.f-btn.primary { background:var(--blue); color:#fff; }
+
+/* ---------- rail ---------- */
+.rail { position:fixed; right:20px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:8px; z-index:40; transition:opacity .3s; }
+body.zen .rail { opacity:0; pointer-events:none; }
+.rail .seg { width:4px; height:24px; border-radius:4px; background:var(--rule); cursor:pointer; transition:all .25s; position:relative; }
+.rail .seg:hover { background:var(--dim); }
+.rail .seg.done { background:var(--ink); opacity:.35; }
+.rail .seg.active { background:var(--coral); height:38px; }
+.rail .seg::after {
+  content:attr(data-tip); position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  background:var(--ink); color:var(--bg); font-family:'DM Mono',monospace; font-size:9.5px;
+  padding:5px 10px; border-radius:6px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s;
+}
+.rail .seg:hover::after { opacity:1; }
+
+/* ---------- dock ---------- */
+.dock {
+  position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:3px; z-index:45;
+  background:var(--card); border:1px solid var(--rule); border-radius:100px;
+  padding:7px 12px; box-shadow:var(--shadow); transition:transform .35s,opacity .35s,background .4s;
+}
+body.zen .dock { transform:translateX(-50%) translateY(150%); opacity:0; }
+.dock .d-btn { width:36px; height:36px; border:none; border-radius:50%; background:transparent; color:var(--dim); cursor:pointer; font-size:13px; position:relative; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.dock .d-btn:hover { background:var(--panel); color:var(--ink); }
+.dock .d-btn.active { background:var(--ink); color:var(--bg); }
+.dock .d-btn.hot.active { background:var(--coral); color:#fff; }
+.dock .d-btn .kbd { position:absolute; bottom:0px; right:3px; font-family:'DM Mono',monospace; font-size:6.5px; opacity:.6; }
+.dock .sep { width:1px; height:24px; background:var(--rule); margin:0 5px; }
+.dock .brand { font-family:'DM Mono',monospace; font-size:10px; color:var(--dim); padding:0 8px 0 4px; }
+.dock .brand i { color:var(--coral); font-style:normal; }
+.dock .meta { font-family:'DM Mono',monospace; font-size:10px; color:var(--dim); padding:0 6px; }
+.dock .meta b { color:var(--coral); font-weight:500; }
+
+/* ---------- overlays ---------- */
+.speaker-notes { position:fixed; bottom:82px; left:50%; transform:translateX(-50%); width:740px; max-width:92vw; z-index:44; background:var(--card); border:1px solid var(--rule); border-radius:14px; box-shadow:var(--shadow); padding:16px 22px; max-height:170px; overflow-y:auto; display:none; }
+.speaker-notes.active { display:block; }
+body.zen .speaker-notes { display:none !important; }
+.speaker-notes .nl { font-family:'DM Mono',monospace; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--coral); margin-bottom:8px; font-weight:500; }
+.speaker-notes .nc { font-size:14px; line-height:1.6; }
+
+.overview { position:fixed; inset:0; z-index:46; background:var(--bg); padding:36px; overflow-y:auto; display:none; }
+.overview.active { display:block; }
+.ov-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.ov-head h2 { font-size:26px; font-weight:800; letter-spacing:-.02em; }
+.ov-head h2 em { font-style:normal; color:var(--coral); }
+.ov-head .hint { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); }
+.ov-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+.ov-card { background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:18px; cursor:pointer; transition:all .15s; position:relative; min-height:120px; }
+.ov-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+.ov-card.current { border:2px solid var(--coral); }
+.ov-card .o-hd { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.ov-card .o-av { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800; }
+.ov-card .o-nm { font-size:13px; font-weight:800; }
+.ov-card .o-hd2 { font-size:10.5px; color:var(--dim); }
+.ov-card .o-sc { margin-left:auto; font-family:'DM Mono',monospace; font-size:9px; color:var(--dim); letter-spacing:.1em; }
+.ov-card .o-tt { font-size:16px; font-weight:800; line-height:1.25; letter-spacing:-.01em; }
+
+/* comments sheet */
+.cmt-modal { position:fixed; inset:0; z-index:130; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.cmt-modal.active { display:flex; }
+.cmt-box { background:var(--card); border-radius:16px; width:460px; max-width:92vw; height:560px; max-height:84vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--shadow); }
+.cmt-head { display:flex; align-items:center; justify-content:center; position:relative; padding:14px; border-bottom:1px solid var(--rule); font-weight:700; font-size:15px; }
+.cmt-head .x { position:absolute; right:14px; background:none; border:none; font-size:17px; cursor:pointer; color:var(--ink); }
+.cmt-list { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:16px; }
+.cmt-row { display:flex; gap:12px; }
+.cmt-row .c-av { width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:800; }
+.cmt-row .c-body { flex:1; font-size:13.5px; line-height:1.45; }
+.cmt-row .c-body .h { font-weight:700; margin-right:6px; }
+.cmt-row .c-meta { font-size:11.5px; color:var(--dim); margin-top:4px; display:flex; gap:14px; align-items:center; }
+.cmt-row .c-like { background:none; border:none; color:var(--dim); cursor:pointer; font-size:12px; padding:0; }
+.cmt-row .c-like.on { color:var(--coral); }
+.cmt-input { display:flex; align-items:center; gap:10px; padding:12px 16px; border-top:1px solid var(--rule); }
+.cmt-input input { flex:1; border:none; background:transparent; outline:none; font-family:inherit; font-size:14px; color:var(--ink); }
+.cmt-input button { background:none; border:none; color:var(--blue); font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; opacity:.4; }
+.cmt-input button.ready { opacity:1; }
+
+/* share sheet */
+.share-modal { position:fixed; inset:0; z-index:130; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.share-modal.active { display:flex; }
+.share-box { background:var(--card); border-radius:16px; width:380px; max-width:90vw; overflow:hidden; box-shadow:var(--shadow); }
+.share-box .s-title { text-align:center; padding:16px; font-weight:700; font-size:14.5px; border-bottom:1px solid var(--rule); }
+.share-box button { display:block; width:100%; padding:15px; background:none; border:none; border-bottom:1px solid var(--rule); font-family:inherit; font-size:14px; cursor:pointer; color:var(--ink); }
+.share-box button:last-child { border-bottom:none; }
+.share-box button:hover { background:var(--panel); }
+.share-box button.danger { color:var(--coral); font-weight:700; }
+
+.modal { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+.modal.active { display:flex; }
+.modal-box { background:var(--card); border:1px solid var(--rule); border-radius:18px; padding:32px; width:540px; max-width:92vw; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow); }
+.modal-box h3 { font-size:24px; font-weight:800; letter-spacing:-.02em; margin-bottom:6px; }
+.modal-box h3 em { font-style:normal; color:var(--coral); }
+.modal-box .sub { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); margin-bottom:20px; }
+.sc-list { list-style:none; }
+.sc-list li { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--rule); font-size:13.5px; }
+.sc-list li:last-child { border-bottom:none; }
+.sc-list .keys { display:flex; gap:5px; align-items:center; }
+.key { display:inline-block; padding:4px 9px; background:var(--panel); border:1px solid var(--rule); border-radius:6px; font-family:'DM Mono',monospace; font-size:10.5px; min-width:26px; text-align:center; }
+
+.toast { position:fixed; top:22px; left:50%; transform:translateX(-50%) translateY(-16px); background:var(--ink); color:var(--bg); padding:11px 22px; border-radius:100px; font-family:'DM Mono',monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; opacity:0; transition:all .3s; z-index:300; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.zen-hint { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); opacity:0; transition:opacity .3s; z-index:60; pointer-events:none; }
+.zen-hint.show { opacity:.9; }
+</style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="vbadge" viewBox="0 0 24 24">
+    <polygon fill="#0095F6" points="12,0.5 14.5,2.7 17.8,2 18.8,5.2 22,6.3 21.3,9.5 23.5,12 21.3,14.5 22,17.8 18.8,18.8 17.8,22 14.5,21.3 12,23.5 9.5,21.3 6.3,22 5.2,18.8 2,17.8 2.7,14.5 0.5,12 2.7,9.5 2,6.3 5.2,5.2 6.3,2 9.5,2.7"/>
+    <path d="M7.6 12.3l2.9 2.9 5.9-5.9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<main class="stage" id="stage">
+  <div class="framebox" id="framebox">
+    <div class="strip" id="strip">
+
+      <!-- 00 PROFILE COVER -->
+      <section class="slide">
+        <div class="card" data-post="0">
+          <div class="stories">
+            <div class="story rv"><div class="igring"><div class="gap"><div class="s-av" style="background:#e1306c;">T</div></div></div><div class="s-nm">taiba</div></div>
+            <div class="story rv"><div class="igring"><div class="gap"><div class="s-av" style="background:#0095f6;">S</div></div></div><div class="s-nm">shahriyar</div></div>
+            <div class="story rv"><div class="igring"><div class="gap"><div class="s-av" style="background:#16a34a;">I</div></div></div><div class="s-nm">irfan</div></div>
+            <div class="story rv"><div class="igring"><div class="gap"><div class="s-av" style="background:#f59e0b;">M</div></div></div><div class="s-nm">maruf</div></div>
+            <div class="story rv"><div class="igring"><div class="gap"><div class="s-av" style="background:#8b5cf6;">L</div></div></div><div class="s-nm">labib</div></div>
+          </div>
+          <div class="profile rv">
+            <div class="igring" style="padding:3px;"><div class="gap" style="padding:3px;"><div class="big-av">HOW<br>SOCIAL</div></div></div>
+            <div class="info">
+              <div class="nm">How Social Media Changes Our Brains <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@behindthescroll · Science &amp; Society</div>
+              <div class="bio">A ten-post briefing on <b>attention</b>, <b>reward</b>, <b>emotion</b> and <b>habit</b>.<br><span class="cat">Reported live by five speakers · 31 Oct 2026</span></div>
+            </div>
+          </div>
+          <div class="stats rv">
+            <div class="st"><b>10</b> posts</div>
+            <div class="st"><b>5</b> speakers</div>
+            <div class="st"><b>~8 min</b></div>
+            <div class="st"><b>1</b> brain</div>
+          </div>
+          <div class="follow-row rv">
+            <button class="f-btn primary js-scroll-next">Start scrolling</button>
+            <button class="f-btn" onclick="toggleOverview()">Browse all posts</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 01 TAIBA: QUESTION -->
+      <section class="slide">
+        <div class="card" data-post="1">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#e1306c;">T</div></div></div>
+            <div class="p-id">
+              <div class="nm">Taiba <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@azuba.taiba.akanda</div>
+            </div>
+            <div class="p-time">2h</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media m-q">
+            <div class="big rv">How many times do we check our phones <em>without even realizing it?</em></div>
+            <div class="drift rv">
+              <span class="pillx">Plan: one message</span>
+              <i class="fas fa-arrow-right"></i>
+              <span class="pillx hot">Reality: 20-30 min of scrolling</span>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">128</b> likes</div>
+          <div class="p-cap"><span class="who">taiba</span>Good morning everyone. We open our phones to reply to <b>one message</b>, watch <b>one video</b>, or check <b>one notification</b>. But somehow, a few seconds turn into 20 or 30 minutes of scrolling.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 3 comments</button>
+            <div class="prev-row"><span class="h">shahriyar.alhasan</span>So accurate. The 30 minute part gets me every time.</div>
+          </div>
+          <div class="p-ts">31 October · 08:00</div>
+        </div>
+      </section>
+
+      <!-- 02 TAIBA: SYSTEMS -->
+      <section class="slide">
+        <div class="card" data-post="2">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#e1306c;">T</div></div></div>
+            <div class="p-id">
+              <div class="nm">Taiba <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@azuba.taiba.akanda</div>
+            </div>
+            <div class="p-time">2h</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-tiles">
+              <div class="m-tile rv"><div class="t-no">System 01</div><div class="t-nm">Attention</div><div class="t-ds">Staying focused on one task.</div></div>
+              <div class="m-tile rv"><div class="t-no">System 02</div><div class="t-nm">Motivation</div><div class="t-ds">What drives us to keep checking.</div></div>
+              <div class="m-tile rv"><div class="t-no">System 03</div><div class="t-nm">Emotions</div><div class="t-ds">How content makes us feel.</div></div>
+              <div class="m-tile rv"><div class="t-no">System 04</div><div class="t-nm">Daily habits</div><div class="t-ds">The loops we repeat every day.</div></div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">214</b> likes</div>
+          <div class="p-cap"><span class="who">taiba</span>Not just social. <b>Biological.</b> Every scroll, like, comment, and notification interacts with different processes in our brain. Handing over to <b>@shahriyar.alhasan</b> for the reward system.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">maruf.hasan</span>The habits one is so real.</div>
+          </div>
+          <div class="p-ts">31 October · 08:01</div>
+        </div>
+      </section>
+
+      <!-- 03 SHAHRIYAR: DOPAMINE -->
+      <section class="slide">
+        <div class="card" data-post="3">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#0095f6;">S</div></div></div>
+            <div class="p-id">
+              <div class="nm">Shahriyar <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@shahriyar.alhasan</div>
+            </div>
+            <div class="p-time">1h</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-flow">
+              <div class="m-node rv"><div class="n-l">Trigger</div><div class="n-t">A like, comment<br>or notification</div></div>
+              <div class="m-arrow rv"><i class="fas fa-arrow-right"></i></div>
+              <div class="m-node hot rv"><div class="n-l">Chemical</div><div class="n-t">Dopamine</div></div>
+              <div class="m-arrow rv"><i class="fas fa-arrow-right"></i></div>
+              <div class="m-node rv"><div class="n-l">Result</div><div class="n-t">It feels<br>rewarding</div></div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">342</b> likes</div>
+          <div class="p-cap"><span class="who">shahriyar</span>First, let's look at the brain's reward system. When we receive a like, comment, message, or notification, it can feel rewarding. One important chemical behind reward and motivation is <b>dopamine</b>.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">irfan.sadik</span>That loop is exactly my evening.</div>
+          </div>
+          <div class="p-ts">31 October · 08:02</div>
+        </div>
+      </section>
+
+      <!-- 04 SHAHRIYAR: UNCERTAINTY -->
+      <section class="slide">
+        <div class="card" data-post="4">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#0095f6;">S</div></div></div>
+            <div class="p-id">
+              <div class="nm">Shahriyar <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@shahriyar.alhasan</div>
+            </div>
+            <div class="p-time">1h</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-matrix">
+              <div class="m-dot f"></div><div class="m-dot"></div><div class="m-dot r"></div><div class="m-dot"></div><div class="m-dot"></div><div class="m-dot f"></div>
+              <div class="m-dot"></div><div class="m-dot f"></div><div class="m-dot"></div><div class="m-dot f"></div><div class="m-dot"></div><div class="m-dot r"></div>
+            </div>
+            <div class="m-legend rv">
+              <span><span class="sw" style="background:var(--ink);"></span>Reward</span>
+              <span><span class="sw" style="background:transparent;border:2px solid var(--ink);"></span>Nothing</span>
+              <span>12 scrolls · 6 rewards</span>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">287</b> likes</div>
+          <div class="p-cap"><span class="who">shahriyar</span>Sometimes we get many likes or an interesting video. Sometimes we don't. This uncertainty keeps us checking. That is why we open social media <b>without even planning to</b>.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">azuba.taiba.akanda</span>Slot machine energy.</div>
+          </div>
+          <div class="p-ts">31 October · 08:03</div>
+        </div>
+      </section>
+
+      <!-- 05 IRFAN: ATTENTION -->
+      <section class="slide">
+        <div class="card" data-post="5">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#16a34a;">I</div></div></div>
+            <div class="p-id">
+              <div class="nm">Irfan <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@irfan.sadik</div>
+            </div>
+            <div class="p-time">1h</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-tl">
+              <div class="m-tl-row row rv"><span class="ts">00:00</span><span class="ev">Deep focus begins. Studying, one task.</span></div>
+              <div class="m-tl-row row ping rv"><span class="ts">00:04</span><span class="ev">PING · a notification arrives</span></div>
+              <div class="m-tl-row row rv"><span class="ts">00:05</span><span class="ev">Focus returns, weaker than before.</span></div>
+              <div class="m-tl-row row ping rv"><span class="ts">00:11</span><span class="ev">PING · another notification</span></div>
+              <div class="m-tl-row row rv"><span class="ts">00:12</span><span class="ev">Focus returns, harder to hold.</span></div>
+              <div class="m-tl-row row rv"><span class="ts">00:30</span><span class="ev">We are back in the feed again.</span></div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">356</b> likes</div>
+          <div class="p-cap"><span class="who">irfan</span>We move from one video to another within seconds. Notifications interrupt studying, work, even conversations. No permanent damage, but focus gets harder to hold. Studying needs <b>long concentration</b>.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">labib.mirza</span>That PING row is stressful to watch.</div>
+          </div>
+          <div class="p-ts">31 October · 08:04</div>
+        </div>
+      </section>
+
+      <!-- 06 MARUF: COMPARISON -->
+      <section class="slide">
+        <div class="card" data-post="6">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#f59e0b;">M</div></div></div>
+            <div class="p-id">
+              <div class="nm">Maruf <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@maruf.hasan</div>
+            </div>
+            <div class="p-time">45m</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-split">
+              <div class="m-half on rv"><div class="h">On screen</div><p>Happy moments. Highlights. Wins.</p></div>
+              <div class="m-half off rv"><div class="h">Off screen</div><p>Real struggles. Bad days. Doubts.</p></div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">431</b> likes</div>
+          <div class="p-cap"><span class="who">maruf</span>Social media can affect our emotions and how we see ourselves. We mostly see happy moments, not real struggles. When we compare, we may feel <b>we are not doing well enough</b>.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">azuba.taiba.akanda</span>Needed this reminder today.</div>
+          </div>
+          <div class="p-ts">31 October · 08:05</div>
+        </div>
+      </section>
+
+      <!-- 07 MARUF: POSITIVE -->
+      <section class="slide">
+        <div class="card" data-post="7">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#f59e0b;">M</div></div></div>
+            <div class="p-id">
+              <div class="nm">Maruf <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@maruf.hasan</div>
+            </div>
+            <div class="p-time">40m</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-quote">
+              <span class="qm rv">"</span>
+              <div class="qt rv">Social media helps us <em>stay connected</em> with others and <em>find communities</em>.</div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">502</b> likes</div>
+          <div class="p-cap"><span class="who">maruf</span>But social media also has positive sides. The effect can be both positive and negative, <b>depending on how we use it</b>. Over to <b>@labib.mirza</b>.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">labib.mirza</span>Balance over banning. Agreed.</div>
+          </div>
+          <div class="p-ts">31 October · 08:06</div>
+        </div>
+      </section>
+
+      <!-- 08 LABIB: CHECKLIST -->
+      <section class="slide">
+        <div class="card" data-post="8">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#8b5cf6;">L</div></div></div>
+            <div class="p-id">
+              <div class="nm">Labib <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@labib.mirza</div>
+            </div>
+            <div class="p-time">20m</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media">
+            <div class="m-check">
+              <div class="m-check-row rv"><div class="box"><i class="fas fa-check"></i></div><div class="tx">Turn off unnecessary notifications.</div></div>
+              <div class="m-check-row rv"><div class="box"><i class="fas fa-check"></i></div><div class="tx">Take short screen breaks.</div></div>
+              <div class="m-check-row rv"><div class="box"><i class="fas fa-check"></i></div><div class="tx">Avoid it when you need to concentrate.</div></div>
+              <div class="m-check-row rv"><div class="box"><i class="fas fa-check"></i></div><div class="tx">Avoid it when you need to sleep.</div></div>
+            </div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">618</b> likes</div>
+          <div class="p-cap"><span class="who">labib</span>Social media is not necessarily our enemy, but our relationship with it matters. Small changes. Use it <b>intentionally</b>, not automatically.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 2 comments</button>
+            <div class="prev-row"><span class="h">irfan.sadik</span>Turning off notifications changed my grades.</div>
+          </div>
+          <div class="p-ts">31 October · 08:07</div>
+        </div>
+      </section>
+
+      <!-- 09 LABIB: POLL -->
+      <section class="slide">
+        <div class="card" data-post="9">
+          <div class="p-head">
+            <div class="igring"><div class="gap"><div class="avatar" style="background:#8b5cf6;">L</div></div></div>
+            <div class="p-id">
+              <div class="nm">Labib <svg class="vbdg"><use href="#vbadge"/></svg></div>
+              <div class="hd">@labib.mirza</div>
+            </div>
+            <div class="p-time">5m</div>
+            <button class="follow-btn">Follow</button>
+            <button class="p-more"><i class="fas fa-ellipsis"></i></button>
+          </div>
+          <div class="p-media m-poll">
+            <div class="pq rv">Am I using social media, or is social media <em>using me?</em></div>
+            <div class="m-opt rv" data-pct="58"><div class="fill"></div><div class="lab"><span>I use it</span><span class="pct">58%</span></div></div>
+            <div class="m-opt rv" data-pct="42"><div class="fill"></div><div class="lab"><span>It uses me</span><span class="pct">42%</span></div></div>
+            <div class="m-end rv"><div class="ok"><i class="fas fa-check"></i></div>You're all caught up. Thank you for listening.</div>
+          </div>
+          <div class="p-foot">
+            <button class="ic heart"><i class="fas fa-heart"></i></button>
+            <button class="ic c-open"><i class="far fa-comment"></i></button>
+            <button class="ic s-open"><i class="far fa-paper-plane"></i></button>
+            <span class="spacer"></span>
+            <button class="ic bookmark"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="p-likes"><b class="lc">1,024</b> likes</div>
+          <div class="p-cap"><span class="who">labib</span>Behind every scroll, there is a brain paying attention, processing information, and making habits. Next time you pick up your phone, ask yourself.</div>
+          <div class="p-cmt-prev">
+            <button class="vac c-open">View all 3 comments</button>
+            <div class="prev-row"><span class="h">azuba.taiba.akanda</span>It uses me. I voted honestly.</div>
+          </div>
+          <div class="p-ts">31 October · 08:08</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<div class="rail" id="rail"></div>
+
+<nav class="dock">
+  <span class="brand"><i>&#9679;</i> brainfeed</span>
+  <button class="d-btn" id="bFirst" title="First"><i class="fas fa-angles-up"></i></button>
+  <button class="d-btn" id="bPrev" title="Up"><i class="fas fa-chevron-up"></i></button>
+  <button class="d-btn hot" id="bPlay" title="Auto-scroll"><i class="fas fa-play"></i></button>
+  <button class="d-btn" id="bNext" title="Down"><i class="fas fa-chevron-down"></i></button>
+  <button class="d-btn" id="bLast" title="Last"><i class="fas fa-angles-down"></i></button>
+  <span class="sep"></span>
+  <button class="d-btn" id="tOverview" title="Overview"><i class="fas fa-table-cells-large"></i><span class="kbd">O</span></button>
+  <button class="d-btn" id="tNotes" title="Speaker notes"><i class="fas fa-align-left"></i><span class="kbd">N</span></button>
+  <span class="sep"></span>
+  <button class="d-btn" id="tTheme" title="Theme"><i class="fas fa-moon"></i><span class="kbd">T</span></button>
+  <button class="d-btn" id="tFull" title="Fullscreen"><i class="fas fa-expand"></i><span class="kbd">F</span></button>
+  <button class="d-btn" id="tZen" title="Hide UI"><i class="fas fa-eye-slash"></i><span class="kbd">H</span></button>
+  <button class="d-btn" id="tHelp" title="Shortcuts"><i class="fas fa-keyboard"></i><span class="kbd">?</span></button>
+  <span class="sep"></span>
+  <span class="meta"><b id="counter">01/10</b> · <span id="timer">00:00</span></span>
+</nav>
+
+<div class="speaker-notes" id="notesPanel">
+  <div class="nl">Speaker notes, read aloud</div>
+  <div class="nc" id="notesContent"></div>
+</div>
+
+<div class="overview" id="overview">
+  <div class="ov-head">
+    <h2>All <em>posts</em></h2>
+    <span class="hint">Click to jump · O or Esc to close</span>
+  </div>
+  <div class="ov-grid" id="ovGrid"></div>
+</div>
+
+<div class="cmt-modal" id="cmtModal">
+  <div class="cmt-box">
+    <div class="cmt-head">Comments <button class="x" id="cmtClose"><i class="fas fa-xmark"></i></button></div>
+    <div class="cmt-list" id="cmtList"></div>
+    <div class="cmt-input">
+      <input id="cmtField" type="text" placeholder="Add a comment..." autocomplete="off">
+      <button id="cmtPost">Post</button>
+    </div>
+  </div>
+</div>
+
+<div class="share-modal" id="shareModal">
+  <div class="share-box">
+    <div class="s-title">Share</div>
+    <button data-msg="Link copied to clipboard">Copy link</button>
+    <button data-msg="Shared to your story">Share to your story</button>
+    <button data-msg="Sent to group chat">Send to group chat</button>
+    <button class="danger" id="shareCancel">Cancel</button>
+  </div>
+</div>
+
+<div class="zen-hint" id="zenHint">Press H to show controls</div>
+
+<div class="modal" id="helpModal">
+  <div class="modal-box">
+    <h3>Keyboard <em>shortcuts</em></h3>
+    <div class="sub">Every control in the feed</div>
+    <ul class="sc-list">
+      <li><span>Scroll down (next)</span><span class="keys"><span class="key">&darr;</span><span class="key">Space</span><span class="key">PgDn</span></span></li>
+      <li><span>Scroll up (previous)</span><span class="keys"><span class="key">&uarr;</span><span class="key">PgUp</span></span></li>
+      <li><span>First / last post</span><span class="keys"><span class="key">Home</span><span class="key">End</span></span></li>
+      <li><span>Jump to post</span><span class="keys"><span class="key">1</span>&#8230;<span class="key">9</span><span class="key">0</span></span></li>
+      <li><span>Overview grid</span><span class="keys"><span class="key">O</span></span></li>
+      <li><span>Speaker notes</span><span class="keys"><span class="key">N</span></span></li>
+      <li><span>Hide / show all controls</span><span class="keys"><span class="key">H</span></span></li>
+      <li><span>Dark / light theme</span><span class="keys"><span class="key">T</span></span></li>
+      <li><span>Fullscreen</span><span class="keys"><span class="key">F</span></span></li>
+      <li><span>Auto-scroll</span><span class="keys"><span class="key">A</span></span></li>
+      <li><span>Reset timer</span><span class="keys"><span class="key">R</span></span></li>
+      <li><span>Close / exit anything</span><span class="keys"><span class="key">Esc</span></span></li>
+      <li><span>This panel</span><span class="keys"><span class="key">?</span></span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= data ================= */
+const SLOT = 667;
+const NOTES = [
+  "Everyone is on stage. Taiba begins the presentation.",
+  "Taiba (Azuba Taiba Akanda): Good morning everyone. Let me start with a simple question. How many times do we check our phones without even realizing it? We open our phones to reply to one message, watch one video, or check one notification. But somehow, a few seconds can turn into 20 or 30 minutes of scrolling.",
+  "Taiba: Social media has become such a normal part of our lives that we often forget to think about what it is doing to us, not just socially, but biologically. Every scroll, like, comment, and notification interacts with different processes in our brain. It can influence our attention, motivation, emotions, and even some of our daily habits. So today, we are going behind the scroll to understand what actually happens inside our brain when we use social media. Our topic is How Social Media Changes Our Brains. Now, I would like to hand it over to Shahriyar, who will explain the connection between social media and our brain's reward system.",
+  "Shahriyar: Good morning everyone. First let's look at how social media interacts with our brain's reward system. When we receive a like, comment, message, or notification, it can feel rewarding. One important chemical involved in the brain's reward and motivation system is dopamine.",
+  "Shahriyar: Social media also gives us unpredictable rewards. Sometimes we get many likes or an interesting video, and sometimes we don't. This uncertainty can encourage us to keep checking our phones. That is why we sometimes open social media without even planning to. Now, I would like to hand it over to Irfan Sadik, who will talk about how social media can influence our attention.",
+  "Irfan: Good morning everyone. Now, let's talk about attention. Social media gives us a continuous flow of new content. We can move from one video or post to another within seconds. Notifications can also interrupt us while we are studying, working, or even talking to someone. This does not mean social media permanently damages our attention. However, constant switching and frequent interruptions can make it harder to stay focused on one task. For students, this can be especially important because studying often requires long periods of concentration. Now, I would like to invite Maruf Hasan to explain how social media can affect our emotions and self-image.",
+  "Maruf: Good morning everyone. Let's talk about emotions and self image. Social media can also affect our emotions and how we see ourselves. We mostly see people's happy moments in social media. We do not always see their real struggles. So, when we compare our life with what we see online, we may sometimes feel that we are not doing well enough.",
+  "Maruf: But social media also has positive sides. It helps us stay connected with others, and find communities. So, the effect of social media can be both positive and negative, depending on how we use it. Now, Labib Mirza will talk about the next part.",
+  "Labib: Good morning everyone. So, after looking at the effects of social media on our brain, one thing becomes clear: social media is not necessarily our enemy, but our relationship with it matters. We can make small changes, such as turning off unnecessary notifications, taking short screen breaks, and avoiding social media when we need to concentrate or sleep. The important thing is to use social media intentionally, rather than automatically.",
+  "Labib: Because behind every scroll, there is a brain paying attention, processing information, and making habits. So, the next time we pick up our phone, take a moment to ask ourself: Am I using social media, or is social media using me? That's it. Thank you everyone for listening."
+];
+const POSTS = [
+  { t:'Profile · Cover', n:'behindthescroll', h:'@behindthescroll', av:'B', c:'#101318' },
+  { t:'The simple question', n:'Taiba', h:'@azuba.taiba.akanda', av:'T', c:'#e1306c' },
+  { t:'Not just social. Biological.', n:'Taiba', h:'@azuba.taiba.akanda', av:'T', c:'#e1306c' },
+  { t:"The brain's reward system", n:'Shahriyar', h:'@shahriyar.alhasan', av:'S', c:'#0095f6' },
+  { t:'Why we keep checking', n:'Shahriyar', h:'@shahriyar.alhasan', av:'S', c:'#0095f6' },
+  { t:'Attention and scrolling', n:'Irfan', h:'@irfan.sadik', av:'I', c:'#16a34a' },
+  { t:'Emotions and self-image', n:'Maruf', h:'@maruf.hasan', av:'M', c:'#f59e0b' },
+  { t:'The positive side', n:'Maruf', h:'@maruf.hasan', av:'M', c:'#f59e0b' },
+  { t:'Use it intentionally', n:'Labib', h:'@labib.mirza', av:'L', c:'#8b5cf6' },
+  { t:'The final question · Poll', n:'Labib', h:'@labib.mirza', av:'L', c:'#8b5cf6' }
+];
+const COMMENTS = [
+  [],
+  [ {u:'shahriyar.alhasan', c:'#0095f6', t:'So accurate. The 30 minute part gets me every time.', time:'2h', likes:12},
+    {u:'labib.mirza', c:'#8b5cf6', t:'Guilty as charged.', time:'1h', likes:6},
+    {u:'neuron.daily', c:'#6b7280', t:'The average person checks their phone 96 times a day.', time:'1h', likes:24} ],
+  [ {u:'shahriyar.alhasan', c:'#0095f6', t:'Ready for the handover. Dopamine incoming.', time:'2h', likes:9},
+    {u:'maruf.hasan', c:'#f59e0b', t:'The habits one is so real.', time:'1h', likes:5} ],
+  [ {u:'azuba.taiba.akanda', c:'#e1306c', t:'Dopamine explained so simply. Nice.', time:'1h', likes:14},
+    {u:'irfan.sadik', c:'#16a34a', t:'That loop is exactly my evening.', time:'1h', likes:8} ],
+  [ {u:'maruf.hasan', c:'#f59e0b', t:'The uncertainty part is the trap.', time:'1h', likes:11},
+    {u:'azuba.taiba.akanda', c:'#e1306c', t:'Slot machine energy.', time:'50m', likes:7} ],
+  [ {u:'labib.mirza', c:'#8b5cf6', t:'That PING row is stressful to watch.', time:'40m', likes:13},
+    {u:'shahriyar.alhasan', c:'#0095f6', t:'Focus never stood a chance.', time:'35m', likes:6} ],
+  [ {u:'azuba.taiba.akanda', c:'#e1306c', t:'Needed this reminder today.', time:'30m', likes:18},
+    {u:'irfan.sadik', c:'#16a34a', t:'Off screen hits hard.', time:'25m', likes:9} ],
+  [ {u:'labib.mirza', c:'#8b5cf6', t:'Balance over banning. Agreed.', time:'20m', likes:10},
+    {u:'shahriyar.alhasan', c:'#0095f6', t:'Communities saved me honestly.', time:'15m', likes:12} ],
+  [ {u:'irfan.sadik', c:'#16a34a', t:'Turning off notifications changed my grades.', time:'10m', likes:21},
+    {u:'maruf.hasan', c:'#f59e0b', t:'Adding the sleep one tonight.', time:'8m', likes:9} ],
+  [ {u:'azuba.taiba.akanda', c:'#e1306c', t:'It uses me. I voted honestly.', time:'4m', likes:32},
+    {u:'shahriyar.alhasan', c:'#0095f6', t:'Great question to end on.', time:'3m', likes:15},
+    {u:'irfan.sadik', c:'#16a34a', t:'Thank you all. This was fun.', time:'2m', likes:19} ]
+];
+
+/* ================= core scroll engine ================= */
+const TOTAL = 10;
+let target = 0, autoTimer = null, t0 = Date.now();
+const strip = document.getElementById('strip');
+const framebox = document.getElementById('framebox');
+const slides = [...document.querySelectorAll('.slide')];
+const visited = new Set();
+
+function fit() {
+  const s = Math.min(innerWidth / 1280, innerHeight / 720);
+  framebox.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize', fit);
+fit();
+
+function animateIn(i) {
+  const slide = slides[i];
+  if (!slide) return;
+  const rv = slide.querySelectorAll('.rv');
+  if (rv.length) gsap.fromTo(rv, { opacity:0, y:18 }, { opacity:1, y:0, duration:.5, stagger:.06, ease:'power3.out', overwrite:'auto' });
+  const opts = slide.querySelectorAll('.m-opt');
+  if (opts.length) {
+    opts.forEach(o => {
+      o.classList.add('revealed');
+      const f = o.querySelector('.fill');
+      gsap.fromTo(f, { width:'0%' }, { width:o.dataset.pct + '%', duration:1, ease:'power2.out', delay:.45, overwrite:'auto' });
+    });
+  }
+}
+
+function scrollTo(i, dur) {
+  target = Math.max(0, Math.min(TOTAL - 1, i));
+  gsap.to(strip, { y: -target * SLOT, duration: dur !== undefined ? dur : .85, ease:'power3.inOut', overwrite:'auto' });
+  if (!visited.has(target)) { visited.add(target); animateIn(target); }
+  updateUI();
+}
+
+function next() { scrollTo(target + 1); }
+function prev() { scrollTo(target - 1); }
+
+function updateUI() {
+  document.getElementById('counter').textContent = String(target + 1).padStart(2,'0') + '/' + TOTAL;
+  document.getElementById('notesContent').textContent = NOTES[target];
+  document.querySelectorAll('#rail .seg').forEach((s, i) => {
+    s.classList.toggle('active', i === target);
+    s.classList.toggle('done', i < target);
+  });
+  document.getElementById('bPrev').disabled = target === 0;
+  document.getElementById('bFirst').disabled = target === 0;
+  document.getElementById('bNext').disabled = target === TOTAL - 1;
+  document.getElementById('bLast').disabled = target === TOTAL - 1;
+  document.querySelectorAll('.ov-card').forEach((c, i) => c.classList.toggle('current', i === target));
+}
+
+/* wheel */
+let wheelLock = false;
+addEventListener('wheel', e => {
+  if (wheelLock || overview.classList.contains('active') || cmtModal.classList.contains('active') || shareModal.classList.contains('active') || helpModal.classList.contains('active')) return;
+  if (Math.abs(e.deltaY) < 20) return;
+  wheelLock = true;
+  scrollTo(target + (e.deltaY > 0 ? 1 : -1), .8);
+  setTimeout(() => wheelLock = false, 700);
+}, { passive:true });
+
+/* drag to scroll */
+let dragging = false, dragMoved = false, dragStartY = 0, dragStartScroll = 0;
+stage.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  if (e.target.closest('button, a, input, .p-more')) return;
+  dragging = true; dragMoved = false;
+  dragStartY = e.clientY;
+  dragStartScroll = gsap.getProperty(strip, 'y');
+  gsap.killTweensOf(strip);
+});
+addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const s = Math.min(innerWidth / 1280, innerHeight / 720);
+  const dy = (e.clientY - dragStartY) / s;
+  if (Math.abs(dy) > 6) dragMoved = true;
+  let y = dragStartScroll + dy;
+  const minY = -(TOTAL - 1) * SLOT, maxY = 0;
+  if (y > maxY) y = y * .3;
+  if (y < minY) y = minY + (y - minY) * .3;
+  gsap.set(strip, { y });
+});
+addEventListener('pointerup', () => {
+  if (!dragging) return;
+  dragging = false;
+  if (dragMoved) {
+    const y = gsap.getProperty(strip, 'y');
+    scrollTo(Math.round(-y / SLOT), .5);
+  }
+});
+
+/* touch swipe */
+let ty = 0;
+addEventListener('touchstart', e => ty = e.changedTouches[0].screenY, { passive:true });
+addEventListener('touchend', e => {
+  const d = e.changedTouches[0].screenY - ty;
+  if (Math.abs(d) > 50 && !dragMoved) d < 0 ? next() : prev();
+}, { passive:true });
+
+/* ================= rail + overview ================= */
+const rail = document.getElementById('rail');
+POSTS.forEach((p, i) => {
+  const s = document.createElement('div');
+  s.className = 'seg' + (i ? '' : ' active');
+  s.dataset.tip = p.t;
+  s.onclick = () => scrollTo(i);
+  rail.appendChild(s);
+});
+const ovGrid = document.getElementById('ovGrid');
+POSTS.forEach((p, i) => {
+  const c = document.createElement('div');
+  c.className = 'ov-card' + (i ? '' : ' current');
+  c.innerHTML = `<div class="o-hd"><div class="o-av" style="background:${p.c};">${p.av}</div><div><div class="o-nm">${p.n}</div><div class="o-hd2">${p.h}</div></div><div class="o-sc">POST ${String(i+1).padStart(2,'0')}</div></div><div class="o-tt">${p.t}</div>`;
+  c.onclick = () => { scrollTo(i); toggleOverview(false); };
+  ovGrid.appendChild(c);
+});
+
+/* ================= interactions ================= */
+document.addEventListener('click', e => {
+  if (e.target.closest('.js-scroll-next')) { next(); return; }
+
+  const h = e.target.closest('.p-foot .heart');
+  if (h) {
+    const card = h.closest('.card');
+    const lc = card.querySelector('.lc');
+    const on = card.dataset.liked === '1';
+    card.dataset.liked = on ? '0' : '1';
+    let n = parseInt(lc.textContent.replace(/,/g,'')) + (on ? -1 : 1);
+    lc.textContent = n.toLocaleString();
+    gsap.fromTo(h, { scale:1.35 }, { scale:1, duration:.35, ease:'back.out(3)' });
+    return;
+  }
+
+  const bk = e.target.closest('.bookmark');
+  if (bk) {
+    bk.classList.toggle('on');
+    bk.innerHTML = bk.classList.contains('on') ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+    showToast(bk.classList.contains('on') ? 'Saved to collection' : 'Removed from saved');
+    return;
+  }
+
+  const f = e.target.closest('.follow-btn');
+  if (f) {
+    const on = f.classList.toggle('on');
+    f.textContent = on ? 'Following' : 'Follow';
+    return;
+  }
+
+  if (e.target.closest('.c-open')) {
+    const card = e.target.closest('.card');
+    openComments(+card.dataset.post);
+    return;
+  }
+
+  if (e.target.closest('.s-open')) {
+    shareModal.classList.add('active');
+    return;
+  }
+
+  const opt = e.target.closest('.m-opt');
+  if (opt) {
+    const card = opt.closest('.card');
+    if (!card.dataset.voted) {
+      card.dataset.voted = '1';
+      opt.classList.add('voted');
+      showToast('Vote recorded');
+    }
+    return;
+  }
+});
+
+/* double tap media to like */
+document.querySelectorAll('.p-media').forEach(m => {
+  m.addEventListener('dblclick', () => {
+    const card = m.closest('.card');
+    if (card.dataset.liked !== '1') {
+      card.dataset.liked = '1';
+      const lc = card.querySelector('.lc');
+      lc.textContent = (parseInt(lc.textContent.replace(/,/g,'')) + 1).toLocaleString();
+    }
+    const heart = document.createElement('div');
+    heart.className = 'bighart';
+    heart.innerHTML = '<i class="fas fa-heart"></i>';
+    m.appendChild(heart);
+    gsap.fromTo(heart, { scale:0, opacity:0 }, { scale:1.15, opacity:1, duration:.35, ease:'back.out(2)' });
+    gsap.to(heart, { scale:.9, opacity:0, duration:.4, delay:.55, ease:'power1.in', onComplete:() => heart.remove() });
+  });
+});
+
+/* ================= comments sheet ================= */
+const cmtModal = document.getElementById('cmtModal');
+const cmtList = document.getElementById('cmtList');
+const cmtField = document.getElementById('cmtField');
+const cmtPost = document.getElementById('cmtPost');
+let cmtIndex = 0;
+
+function renderComments() {
+  cmtList.innerHTML = '';
+  COMMENTS[cmtIndex].forEach((cm, idx) => {
+    const row = document.createElement('div');
+    row.className = 'cmt-row';
+    row.innerHTML = `
+      <div class="c-av" style="background:${cm.c};">${cm.u[0].toUpperCase()}</div>
+      <div class="c-body">
+        <span class="h">${cm.u}</span>${cm.t}
+        <div class="c-meta">
+          <span>${cm.time}</span>
+          <span>${cm.likes} likes</span>
+          <button class="c-like" data-idx="${idx}"><i class="far fa-heart"></i></button>
+        </div>
+      </div>`;
+    cmtList.appendChild(row);
+  });
+}
+function openComments(i) {
+  cmtIndex = i;
+  renderComments();
+  cmtModal.classList.add('active');
+  setTimeout(() => cmtField.focus(), 50);
+}
+document.getElementById('cmtClose').onclick = () => cmtModal.classList.remove('active');
+cmtModal.addEventListener('click', e => {
+  if (e.target === cmtModal) cmtModal.classList.remove('active');
+  const lk = e.target.closest('.c-like');
+  if (lk) {
+    lk.classList.toggle('on');
+    lk.innerHTML = lk.classList.contains('on') ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+  }
+});
+cmtField.addEventListener('input', () => cmtPost.classList.toggle('ready', cmtField.value.trim().length > 0));
+cmtField.addEventListener('keydown', e => { if (e.key === 'Enter') cmtPost.click(); e.stopPropagation(); });
+cmtPost.onclick = () => {
+  const v = cmtField.value.trim();
+  if (!v) return;
+  COMMENTS[cmtIndex].push({ u:'you', c:'#262626', t:v, time:'now', likes:0 });
+  cmtField.value = '';
+  cmtPost.classList.remove('ready');
+  renderComments();
+  cmtList.scrollTop = cmtList.scrollHeight;
+};
+
+/* ================= share sheet ================= */
+const shareModal = document.getElementById('shareModal');
+shareModal.addEventListener('click', e => {
+  if (e.target === shareModal) shareModal.classList.remove('active');
+  const b = e.target.closest('button[data-msg]');
+  if (b) { showToast(b.dataset.msg); shareModal.classList.remove('active'); }
+  if (e.target.closest('#shareCancel')) shareModal.classList.remove('active');
+});
+
+/* ================= modes ================= */
+const overview = document.getElementById('overview');
+const notesPanel = document.getElementById('notesPanel');
+const helpModal = document.getElementById('helpModal');
+const zenHint = document.getElementById('zenHint');
+let zenT;
+
+function toggleOverview(f) {
+  const v = f === undefined ? !overview.classList.contains('active') : f;
+  overview.classList.toggle('active', v);
+  document.getElementById('tOverview').classList.toggle('active', v);
+}
+function toggleNotes(f) {
+  const v = f === undefined ? !notesPanel.classList.contains('active') : f;
+  notesPanel.classList.toggle('active', v);
+  document.getElementById('tNotes').classList.toggle('active', v);
+}
+function toggleZen() {
+  document.body.classList.toggle('zen');
+  const on = document.body.classList.contains('zen');
+  document.getElementById('tZen').classList.toggle('active', on);
+  showToast(on ? 'Controls hidden. Press H to show them' : 'Controls shown');
+}
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (dark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'dark');
+  document.querySelector('#tTheme i').className = dark ? 'fas fa-moon' : 'fas fa-sun';
+  showToast(dark ? 'Light mode' : 'Dark mode');
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+}
+function toggleAutoplay() {
+  const b = document.getElementById('bPlay');
+  if (autoTimer) {
+    clearInterval(autoTimer); autoTimer = null;
+    b.innerHTML = '<i class="fas fa-play"></i>'; b.classList.remove('active');
+    showToast('Auto-scroll off');
+  } else {
+    autoTimer = setInterval(() => { target < TOTAL - 1 ? next() : toggleAutoplay(); }, 7000);
+    b.innerHTML = '<i class="fas fa-pause"></i>'; b.classList.add('active');
+    showToast('Auto-scroll, 7 seconds per post');
+  }
+}
+function toggleHelp(f) {
+  const v = f === undefined ? !helpModal.classList.contains('active') : f;
+  helpModal.classList.toggle('active', v);
+}
+
+document.addEventListener('mousemove', () => {
+  if (document.body.classList.contains('zen')) {
+    zenHint.classList.add('show');
+    clearTimeout(zenT);
+    zenT = setTimeout(() => zenHint.classList.remove('show'), 1400);
+  }
+});
+
+setInterval(() => {
+  const s = Math.floor((Date.now() - t0) / 1000);
+  document.getElementById('timer').textContent =
+    String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}, 1000);
+
+const toast = document.getElementById('toast');
+let toastT;
+function showToast(m) {
+  toast.textContent = m;
+  toast.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+document.getElementById('bFirst').onclick = () => scrollTo(0);
+document.getElementById('bPrev').onclick = prev;
+document.getElementById('bNext').onclick = next;
+document.getElementById('bLast').onclick = () => scrollTo(TOTAL - 1);
+document.getElementById('bPlay').onclick = toggleAutoplay;
+document.getElementById('tOverview').onclick = () => toggleOverview();
+document.getElementById('tNotes').onclick = () => toggleNotes();
+document.getElementById('tTheme').onclick = toggleTheme;
+document.getElementById('tFull').onclick = toggleFullscreen;
+document.getElementById('tZen').onclick = toggleZen;
+document.getElementById('tHelp').onclick = () => toggleHelp();
+helpModal.addEventListener('click', e => { if (e.target === helpModal) toggleHelp(false); });
+
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (helpModal.classList.contains('active')) {
+    if (e.key === 'Escape' || e.key === '?') toggleHelp(false);
+    return;
+  }
+  if (cmtModal.classList.contains('active') || shareModal.classList.contains('active')) {
+    if (e.key === 'Escape') { cmtModal.classList.remove('active'); shareModal.classList.remove('active'); }
+    return;
+  }
+  switch (e.key) {
+    case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown': case 'Enter': e.preventDefault(); next(); break;
+    case 'ArrowUp': case 'ArrowLeft': case 'PageUp': e.preventDefault(); prev(); break;
+    case 'Home': e.preventDefault(); scrollTo(0); break;
+    case 'End': e.preventDefault(); scrollTo(TOTAL - 1); break;
+    case 'o': case 'O': case 'g': case 'G': toggleOverview(); break;
+    case 'n': case 'N': toggleNotes(); break;
+    case 't': case 'T': toggleTheme(); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+    case 'a': case 'A': toggleAutoplay(); break;
+    case 'h': case 'H': toggleZen(); break;
+    case 'r': case 'R': t0 = Date.now(); showToast('Timer reset'); break;
+    case '?': toggleHelp(); break;
+    case 'Escape':
+      if (overview.classList.contains('active')) toggleOverview(false);
+      else if (notesPanel.classList.contains('active')) toggleNotes(false);
+      break;
+    default:
+      if (/^[1-9]$/.test(e.key)) scrollTo(+e.key - 1);
+      else if (e.key === '0') scrollTo(9);
+  }
+});
+
+/* init */
+gsap.set('.rv', { opacity: 0 });
+visited.add(0);
+animateIn(0);
+updateUI();
+setTimeout(() => showToast('Scroll to begin · ? for shortcuts'), 900);
+</script>
+</body>
+</html>
